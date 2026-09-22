@@ -17,7 +17,7 @@ export function CompanySelector() {
     openCreateModal,
     closeCreateModal,
   } = useCompany();
-  const { success } = useToast();
+  const { success, error: toastError } = useToast();
 
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -47,17 +47,24 @@ export function CompanySelector() {
     }
   }
 
-  function handleCreateSubmit(e: FormEvent) {
+  async function handleCreateSubmit(e: FormEvent) {
     e.preventDefault();
     if (!newCompanyName.trim()) return;
 
     setIsSubmitting(true);
-    const created = createCompany(newCompanyName, newCompanyCategory);
-    setIsSubmitting(false);
-    setNewCompanyName("");
-    setNewCompanyCategory("");
-    success(`Entreprise "${created.name}" créée avec succès !`);
+    try {
+      const created = await createCompany(newCompanyName, newCompanyCategory);
+      setNewCompanyName("");
+      setNewCompanyCategory("");
+      success(`Entreprise "${created.name}" créée avec succès !`);
+    } catch {
+      toastError("Erreur lors de la création de l'entreprise.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
+
+  if (!currentCompany) return null;
 
   return (
     <>

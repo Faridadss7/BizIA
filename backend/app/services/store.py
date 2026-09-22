@@ -18,6 +18,7 @@ from app.utils.settings import settings
 
 _store: "JsonStore | None" = None
 _user_stores: dict[str, "JsonStore"] = {}
+_company_stores: dict[str, "JsonStore"] = {}
 
 _EMPTY: dict[str, Any] = {
     "products": [],
@@ -26,6 +27,8 @@ _EMPTY: dict[str, Any] = {
     "last_source": "manual",
     "users": [],
     "sessions": [],
+    "companies": [],
+    "company_members": [],
 }
 
 
@@ -232,6 +235,115 @@ class JsonStore:
             ]
             self._dump(data)
 
+    def list_companies_for_user(self, user_id: str) -> list[dict[str, Any]]:
+        with self._lock:
+            data = self._load()
+            memberships = [m for m in data.get("company_members", []) if str(m.get("user_id")) == str(user_id)]
+            companies_map = {str(c["id"]): c for c in data.get("companies", [])}
+            results = []
+            for m in memberships:
+                c = companies_map.get(str(m.get("company_id")))
+                if c:
+                    item = copy.deepcopy(c)
+                    item["role"] = m.get("role", "member")
+                    results.append(item)
+            return results
+
+    def create_company_for_user(
+        self,
+        user_id: str,
+        name: str,
+        category: str = "Commerce Général",
+        currency: str = "FCFA",
+    ) -> dict[str, Any]:
+        with self._lock:
+            data = self._load()
+            now = datetime.now(timezone.utc).isoformat()
+            company_id = _new_id()
+            company = {
+                "id": company_id,
+                "name": name.strip(),
+                "category": (category or "Commerce Général").strip(),
+                "currency": (currency or "FCFA").strip(),
+                "created_by": str(user_id),
+                "created_at": now,
+                "updated_at": now,
+            }
+            member = {
+                "id": _new_id(),
+                "company_id": company_id,
+                "user_id": str(user_id),
+                "role": "owner",
+                "created_at": now,
+            }
+            data.setdefault("companies", []).append(company)
+            data.setdefault("company_members", []).append(member)
+            self._dump(data)
+            result = copy.deepcopy(company)
+            result["role"] = "owner"
+            return result
+
+    def get_company_for_user(self, company_id: str, user_id: str) -> dict[str, Any] | None:
+        with self._lock:
+            data = self._load()
+            member = next(
+                (
+                    m
+                    for m in data.get("company_members", [])
+                    if str(m.get("company_id")) == str(company_id)
+                    and str(m.get("user_id")) == str(user_id)
+                ),
+                None,
+            )
+            if not member:
+                return None
+            company = next(
+                (c for c in data.get("companies", []) if str(c.get("id")) == str(company_id)),
+                None,
+            )
+            if not company:
+                return None
+            result = copy.deepcopy(company)
+            result["role"] = member.get("role", "member")
+            return result
+
+    def update_company_for_user(
+        self, company_id: str, user_id: str, updates: dict[str, Any]
+    ) -> dict[str, Any] | None:
+        with self._lock:
+            data = self._load()
+            member = next(
+                (
+                    m
+                    for m in data.get("company_members", [])
+                    if str(m.get("company_id")) == str(company_id)
+                    and str(m.get("user_id")) == str(user_id)
+                ),
+                None,
+            )
+            if not member or member.get("role") not in ("owner", "admin"):
+                return None
+            for idx, c in enumerate(data.get("companies", [])):
+                if str(c.get("id")) == str(company_id):
+                    for k in ("name", "category", "currency"):
+                        if k in updates and updates[k] is not None:
+                            c[k] = str(updates[k]).strip()
+                    c["updated_at"] = datetime.now(timezone.utc).isoformat()
+                    data["companies"][idx] = c
+                    self._dump(data)
+                    res = copy.deepcopy(c)
+                    res["role"] = member.get("role")
+                    return res
+            return None
+
+    def ensure_default_company(self, user_id: str, user_name: str = "") -> dict[str, Any]:
+        existing = self.list_companies_for_user(user_id)
+        if existing:
+            return existing[0]
+        name = f"Entreprise {user_name}".strip() if user_name.strip() else "Mon Entreprise"
+        return self.create_company_for_user(user_id, name)
+
+
     def get_last_analysis(self) -> dict[str, Any] | None:
         with self._lock:
             analysis = self._load()["last_analysis"]
@@ -347,6 +459,8 @@ class JsonStore:
             "last_source": raw.get("last_source") or "manual",
             "users": list(raw.get("users") or []),
             "sessions": list(raw.get("sessions") or []),
+            "companies": list(raw.get("companies") or []),
+            "company_members": list(raw.get("company_members") or []),
         }
 
     def _dump(self, data: dict[str, Any]) -> None:
@@ -366,11 +480,20 @@ def get_store() -> JsonStore:
 
 def get_user_store(user_id: str) -> JsonStore:
     """Store métier isolé d'un compte authentifié."""
-    key = str(uuid.UUID(user_id))
+    key = str(uuid.UUID(str(user_id)))
     if key not in _user_stores:
         base = get_store().path
         _user_stores[key] = JsonStore(base.parent / "users" / f"{key}.json")
     return _user_stores[key]
+
+
+def get_company_store(company_id: str) -> JsonStore:
+    """Store métier isolé d'une entreprise (Multi-entreprises V2)."""
+    key = str(uuid.UUID(str(company_id)))
+    if key not in _company_stores:
+        base = get_store().path
+        _company_stores[key] = JsonStore(base.parent / "companies" / f"{key}.json")
+    return _company_stores[key]
 
 
 def set_store(store: JsonStore | None) -> None:
@@ -378,3 +501,4 @@ def set_store(store: JsonStore | None) -> None:
     global _store
     _store = store
     _user_stores.clear()
+    _company_stores.clear()

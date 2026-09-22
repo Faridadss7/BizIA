@@ -6,6 +6,7 @@ import type {
   Alert,
   AnalysisResult,
   ChatReply,
+  Company,
   IngestionPreview,
   IngestionResult,
   Product,
@@ -31,15 +32,24 @@ export class ApiError extends Error {
   }
 }
 
+function getActiveCompanyId(): string | null {
+  if (typeof window === "undefined") return null;
+  const id = localStorage.getItem("bizia_active_company_id");
+  if (!id || id === "default-comp") return null;
+  return id;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
     const token = getStoredSession()?.token;
+    const companyId = getActiveCompanyId();
     response = await fetch(`${API_URL}${path}`, {
       ...init,
       headers: {
         ...(init?.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(companyId ? { "X-Company-ID": companyId } : {}),
         ...init?.headers,
       },
     });
@@ -63,6 +73,20 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   health: () => request<{ status: string }>("/health"),
+  companies: {
+    list: () => request<{ items: Company[] }>("/api/companies"),
+    create: (body: { name: string; category?: string; currency?: string }) =>
+      request<{ company: Company }>("/api/companies", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    get: (id: string) => request<{ company: Company }>(`/api/companies/${id}`),
+    update: (id: string, body: { name?: string; category?: string; currency?: string }) =>
+      request<{ company: Company }>(`/api/companies/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      }),
+  },
   products: {
     list: () => request<{ items: Product[] }>("/api/products"),
     create: (body: Product) =>
@@ -107,9 +131,13 @@ export const api = {
       let response: Response;
       try {
         const token = getStoredSession()?.token;
+        const companyId = getActiveCompanyId();
         response = await fetch(`${API_URL}/api/reports/generate?format=${format}`, {
           method: "POST",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(companyId ? { "X-Company-ID": companyId } : {}),
+          },
         });
       } catch {
         throw new ApiError("network", API_UNREACHABLE_MESSAGE);

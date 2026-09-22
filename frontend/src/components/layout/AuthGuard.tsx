@@ -50,21 +50,8 @@ export function AuthGuard({ children }: { children: ReactNode }) {
               type="button"
               className="btn btn--ghost btn--sm"
               onClick={async () => {
-                await login({ email: "demo@bizia.africa", password: "password123" }).catch(async () => {
-                  // Fallback: auto-register demo user if not existing
-                  window.localStorage.setItem(
-                    "bizia_auth_session",
-                    JSON.stringify({
-                      user: {
-                        id: "demo-user",
-                        firstName: "Invité",
-                        lastName: "Démo",
-                        email: "demo@bizia.africa",
-                      },
-                      token: "demo_token_123",
-                    })
-                  );
-                  window.location.reload();
+                await login({ email: "demo@bizia.africa", password: "password123" }).catch(() => {
+                  window.location.href = "/connexion";
                 });
               }}
             >

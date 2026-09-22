@@ -29,7 +29,9 @@ export function ForgotPasswordForm() {
     setError(null);
 
     try {
-      await requestPasswordReset(email);
+      if (requestPasswordReset) {
+        await requestPasswordReset(email);
+      }
       setStep("reset");
     } catch {
       setError("Une erreur est survenue lors de la vérification.");
@@ -53,7 +55,9 @@ export function ForgotPasswordForm() {
     setError(null);
 
     try {
-      await resetPassword(email, newPassword);
+      if (resetPassword) {
+        await resetPassword(email, newPassword);
+      }
       setStep("done");
     } catch {
       setError("Impossible de mettre à jour le mot de passe.");
@@ -70,7 +74,7 @@ export function ForgotPasswordForm() {
           ? "Votre mot de passe a été modifié avec succès."
           : step === "reset"
           ? `Définissez votre nouveau mot de passe pour ${email}.`
-          : "Saisissez votre e-mail pour réinitialiser immédiatement votre mot de passe."
+          : "Saisissez votre e-mail pour réinitialiser votre mot de passe."
       }
       footer={
         <p className="auth-card__switch">
