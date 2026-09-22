@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { AppShell } from "@/components/layout/AppShell";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { CompanyProvider } from "@/contexts/CompanyContext";
-import { ToastProvider } from "@/contexts/ToastContext";
+import Link from "next/link";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
 export const metadata: Metadata = {
-  title: "BizIA — Intelligence & Performance Commerciale",
-  description: "Analyste de données IA autonome pour PME et entreprises.",
-  icons: {
-    icon: "/logo.svg",
-    apple: "/logo.svg",
-  },
+  title: "BizIA",
+  description: "Analyste de données IA autonome pour PME.",
 };
+
+const links = [
+  ["/", "Accueil"],
+  ["/produits", "Produits"],
+  ["/ventes", "Ventes"],
+  ["/import", "Import"],
+  ["/dashboard", "Dashboard"],
+  ["/chat", "Assistant"],
+] as const;
 
 export default function RootLayout({
   children,
@@ -27,14 +23,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={inter.className}>
-        <AuthProvider>
-          <CompanyProvider>
-            <ToastProvider>
-              <AppShell>{children}</AppShell>
-            </ToastProvider>
-          </CompanyProvider>
-        </AuthProvider>
+      <body>
+        <main>
+          <nav>
+            {links.map(([href, label]) => (
+              <Link key={href} href={href}>
+                {label}
+              </Link>
+            ))}
+          </nav>
+          {children}
+        </main>
       </body>
     </html>
   );
