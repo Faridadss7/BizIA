@@ -45,8 +45,8 @@ export function BizIALogo({ showTagline = true, size = "md" }: BizIALogoProps) {
         />
         <defs>
           <linearGradient id="bizia-grad" x1="0" y1="0" x2="40" y2="40">
-            <stop stopColor="#0091ff" />
-            <stop offset="1" stopColor="#38bdf8" />
+            <stop stopColor="#2563eb" />
+            <stop offset="1" stopColor="#4f46e5" />
           </linearGradient>
         </defs>
       </svg>

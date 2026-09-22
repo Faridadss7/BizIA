@@ -18,10 +18,6 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   signup: (payload: SignupPayload) => Promise<void>;
   login: (payload: LoginPayload) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
-  loginWithGoogleAccount: (profile: { email: string; name?: string }) => Promise<void>;
-  requestPasswordReset: (email: string) => Promise<boolean>;
-  resetPassword: (email: string, newPassword: string) => Promise<boolean>;
   logout: () => Promise<void>;
 };
 
@@ -32,9 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const session = authService.getStoredSession();
-    setUser(session?.user ?? null);
-    setIsLoading(false);
+    authService
+      .restoreSession()
+      .then((session) => setUser(session?.user ?? null))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const signup = useCallback(async (payload: SignupPayload) => {
@@ -45,24 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (payload: LoginPayload) => {
     const session = await authService.login(payload);
     setUser(session.user);
-  }, []);
-
-  const loginWithGoogle = useCallback(async () => {
-    const session = await authService.loginWithGoogle();
-    setUser(session.user);
-  }, []);
-
-  const loginWithGoogleAccount = useCallback(async (profile: { email: string; name?: string }) => {
-    const session = await authService.loginWithGoogleAccount(profile);
-    setUser(session.user);
-  }, []);
-
-  const requestPasswordReset = useCallback(async (email: string) => {
-    return await authService.requestPasswordReset(email);
-  }, []);
-
-  const resetPassword = useCallback(async (email: string, newPassword: string) => {
-    return await authService.resetPassword(email, newPassword);
   }, []);
 
   const logout = useCallback(async () => {
@@ -77,13 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!user,
       signup,
       login,
-      loginWithGoogle,
-      loginWithGoogleAccount,
-      requestPasswordReset,
-      resetPassword,
       logout,
     }),
-    [user, isLoading, signup, login, loginWithGoogle, loginWithGoogleAccount, requestPasswordReset, resetPassword, logout],
+    [user, isLoading, signup, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,6 +1,6 @@
 /** Types alignés sur le contrat API (docs/api/README.md). */
 
-export type SourceType = "manual" | "csv" | "excel" | "unknown";
+export type SourceType = "manual" | "csv" | "excel" | "pdf" | "image" | "unknown";
 
 export type Product = {
   id?: string;
@@ -75,6 +75,8 @@ export type AnalysisResult = {
   low_stock: LowStockItem[];
   trend: TrendPoint[];
   week_over_week: {
+    metric: "profit";
+    window_days: number;
     current_window_profit: number;
     previous_window_profit: number;
     delta: number;
@@ -92,6 +94,38 @@ export type IngestionResult = {
   source: SourceType;
   products_ingested: number;
   sales_ingested: number;
+  sales_skipped_unknown?: number;
+  sales_skipped_duplicate?: number;
+};
+
+export type ImportedProductRow = {
+  sku: string;
+  name?: string | null;
+  category?: string | null;
+  unit_cost?: number | null;
+  unit_price?: number | null;
+  stock_quantity?: number | null;
+  low_stock_threshold?: number | null;
+};
+
+export type ImportedSaleRow = {
+  product_sku: string;
+  quantity: number;
+  unit_price?: number | null;
+  unit_cost?: number | null;
+  sold_at?: string | null;
+  channel?: string | null;
+};
+
+export type IngestionPreview = {
+  status: "preview";
+  filename: string;
+  source: "csv" | "excel" | "pdf" | "image";
+  document_type: "sales" | "products" | "mixed" | "unknown";
+  extraction_method: "local" | "gemini";
+  products: ImportedProductRow[];
+  sales: ImportedSaleRow[];
+  warnings: string[];
 };
 
 export type ChatReply = {

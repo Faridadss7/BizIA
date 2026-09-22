@@ -2,7 +2,7 @@
 
 Analyste de données IA autonome pour les PME et les entreprises.
 
-BizIA transforme des données saisies à la main ou importées (CSV / Excel) en indicateurs, alertes, insights et un dialogue avec un assistant — **via un seul pipeline d’analyse**.
+BizIA transforme des données saisies à la main ou importées (CSV, Excel, PDF ou image) en indicateurs, alertes, insights et un dialogue avec un assistant — **via un seul pipeline d’analyse**.
 
 > Les données saisies manuellement et les données importées alimentent le même moteur. Pas deux logiques métier.
 
@@ -19,7 +19,7 @@ Chaque membre implémente ensuite son périmètre dans son dossier.
 ## Fonctionnalités MVP (à implémenter)
 
 - Saisie manuelle de produits et de ventes
-- Import CSV et Excel simple
+- Import CSV, Excel, PDF (tableau) et images (OCR)
 - Statistiques descriptives : CA, bénéfice, marges, stocks faibles, tendances
 - Alertes par seuils et première détection d’anomalies
 - Dashboard (indicateurs, alertes, insights)
@@ -31,7 +31,7 @@ Hors priorité hackathon : PDF non structurés, prévisions complexes, multi-bou
 ## Architecture
 
 ```
-Sources (formulaire | CSV | Excel)
+Sources (formulaire | CSV | Excel | PDF | image)
         ↓
    NORMALISATION → schéma commun
         ↓
@@ -56,7 +56,7 @@ Frontend (Next.js) → API FastAPI → normalisation → ml.analyze() → API �
 | Backend | Python 3.12, FastAPI | Déjà présent ; OpenAPI auto (`/docs`) |
 | ML | pandas, numpy, scikit-learn | Déjà dans `backend/requirements.txt`, extrait dans `ml/` |
 | Persistance MVP | JSON fichier (`data/local/`) | Zéro infra (pas de Postgres pour le hackathon) |
-| Conteneurs | Docker Compose (optionnel) | Lancer front + back ensemble |
+| Conteneurs | Docker (`Dockerfile` racine) | Un service unique sert le site et l’API |
 
 ## Structure
 
@@ -135,6 +135,9 @@ pytest ml/tests -q
 
 ### Docker (optionnel)
 
+Un seul conteneur, comme en production : le site exporté est servi par l’API sur
+http://localhost:8000.
+
 ```bash
 docker compose up --build
 ```
@@ -205,7 +208,7 @@ Aperçu :
 | GET | `/health` | Santé |
 | GET/POST | `/api/products` | Produits |
 | GET/POST | `/api/sales` | Ventes |
-| POST | `/api/ingestion/files` | Import CSV/Excel |
+| POST | `/api/ingestion/files` | Import CSV/Excel/PDF/image |
 | POST | `/api/analysis/run` | Lance le moteur unique |
 | GET | `/api/analysis/summary` | Dernier résultat |
 | GET | `/api/alerts` | Alertes |
@@ -226,7 +229,7 @@ Chaque squelette porte un commentaire `TODO(<prénom>)` à l’endroit exact où
 ## Documentation
 
 - [docs/architecture/pipeline.md](docs/architecture/pipeline.md)
-- [docs/development/setup.md](docs/development/setup.md)
+- [docs/development/setup.md](docs/development/setup.md) — local et **Render** (un service, `render.yaml`)
 - [docs/presentation/](docs/presentation/) — documents de référence équipe
 - [docs/vision.md](docs/vision.md) · [docs/conventions.md](docs/conventions.md)
 

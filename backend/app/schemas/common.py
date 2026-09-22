@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-SourceType = Literal["manual", "csv", "excel", "unknown"]
+SourceType = Literal["manual", "csv", "excel", "pdf", "image", "unknown"]
 
 
 class ProductIn(BaseModel):
@@ -48,3 +48,15 @@ class CanonicalDataset(BaseModel):
 class ErrorBody(BaseModel):
     code: str
     message: str
+
+
+class RegisterIn(BaseModel):
+    first_name: str = Field(min_length=1, max_length=80)
+    last_name: str = Field(min_length=1, max_length=80)
+    email: str = Field(min_length=3, max_length=254, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    password: str = Field(min_length=8, max_length=128)
+
+
+class LoginIn(BaseModel):
+    email: str = Field(min_length=3, max_length=254)
+    password: str = Field(min_length=1, max_length=128)

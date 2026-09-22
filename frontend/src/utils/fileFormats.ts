@@ -1,16 +1,14 @@
-export type DocumentFormat = "csv" | "xlsx" | "xls" | "pdf" | "doc" | "docx" | "ppt" | "pptx";
-
-export type ExportFormat = DocumentFormat;
+export type DocumentFormat = "csv" | "xlsx" | "xls" | "pdf" | "png" | "jpg" | "jpeg" | "webp";
 
 export const ACCEPTED_EXTENSIONS: DocumentFormat[] = [
   "csv",
   "xlsx",
   "xls",
   "pdf",
-  "doc",
-  "docx",
-  "ppt",
-  "pptx",
+  "png",
+  "jpg",
+  "jpeg",
+  "webp",
 ];
 
 export const ACCEPTED_MIME_TYPES = [
@@ -18,13 +16,16 @@ export const ACCEPTED_MIME_TYPES = [
   "application/vnd.ms-excel",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-powerpoint",
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
 ];
 
-export const FILE_INPUT_ACCEPT = ACCEPTED_EXTENSIONS.map((ext) => `.${ext}`).join(",");
+export const FILE_INPUT_ACCEPT = [
+  ...ACCEPTED_EXTENSIONS.map((ext) => `.${ext}`),
+  ...ACCEPTED_MIME_TYPES,
+].join(",");
 
 export function getFileExtension(filename: string): string | null {
   const ext = filename.split(".").pop()?.toLowerCase();
@@ -43,10 +44,10 @@ export function formatLabel(format: DocumentFormat): string {
     xlsx: "Excel",
     xls: "Excel (legacy)",
     pdf: "PDF",
-    doc: "Word",
-    docx: "Word",
-    ppt: "PowerPoint",
-    pptx: "PowerPoint",
+    png: "Image PNG",
+    jpg: "Image JPEG",
+    jpeg: "Image JPEG",
+    webp: "Image WebP",
   };
   return labels[format];
 }

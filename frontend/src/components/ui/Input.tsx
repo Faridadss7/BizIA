@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type InputHTMLAttributes, type ReactNode } from "react";
-import { IconCheckCircle } from "@/components/icons/Icons";
 
 type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
   label: string;
@@ -74,11 +73,7 @@ export function Input({
           {hint}
         </p>
       )}
-      {valid && !error && (
-        <span className="field__valid-icon" aria-hidden="true" style={{ display: "inline-flex", alignItems: "center" }}>
-          <IconCheckCircle size={14} />
-        </span>
-      )}
+      {valid && !error && <span className="field__valid-icon" aria-hidden="true">✓</span>}
     </div>
   );
 }

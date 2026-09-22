@@ -10,11 +10,8 @@ import { Spinner } from "@/components/ui/Spinner";
 import { api } from "@/services/api";
 import type { AnalysisResult } from "@/types";
 import { getApiErrorMessage, isNetworkError } from "@/utils/apiError";
-import { IconTrending, IconChartBar, IconFilePdf, IconArrowLeft, QuickActionIconSvg, type QuickActionIcon } from "@/components/icons/Icons";
+import { IconTrending, QuickActionIconSvg, type QuickActionIcon } from "@/components/icons/Icons";
 import { formatCurrency, formatPercent } from "@/utils/format";
-import { CommercialReport } from "./CommercialReport";
-import { PdfReportModal } from "./PdfReportModal";
-import { useCompany } from "@/contexts/CompanyContext";
 
 const KPI_CONFIG = [
   { key: "revenue", label: "Chiffre d'affaires", accent: "blue", format: (v: number) => formatCurrency(v) },
@@ -33,7 +30,7 @@ const QUICK_ACTIONS: Array<{
 }> = [
   { href: "/produits", title: "Ajouter des produits", desc: "Saisie manuelle de votre catalogue", icon: "package" },
   { href: "/ventes", title: "Enregistrer des ventes", desc: "Suivez chaque transaction", icon: "coins" },
-  { href: "/import", title: "Importer un document", desc: "Excel, CSV, PDF, Word, PowerPoint", icon: "upload" },
+  { href: "/import", title: "Importer un fichier", desc: "Excel, CSV, PDF ou photo de votre tableau", icon: "upload" },
   { href: "/chat", title: "Parler à l'assistant", desc: "Questions sur votre activité", icon: "bot" },
 ];
 
@@ -59,14 +56,12 @@ function KpiCard({
 }
 
 export function DashboardPanel() {
-  const { currentCompany } = useCompany();
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
   const [apiOffline, setApiOffline] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"commercial" | "financial">("financial");
-  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
   const loadSummary = useCallback(async () => {
     setLoading(true);
@@ -92,6 +87,13 @@ export function DashboardPanel() {
   }, [loadSummary]);
 
   async function handleRunAnalysis() {
+    if (
+      !window.confirm(
+        "Lancer l'analyse sur les produits et ventes actuellement enregistrés ?",
+      )
+    ) {
+      return;
+    }
     setAnalyzing(true);
     setActionError(null);
     try {
@@ -109,6 +111,18 @@ export function DashboardPanel() {
     }
   }
 
+  async function handleDownloadPdf() {
+    setExportingPdf(true);
+    setActionError(null);
+    try {
+      await api.reports.download("pdf");
+    } catch (err) {
+      setActionError(getApiErrorMessage(err));
+    } finally {
+      setExportingPdf(false);
+    }
+  }
+
   const kpis = result?.kpis;
   const hasData = kpis && (kpis.sales_count > 0 || kpis.revenue > 0);
 
@@ -118,22 +132,21 @@ export function DashboardPanel() {
       eyebrow="Vue d'ensemble"
       title="Tableau de bord"
       description="Pilotez votre activité avec des indicateurs clés, tendances et alertes en temps réel."
-      hideDefaultBanner={activeTab === "commercial"}
       actions={
         <>
-          <button
-            type="button"
-            className="btn btn--outline btn--sm"
-            onClick={() => setIsPdfModalOpen(true)}
-          >
-            <IconFilePdf size={16} />
-            <span>Rapport PDF</span>
-          </button>
           <Button onClick={handleRunAnalysis} loading={analyzing} disabled={analyzing || apiOffline}>
             Lancer l&apos;analyse
           </Button>
           <Button variant="secondary" onClick={loadSummary} disabled={loading}>
             Actualiser
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={handleDownloadPdf}
+            loading={exportingPdf}
+            disabled={!hasData || exportingPdf}
+          >
+            Télécharger le bilan PDF
           </Button>
         </>
       }
@@ -144,36 +157,7 @@ export function DashboardPanel() {
         </Alert>
       )}
 
-      {/* Barre d'onglets de navigation du Dashboard */}
-      <div className="dashboard-tab-bar">
-        <button
-          type="button"
-          className={`dashboard-tab-btn ${activeTab === "commercial" ? "dashboard-tab-btn--active" : ""}`}
-          onClick={() => setActiveTab("commercial")}
-        >
-          <span className="dashboard-tab-btn__icon">
-            <IconChartBar size={18} />
-          </span>
-          <span>Performance Commerciale</span>
-        </button>
-        <button
-          type="button"
-          className={`dashboard-tab-btn ${activeTab === "financial" ? "dashboard-tab-btn--active" : ""}`}
-          onClick={() => setActiveTab("financial")}
-        >
-          <span className="dashboard-tab-btn__icon">
-            <IconTrending size={18} />
-          </span>
-          <span>Marges, Stocks & Alertes IA</span>
-        </button>
-      </div>
-
-      {activeTab === "commercial" ? (
-        <CommercialReport
-          companyName={currentCompany.name}
-          onOpenPdf={() => setIsPdfModalOpen(true)}
-        />
-      ) : loading ? (
+      {loading ? (
         <div className="dashboard-loading">
           <Spinner label="Chargement de vos indicateurs…" />
         </div>
@@ -207,10 +191,10 @@ export function DashboardPanel() {
                 <div className="dashboard-empty__icon" aria-hidden="true">
                   <IconTrending size={48} />
                 </div>
-                <h2>{apiOffline ? "En attente du serveur" : "Prêt à analyser vos données"}</h2>
+                <h2>{apiOffline ? "Connexion en cours" : "Prêt à analyser vos données"}</h2>
                 <p className="muted">
                   {apiOffline
-                    ? "Le backend n'est pas démarré. Lancez l'API FastAPI, puis actualisez cette page ou importez vos fichiers."
+                    ? "Nous n'arrivons pas à joindre BizIA pour le moment. Patientez un instant, puis actualisez cette page."
                     : "Ajoutez des produits et des ventes, puis lancez l'analyse pour remplir ce tableau de bord."}
                 </p>
                 {!apiOffline && (
@@ -244,7 +228,10 @@ export function DashboardPanel() {
               {result.week_over_week && (
                 <div className="card card--glass dashboard-panel">
                   <div className="dashboard-panel__head">
-                    <h2>Évolution hebdomadaire</h2>
+                    <h2>
+                      Évolution du bénéfice ({result.week_over_week.window_days} jour
+                      {result.week_over_week.window_days > 1 ? "s" : ""} / période)
+                    </h2>
                     <Badge variant={result.week_over_week.delta >= 0 ? "low" : "high"}>
                       {result.week_over_week.delta >= 0 ? "Hausse" : "Baisse"}
                     </Badge>
@@ -301,6 +288,36 @@ export function DashboardPanel() {
                 </div>
 
                 <div className="card card--glass dashboard-panel">
+                  <h2>Top rentabilité</h2>
+                  {result.top_profit.length === 0 ? (
+                    <p className="muted">Aucune donnée pour le moment.</p>
+                  ) : (
+                    <div className="table-wrap">
+                      <table className="data-table">
+                        <thead>
+                          <tr>
+                            <th>Produit</th>
+                            <th>Bénéfice</th>
+                            <th>CA</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {result.top_profit.map((p) => (
+                            <tr key={p.sku}>
+                              <td>{p.name}</td>
+                              <td>{formatCurrency(p.profit)}</td>
+                              <td>{formatCurrency(p.revenue)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="page-grid">
+                <div className="card card--glass dashboard-panel">
                   <h2>Stocks faibles</h2>
                   {result.low_stock.length === 0 ? (
                     <p className="muted">Aucun stock critique détecté.</p>
@@ -334,6 +351,25 @@ export function DashboardPanel() {
                       );
                     })}
                   </div>
+                </div>
+              )}
+
+              {result.anomalies.length > 0 && (
+                <div className="card card--glass dashboard-panel">
+                  <h2>Anomalies</h2>
+                  <ul className="alert-list">
+                    {result.anomalies.map((item) => (
+                      <li key={`${item.type}-${item.period}`}>
+                        <Badge variant={item.severity === "high" ? "high" : "medium"}>
+                          {item.severity}
+                        </Badge>
+                        <div>
+                          <strong>{item.period}</strong>
+                          <p className="muted">{item.message}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
@@ -389,11 +425,6 @@ export function DashboardPanel() {
           )}
         </>
       )}
-
-      <PdfReportModal
-        isOpen={isPdfModalOpen}
-        onClose={() => setIsPdfModalOpen(false)}
-      />
     </AppPageLayout>
   );
 }

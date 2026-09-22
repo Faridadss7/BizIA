@@ -1,22 +1,43 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { DocumentFormatIcon, IconUpload, IconSparkles } from "@/components/icons/Icons";
+import { DocumentFormatIcon, IconUpload } from "@/components/icons/Icons";
 import { ExportPanel } from "@/components/import/ExportPanel";
-import { StructuredDataTable } from "@/components/import/StructuredDataTable";
+import { ImportPreview } from "@/components/import/ImportPreview";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { AppPageLayout } from "@/components/layout/AppPageLayout";
 import { Spinner } from "@/components/ui/Spinner";
 import { api } from "@/services/api";
-import type { IngestionResult } from "@/types";
-import {
-  ACCEPTED_EXTENSIONS,
-  FILE_INPUT_ACCEPT,
-  formatLabel,
-  isAcceptedDocument,
-} from "@/utils/fileFormats";
+import type { IngestionPreview, IngestionResult } from "@/types";
+import { FILE_INPUT_ACCEPT, formatLabel, isAcceptedDocument } from "@/utils/fileFormats";
 import { getApiErrorMessage } from "@/utils/apiError";
+
+function plural(count: number, singular: string, plural = `${singular}s`): string {
+  return `${count} ${count > 1 ? plural : singular}`;
+}
+
+/** Ne mentionne que ce qui s'est réellement passé, pour éviter les compteurs à zéro. */
+function describeImport(result: IngestionResult): string {
+  const skippedUnknown = result.sales_skipped_unknown ?? 0;
+  const skippedDuplicate = result.sales_skipped_duplicate ?? 0;
+  const added: string[] = [];
+  if (result.products_ingested) added.push(`${plural(result.products_ingested, "produit")} enregistré${result.products_ingested > 1 ? "s" : ""}`);
+  if (result.sales_ingested) added.push(`${plural(result.sales_ingested, "vente")} ajoutée${result.sales_ingested > 1 ? "s" : ""}`);
+
+  const ignored: string[] = [];
+  if (skippedUnknown) ignored.push(`${plural(skippedUnknown, "vente")} sans produit au catalogue`);
+  if (skippedDuplicate) ignored.push(`${plural(skippedDuplicate, "vente")} déjà présente${skippedDuplicate > 1 ? "s" : ""}`);
+
+  if (!added.length) {
+    return ignored.length
+      ? `Aucune ligne n'a été ajoutée : ${ignored.join(", ")}.`
+      : "Aucune ligne exploitable n'a été trouvée dans ce fichier.";
+  }
+  const summary = added.join(" et ");
+  return ignored.length ? `${summary}. Ignoré : ${ignored.join(", ")}.` : `${summary}.`;
+}
 
 export function ImportPanel() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -25,19 +46,18 @@ export function ImportPanel() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<IngestionResult | null>(null);
-  const [showStructured, setShowStructured] = useState(true);
+  const [preview, setPreview] = useState<IngestionPreview | null>(null);
 
   function pickFile(selected: File | null) {
     if (!selected) return;
     if (!isAcceptedDocument(selected)) {
-      setError(
-        "Format non supporté. Formats acceptés : CSV, Excel, PDF, Word (.doc/.docx), PowerPoint (.ppt/.pptx).",
-      );
+      setError("Format non supporté. Formats acceptés : CSV, Excel, PDF et images (PNG, JPEG, WebP).");
       setFile(null);
       return;
     }
     setError(null);
     setResult(null);
+    setPreview(null);
     setFile(selected);
   }
 
@@ -51,6 +71,14 @@ export function ImportPanel() {
     pickFile(e.dataTransfer.files?.[0] ?? null);
   }
 
+  function clearFile() {
+    setFile(null);
+    setError(null);
+    setResult(null);
+    setPreview(null);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
   async function handleUpload() {
     if (!file) return;
 
@@ -59,11 +87,8 @@ export function ImportPanel() {
     setResult(null);
 
     try {
-      const data = await api.ingestFile(file);
-      setResult(data);
-      setShowStructured(true);
-      setFile(null);
-      if (inputRef.current) inputRef.current.value = "";
+      const data = await api.previewFile(file);
+      setPreview(data);
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {
@@ -71,27 +96,13 @@ export function ImportPanel() {
     }
   }
 
-  const displayFormats = ["csv", "xlsx", "pdf", "docx", "pptx"] as const;
+  const displayFormats = ["csv", "xlsx", "pdf", "png"] as const;
+  const addedRows = result ? result.products_ingested + result.sales_ingested : 0;
 
   return (
     <AppPageLayout
-      eyebrow="Données & Pipeline IA"
-      title="Import & structuration intelligente"
-      description="Importez tous vos fichiers métier — tableurs, PDF, Word, PowerPoint — et validez les données extraites par les modèles d'IA."
-      actions={
-        <Button
-          variant="secondary"
-          onClick={() => setShowStructured((prev) => !prev)}
-        >
-          {showStructured ? (
-            "Masquer les données IA"
-          ) : (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <IconSparkles size={16} /> Voir les données IA/ML
-            </span>
-          )}
-        </Button>
-      }
+      eyebrow="Données"
+      title="Import & export"
     >
       <div className="card card--glass import-zone">
         <div
@@ -105,7 +116,13 @@ export function ImportPanel() {
           onClick={() => inputRef.current?.click()}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
+          aria-label="Choisir un fichier à importer"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
         >
           <input
             ref={inputRef}
@@ -117,13 +134,13 @@ export function ImportPanel() {
           <IconUpload className="dropzone__icon" size={40} />
           {file ? (
             <>
-              <p className="dropzone__title">Document sélectionné</p>
+              <p className="dropzone__title">Fichier sélectionné</p>
               <p className="dropzone__filename">{file.name}</p>
               <p className="muted">{(file.size / 1024).toFixed(1)} Ko</p>
             </>
           ) : (
             <>
-              <p className="dropzone__title">Glissez votre document ici</p>
+              <p className="dropzone__title">Glissez un CSV, Excel, PDF ou une image ici</p>
               <p className="muted">ou cliquez pour parcourir vos fichiers</p>
             </>
           )}
@@ -141,40 +158,51 @@ export function ImportPanel() {
         {error && <Alert variant="error">{error}</Alert>}
 
         {result && (
-          <Alert variant="success" title="Document importé et structuré">
-            {result.filename} — {result.products_ingested} produit(s), {result.sales_ingested}{" "}
-            enregistrement(s) traités par l&apos;IA.
+          <Alert variant={addedRows ? "success" : "warning"} title={result.filename}>
+            {describeImport(result)}
+            {addedRows > 0 && (
+              <>
+                {" "}
+                <Link href="/ventes" className="alert__link">
+                  Voir l&apos;historique des ventes
+                </Link>{" "}
+                ou{" "}
+                <Link href="/dashboard" className="alert__link">
+                  ouvrir le tableau de bord
+                </Link>
+                .
+              </>
+            )}
           </Alert>
         )}
 
         <div className="import-actions">
           <Button onClick={handleUpload} disabled={!file || uploading} loading={uploading}>
-            Importer le document
+            Lire le document
           </Button>
-          {uploading && <Spinner size="sm" label="Traitement par les modèles IA en cours…" />}
+          {file && !uploading && (
+            <Button variant="ghost" onClick={clearFile}>
+              Retirer le fichier
+            </Button>
+          )}
+          {uploading && (
+            <Spinner size="sm" label="Lecture de tout le document en cours…" />
+          )}
         </div>
       </div>
 
-      {/* Tableau de structuration IA/ML interactif */}
-      {showStructured && (
-        <StructuredDataTable
-          filename={result?.filename || file?.name || "releve_transactions_2025.xlsx"}
+      {preview && (
+        <ImportPreview
+          preview={preview}
+          onCancel={clearFile}
+          onCommitted={(data) => {
+            setResult(data);
+            setPreview(null);
+            setFile(null);
+            if (inputRef.current) inputRef.current.value = "";
+          }}
         />
       )}
-
-      <div className="card card--glass">
-        <h2>Formats acceptés à l&apos;import</h2>
-        <ul className="import-hints">
-          <li>
-            <strong>Tableurs :</strong> CSV, Excel (.xlsx, .xls) — ventes, produits, stocks
-          </li>
-          <li>
-            <strong>Documents :</strong> PDF, Word (.doc, .docx), PowerPoint (.ppt, .pptx)
-          </li>
-          <li>Chaque document est normalisé puis intégré au pipeline d&apos;analyse unique</li>
-          <li>Extensions reconnues : {ACCEPTED_EXTENSIONS.map((e) => `.${e}`).join(", ")}</li>
-        </ul>
-      </div>
 
       <ExportPanel />
     </AppPageLayout>

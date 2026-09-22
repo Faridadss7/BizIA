@@ -1,18 +1,21 @@
+## Un seul conteneur, comme sur Render : l'API sert aussi le site exporté.
 services:
-  backend:
+  bizia:
     build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
-      API_HOST: 0.0.0.0
-      API_PORT: 8000
-      CORS_ORIGINS: http://localhost:3000
+      CORS_ORIGINS: "*"
       PYTHONPATH: /repo
       DATA_DIR: /repo/data
       UPLOAD_DIR: /repo/data/uploads
       DATABASE_PATH: /repo/data/local/bizia.json
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      GEMINI_ENRICH_ANALYSIS: ${GEMINI_ENRICH_ANALYSIS:-true}
     volumes:
       - ./data:/repo/data
     healthcheck:
@@ -20,15 +23,3 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-    depends_on:
-      backend:
-        condition: service_healthy
