@@ -10,12 +10,26 @@ function withVisibleSpaces(value: string): string {
   return value.replace(/\s/g, "\u00a0");
 }
 
-export function formatCurrency(value: number, currency: string = "FCFA"): string {
+export function formatCurrency(
+  value: number,
+  currencyOrOptions: string | { currency?: string; showDecimals?: boolean } = "FCFA"
+): string {
+  const currency =
+    typeof currencyOrOptions === "string"
+      ? currencyOrOptions
+      : currencyOrOptions?.currency || "FCFA";
+  const showDecimals =
+    typeof currencyOrOptions === "object" ? !!currencyOrOptions.showDecimals : false;
+
   const amount = new Intl.NumberFormat("fr-FR", {
-    maximumFractionDigits: 0,
+    minimumFractionDigits: showDecimals ? 2 : 0,
+    maximumFractionDigits: showDecimals ? 2 : 0,
   }).format(value);
   return `${withVisibleSpaces(amount)}\u00a0${currency}`;
 }
+
+export const formatAmount = formatCurrency;
+
 
 export function formatPercent(value: number): string {
   return withVisibleSpaces(

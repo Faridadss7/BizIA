@@ -28,3 +28,10 @@ def create_sale(payload: SaleIn, company: dict = Depends(current_company)) -> di
     if not data.get("channel"):
         data["channel"] = "manual"
     return {"item": store.add_sale(data)}
+
+
+@router.delete("/{sale_id}")
+def delete_sale(sale_id: str, company: dict = Depends(current_company)) -> dict:
+    deleted = get_company_store(company["id"]).delete_sale(sale_id)
+    return {"deleted": deleted, "sale_id": sale_id}
+

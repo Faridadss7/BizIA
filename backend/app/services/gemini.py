@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import logging
+import re
+from datetime import datetime, timezone
 from typing import Any
 
 from app.utils.settings import settings
@@ -262,36 +264,97 @@ def _config(max_output_tokens: int, **extra: Any) -> dict[str, Any]:
     }
 
 
-def _generate_text(prompt: str) -> str | None:
-    try:
-        response = _client().models.generate_content(
-            model=settings.gemini_model,
-            contents=prompt,
-            config=_config(700),
-        )
-        text = (response.text or "").strip()
-        return text or None
-    except Exception:
-        logger.exception("Gemini indisponible; utilisation du moteur local.")
+def _model_candidates() -> list[str]:
+    primary = settings.gemini_model or "gemini-3.5-flash-lite"
+    candidates = [primary]
+    for alt in ("gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash"):
+        if alt not in candidates:
+            candidates.append(alt)
+    return candidates
+
+
+def transcribe_audio_with_gemini(audio_bytes: bytes, mime_type: str = "audio/webm") -> str | None:
+    """Transcrit un fichier audio en texte via le modèle multimodal Gemini."""
+    if not gemini_enabled():
         return None
+    try:
+        from google.genai import types
+
+        mime_lower = (mime_type or "").lower()
+        if "webm" in mime_lower:
+            clean_mime = "audio/webm"
+        elif "ogg" in mime_lower:
+            clean_mime = "audio/ogg"
+        elif "mp4" in mime_lower or "m4a" in mime_lower or "aac" in mime_lower:
+            clean_mime = "audio/mp4"
+        elif "mp3" in mime_lower or "mpeg" in mime_lower:
+            clean_mime = "audio/mp3"
+        elif "wav" in mime_lower:
+            clean_mime = "audio/wav"
+        else:
+            clean_mime = "audio/webm"
+
+        for model_name in _model_candidates():
+            try:
+                response = _client().models.generate_content(
+                    model=model_name,
+                    contents=[
+                        types.Part.from_bytes(data=audio_bytes, mime_type=clean_mime),
+                        "Transcris fidèlement et mot à mot ce message vocal en français. Retourne uniquement la transcription textuelle brute, sans guillemets, sans formatage spécial ni commentaire d'introduction.",
+                    ],
+                    config={"temperature": 0.1, "max_output_tokens": 500},
+                )
+                text = (response.text or "").strip()
+                if text:
+                    logger.info("Transcription Gemini réussie (%s): %s", model_name, text)
+                    return text
+            except Exception as e:
+                logger.warning("Essai transcription avec %s échoué: %s", model_name, e)
+                continue
+        return None
+    except Exception as exc:
+        logger.exception("Échec de la transcription audio Gemini: %s", exc)
+        return None
+
+
+def _generate_text(prompt: str) -> str | None:
+    for model_name in _model_candidates():
+        try:
+            response = _client().models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=_config(700),
+            )
+            text = (response.text or "").strip()
+            if text:
+                return text
+        except Exception as e:
+            logger.warning("Échec _generate_text avec %s: %s", model_name, e)
+            continue
+    logger.exception("Gemini indisponible sur tous les modèles; utilisation du moteur local.")
+    return None
 
 
 def _generate_json(prompt: str, schema: dict[str, Any]) -> dict[str, Any] | None:
-    try:
-        response = _client().models.generate_content(
-            model=settings.gemini_model,
-            contents=prompt,
-            config=_config(
-                3_000,
-                response_mime_type="application/json",
-                response_json_schema=schema,
-            ),
-        )
-        value = json.loads(response.text or "")
-        return value if isinstance(value, dict) else None
-    except Exception:
-        logger.exception("Enrichissement Gemini indisponible; analyse locale conservée.")
-        return None
+    for model_name in _model_candidates():
+        try:
+            response = _client().models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=_config(
+                    3_000,
+                    response_mime_type="application/json",
+                    response_json_schema=schema,
+                ),
+            )
+            value = json.loads(response.text or "")
+            if isinstance(value, dict):
+                return value
+        except Exception as e:
+            logger.warning("Échec _generate_json avec %s: %s", model_name, e)
+            continue
+    logger.exception("Enrichissement Gemini indisponible; analyse locale conservée.")
+    return None
 
 
 def _valid_enrichment(value: dict[str, Any] | None) -> bool:
@@ -345,3 +408,115 @@ def _valid_document_extraction(value: Any) -> bool:
         and item["quantity"] > 0
         for item in sales
     )
+
+
+def generate_table_with_gemini(prompt_text: str, template: str = "products") -> dict[str, Any]:
+    """Génère des lignes de tableau réalistes et structurées pour le tableur BizIA."""
+    has_explicit_prices = bool(
+        re.search(r"(?:prix|co[uû]t|tarif|montant|[aà]\s*\d+|\d+\s*(?:fcfa|cfa|f|€|\$))\s*[:=]?\s*\d+", prompt_text, re.IGNORECASE)
+    )
+
+    if not gemini_enabled():
+        res = _fallback_table_data(prompt_text, template)
+    else:
+        schema = {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "template": {"type": "string"},
+                "rows": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "sku": {"type": "string"},
+                            "name": {"type": "string"},
+                            "category": {"type": "string"},
+                            "unit_cost": {"type": "number"},
+                            "unit_price": {"type": "number"},
+                            "stock_quantity": {"type": "number"},
+                            "quantity": {"type": "number"},
+                            "customer": {"type": "string"},
+                            "date": {"type": "string"},
+                            "amount": {"type": "number"},
+                            "description": {"type": "string"},
+                        },
+                    },
+                },
+            },
+            "required": ["title", "template", "rows"],
+        }
+
+        instructions = (
+            f"Tu es l'assistant de gestion commerciale BizIA pour PME. "
+            f"L'utilisateur demande de générer un tableau de données selon le modèle '{template}'. "
+            f"Demande de l'utilisateur : « {prompt_text} ».\n\n"
+            f"RÈGLE STRICTE SUR LES PRIX ET QUANTITÉS :\n"
+            f"- Si l'utilisateur mentionne des noms d'articles ou de catégories sans spécifier explicitement de prix d'achat, prix de vente ou stock (ex: 'ajoute 5 articles : calculatrice, téléphone, bracelet, montre...'), "
+            f"tu DOIS impérativement mettre unit_cost: 0, unit_price: 0, stock_quantity: 0 (ou amount: 0, quantity: 0) pour que l'utilisateur saisisse lui-même ses tarifs réels sans données inventées.\n"
+            f"- Si l'utilisateur a donné des prix explicites dans son message, utilise exactement ces montants.\n\n"
+            f"Pour 'products': renseigne sku, name, category, unit_cost, unit_price, stock_quantity.\n"
+            f"Pour 'sales': renseigne sku, name, quantity, unit_price, customer, date.\n"
+            f"Pour 'expenses': renseigne date, category, amount, description.\n"
+            f"Retourne uniquement l'objet JSON correspondant."
+        )
+
+        result = _generate_json(instructions, schema)
+        if result and isinstance(result.get("rows"), list) and len(result["rows"]) > 0:
+            res = result
+        else:
+            res = _fallback_table_data(prompt_text, template)
+
+    # Post-traitement de sécurité : si aucun prix explicite n'a été spécifié par l'utilisateur,
+    # forcer impérativement tous les prix/coûts/stocks à 0 pour laisser l'utilisateur les renseigner lui-même.
+    if not has_explicit_prices and res and isinstance(res.get("rows"), list):
+        for row in res["rows"]:
+            if template == "products":
+                row["unit_price"] = 0
+                row["unit_cost"] = 0
+                row["stock_quantity"] = 0
+            elif template == "sales":
+                row["unit_price"] = 0
+                row["quantity"] = 1
+            elif template == "expenses":
+                row["amount"] = 0
+
+    return res
+
+
+def _fallback_table_data(prompt_text: str, template: str) -> dict[str, Any]:
+    """Générateur de secours local pour le tableur sans prix fictifs."""
+    # Extraire les noms de produits séparés par virgule ou mots clés
+    raw_names = [n.strip() for n in prompt_text.replace(":", ",").replace("et ", ",").split(",") if n.strip()]
+    if not raw_names or len(raw_names) == 1:
+        words = [w.strip() for w in prompt_text.split() if len(w.strip()) > 2 and w.lower() not in ("ajoute", "creer", "enregistre", "produits", "articles", "tableau")]
+        raw_names = words[:5] if words else ["Article 1"]
+
+    if template == "sales":
+        return {
+            "title": "Journal des Ventes",
+            "template": "sales",
+            "rows": [
+                {"sku": f"ART-00{i+1}", "name": name.capitalize(), "quantity": 0, "unit_price": 0, "customer": "Client", "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")}
+                for i, name in enumerate(raw_names)
+            ],
+        }
+    elif template == "expenses":
+        return {
+            "title": "Journal des Dépenses",
+            "template": "expenses",
+            "rows": [
+                {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"), "category": "Charges d'exploitation", "amount": 0, "description": name.capitalize()}
+                for name in raw_names
+            ],
+        }
+    else:
+        return {
+            "title": "Catalogue & Stocks",
+            "template": "products",
+            "rows": [
+                {"sku": f"ART-00{i+1}", "name": name.capitalize(), "category": "Général", "unit_cost": 0, "unit_price": 0, "stock_quantity": 0}
+                for i, name in enumerate(raw_names)
+            ],
+        }
+

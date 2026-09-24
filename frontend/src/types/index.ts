@@ -128,10 +128,19 @@ export type IngestionPreview = {
   warnings: string[];
 };
 
+export type ChatAction = {
+  type: string;
+  label: string;
+  details?: Record<string, any>;
+};
+
 export type ChatReply = {
   reply: string;
   grounded: boolean;
-  user_message: string;
+  user_message?: string;
+  transcript?: string;
+  actions_taken?: ChatAction[];
+  database_updated?: boolean;
 };
 
 export type Company = {

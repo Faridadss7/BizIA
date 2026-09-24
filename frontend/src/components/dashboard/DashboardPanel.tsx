@@ -13,6 +13,7 @@ import type { AnalysisResult } from "@/types";
 import { getApiErrorMessage, isNetworkError } from "@/utils/apiError";
 import { IconTrending, QuickActionIconSvg, type QuickActionIcon } from "@/components/icons/Icons";
 import { formatCurrency, formatPercent } from "@/utils/format";
+import { PdfReportModal } from "@/components/dashboard/PdfReportModal";
 
 const QUICK_ACTIONS: Array<{
   href: string;
@@ -22,8 +23,9 @@ const QUICK_ACTIONS: Array<{
 }> = [
   { href: "/produits", title: "Ajouter des produits", desc: "Saisie manuelle de votre catalogue", icon: "package" },
   { href: "/ventes", title: "Enregistrer des ventes", desc: "Suivez chaque transaction", icon: "coins" },
+  { href: "/simulateur", title: "Simulateur & Tableaux", desc: "Création de feuilles Excel et calculs What-If", icon: "package" },
   { href: "/import", title: "Importer un fichier", desc: "Excel, CSV, PDF ou photo de votre tableau", icon: "upload" },
-  { href: "/chat", title: "Parler à l'assistant", desc: "Questions sur votre activité", icon: "bot" },
+  { href: "/chat", title: "Parler à l'assistant", desc: "Questions et commandes vocales", icon: "bot" },
 ];
 
 function KpiCard({
@@ -55,6 +57,8 @@ export function DashboardPanel() {
   const [exportingPdf, setExportingPdf] = useState(false);
   const [apiOffline, setApiOffline] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [isSpeakingBriefing, setIsSpeakingBriefing] = useState(false);
 
   const kpiConfig = useMemo(
     () => [
@@ -158,6 +162,37 @@ export function DashboardPanel() {
     }
   }
 
+  function handleListenBriefing() {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      alert("La synthèse vocale n'est pas supportée par votre navigateur.");
+      return;
+    }
+
+    if (isSpeakingBriefing) {
+      window.speechSynthesis.cancel();
+      setIsSpeakingBriefing(false);
+      return;
+    }
+
+    const kpis = result?.kpis;
+    const rev = kpis?.revenue ? `${Math.round(kpis.revenue)} francs CFA` : "non calculé";
+    const prof = kpis?.profit ? `${Math.round(kpis.profit)} francs CFA` : "non calculé";
+    const margin = kpis?.margin_pct ? `${kpis.margin_pct.toFixed(1)} pourcent` : "";
+    const topInsight = result?.insights?.[0] || "Votre activité est équilibrée.";
+    const topRec = result?.recommendations?.[0]?.action || "Consultez vos stocks pour anticiper les réassorts.";
+
+    const speechText = `Bonjour. Voici le briefing de gestion pour ${currentCompany.name}. Chiffre d'affaires : ${rev}. Bénéfice net estimé : ${prof}, avec une marge moyenne de ${margin}. Premier constat clé : ${topInsight}. Recommandation prioritaire : ${topRec}.`;
+
+    const utterance = new SpeechSynthesisUtterance(speechText);
+    utterance.lang = "fr-FR";
+    utterance.rate = 1.0;
+    utterance.onend = () => setIsSpeakingBriefing(false);
+    utterance.onerror = () => setIsSpeakingBriefing(false);
+
+    setIsSpeakingBriefing(true);
+    window.speechSynthesis.speak(utterance);
+  }
+
   const kpis = result?.kpis;
   const hasData = kpis && (kpis.sales_count > 0 || kpis.revenue > 0);
 
@@ -172,16 +207,24 @@ export function DashboardPanel() {
           <Button onClick={handleRunAnalysis} loading={analyzing} disabled={analyzing || apiOffline}>
             Lancer l&apos;analyse
           </Button>
-          <Button variant="secondary" onClick={loadSummary} disabled={loading}>
-            Actualiser
-          </Button>
+          {hasData && (
+            <Button
+              variant="secondary"
+              onClick={handleListenBriefing}
+              className={isSpeakingBriefing ? "btn--active-voice" : ""}
+            >
+              {isSpeakingBriefing ? "Arrêter la voix" : "Écouter le Briefing"}
+            </Button>
+          )}
           <Button
             variant="secondary"
-            onClick={handleDownloadPdf}
-            loading={exportingPdf}
-            disabled={!hasData || exportingPdf}
+            onClick={() => setIsPdfModalOpen(true)}
+            disabled={!hasData}
           >
-            Télécharger le bilan PDF
+            Bilan PDF Officiel
+          </Button>
+          <Button variant="secondary" onClick={loadSummary} disabled={loading}>
+            Actualiser
           </Button>
         </>
       }
@@ -460,6 +503,13 @@ export function DashboardPanel() {
           )}
         </>
       )}
+
+      {/* Modale d'export et prévisualisation du Bilan PDF */}
+      <PdfReportModal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        result={result}
+      />
     </AppPageLayout>
   );
 }

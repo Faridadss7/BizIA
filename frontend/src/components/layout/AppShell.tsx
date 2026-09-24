@@ -12,15 +12,22 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { useAuth } from "@/contexts/AuthContext";
 
 const NAV_LINKS = [
+  ["/", "Accueil"],
   ["/produits", "Produits"],
   ["/ventes", "Ventes"],
   ["/import", "Import"],
+  ["/simulateur", "Simulateur Excel"],
   ["/dashboard", "Dashboard"],
-  ["/chat", "Assistant"],
+  ["/chat", "Assistant & Voix"],
+] as const;
+
+const GUEST_NAV_LINKS = [
+  ["/", "Accueil"],
+  ["/simulateur", "Simulateur Excel"],
 ] as const;
 
 const AUTH_ROUTES = ["/connexion", "/inscription", "/mot-de-passe-oublie"];
-const PROTECTED_ROUTES = ["/produits", "/ventes", "/import", "/dashboard", "/chat"];
+const PROTECTED_ROUTES = ["/produits", "/ventes", "/import", "/simulateur", "/dashboard", "/chat"];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -30,18 +37,24 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const isAuthPage = pathname != null && AUTH_ROUTES.includes(pathname);
   const isHome = pathname === "/";
-  const showNav = !isAuthPage && !isLoading && isAuthenticated;
+  const activeNavLinks = isAuthenticated ? NAV_LINKS : GUEST_NAV_LINKS;
+  const showNav = !isAuthPage && !isLoading;
 
   async function handleLogout() {
     await logout();
     setMenuOpen(false);
   }
 
+  function isLinkActive(href: string) {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname?.startsWith(href + "/");
+  }
+
   return (
     <div className="app-shell">
       <header className="header">
         <div className="header__inner header__inner--landing">
-          <div className="header__left" style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div className="header__left">
             <Link href="/" className="header__brand" onClick={() => setMenuOpen(false)}>
               <BizIALogo size="md" showTagline />
             </Link>
@@ -50,15 +63,18 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {showNav && (
             <nav className="header__links header__links--center" aria-label="Navigation principale">
-              {NAV_LINKS.map(([href, label]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={pathname === href ? "header__link header__link--active" : "header__link"}
-                >
-                  {label}
-                </Link>
-              ))}
+              {activeNavLinks.map(([href, label]) => {
+                const active = isLinkActive(href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={active ? "header__link header__link--active" : "header__link"}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
             </nav>
           )}
 
@@ -104,16 +120,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             className={`header__mobile-drawer ${menuOpen ? "header__mobile-drawer--open" : ""}`}
             aria-label="Menu mobile"
           >
-            {NAV_LINKS.map(([href, label]) => (
-              <Link
-                key={href}
-                href={href}
-                className={pathname === href ? "header__link header__link--active" : "header__link"}
-                onClick={() => setMenuOpen(false)}
-              >
-                {label}
-              </Link>
-            ))}
+            {activeNavLinks.map(([href, label]) => {
+              const active = isLinkActive(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={active ? "header__link header__link--active" : "header__link"}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {label}
+                </Link>
+              );
+            })}
           </nav>
         )}
       </header>

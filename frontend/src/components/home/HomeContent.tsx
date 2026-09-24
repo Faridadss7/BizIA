@@ -1,168 +1,180 @@
 "use client";
 
 import Link from "next/link";
-import { DashboardMockup } from "@/components/home/DashboardMockup";
-import { IconCheck } from "@/components/icons/IconCheck";
+import { LiveProductShowcase } from "@/components/home/LiveProductShowcase";
 import { useAuth } from "@/contexts/AuthContext";
-
-const FEATURES = [
-  "Importez Excel, CSV, PDF, Word et PowerPoint en un clic",
-  "Tableaux de bord automatiques et alertes intelligentes",
-  "Assistant IA qui connaît votre business",
-];
-
-const STATS = [
-  { value: "2 min", label: "pour importer et analyser" },
-  { value: "10+", label: "formats de fichiers supportés" },
-  { value: "98%", label: "de précision sur les prévisions" },
-  { value: "500+", label: "entreprises font confiance à BizIA" },
-];
-
-const STEPS = [
-  {
-    n: 1,
-    title: "Importez vos fichiers",
-    desc: "Excel, PDF, Word, PowerPoint — glissez-déposez vos documents. BizIA les analyse instantanément.",
-  },
-  {
-    n: 2,
-    title: "Visualisez vos données",
-    desc: "Tableaux de bord, KPIs, graphiques de tendances générés automatiquement selon vos données.",
-  },
-  {
-    n: 3,
-    title: "Recevez des recommandations",
-    desc: "L'assistant IA analyse les tendances et vous propose des actions concrètes pour votre activité.",
-  },
-];
+import { IconPackage, IconTrending, IconFile } from "@/components/icons/Icons";
 
 export function HomeContent() {
   const { user, isLoading, isAuthenticated } = useAuth();
 
   return (
-    <div className="landing">
-      {/* ── Hero ── */}
-      <section className="landing-hero">
-        <div className="landing-hero__grid">
-          <div className="landing-hero__text">
-            <p className="landing-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7-6.3-4.6L6 21l2.3-7-6-4.6h7.6z" />
-              </svg>
-              Intelligence décisionnelle pour PME &amp; entreprises
-            </p>
+    <div className="landing" style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem 1.5rem" }}>
+      {/* ── Section Hero Principale ── */}
+      <section style={{ padding: "3rem 0 4rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "3.5rem", alignItems: "center" }}>
+          
+          {/* Colonne Texte & Appel à l'action */}
+          <div>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "#1D4ED8",
+                marginBottom: "0.75rem",
+              }}
+            >
+              Gestion Commerciale &amp; Analyse Financière
+            </div>
 
-            <h1 className="landing-hero__title">
-              De la donnée brute
-              <br />
-              à la décision.
+            <h1
+              style={{
+                fontSize: "2.1rem",
+                fontWeight: 750,
+                lineHeight: 1.25,
+                color: "#111827",
+                letterSpacing: "-0.025em",
+                margin: "0 0 1rem",
+              }}
+            >
+              Pilotez vos ventes, stocks et marges en temps réel.
             </h1>
 
-            <p className="landing-hero__subtitle">
-              BizIA transforme vos ventes, stocks, documents Excel, PDF, Word et PowerPoint en
-              indicateurs, alertes et recommandations — avec un assistant IA ancré sur votre activité.
+            <p
+              style={{
+                fontSize: "1rem",
+                lineHeight: 1.6,
+                color: "#4B5563",
+                marginBottom: "1.75rem",
+              }}
+            >
+              Conçu pour les commerçants, grossistes et PME : encaissez rapidement vos ventes,
+              simulez vos bénéfices avec le tableur What-If et éditez vos bilans financiers officiels.
             </p>
 
-            <ul className="landing-features">
-              {FEATURES.map((f) => (
-                <li key={f}>
-                  <IconCheck />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
+            {/* Piliers fonctionnels sobres */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "0.85rem",
+                padding: "1rem",
+                background: "#F9FAFB",
+                border: "1px solid #E5E7EB",
+                borderRadius: "6px",
+                marginBottom: "1.75rem",
+              }}
+            >
+              <div>
+                <strong style={{ fontSize: "0.8125rem", color: "#111827", display: "block" }}>Caisse &amp; Déstockage</strong>
+                <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>Saisie ou dictée vocale</span>
+              </div>
 
+              <div>
+                <strong style={{ fontSize: "0.8125rem", color: "#111827", display: "block" }}>Simulateur What-If</strong>
+                <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>Marge brute en FCFA</span>
+              </div>
+
+              <div>
+                <strong style={{ fontSize: "0.8125rem", color: "#111827", display: "block" }}>Bilans PDF Officiels</strong>
+                <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>Rapports de gestion</span>
+              </div>
+
+              <div>
+                <strong style={{ fontSize: "0.8125rem", color: "#111827", display: "block" }}>Multi-Entreprises</strong>
+                <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>Isolation des comptes</span>
+              </div>
+            </div>
+
+            {/* Boutons d'action sobres */}
             {isLoading ? (
               <p className="muted">Chargement…</p>
             ) : isAuthenticated && user ? (
-              <div className="landing-hero__cta">
-                <p className="landing-welcome">
-                  Bienvenue, <strong>{user.firstName}</strong> !
+              <div>
+                <p style={{ fontSize: "0.8125rem", color: "#6B7280", marginBottom: "0.5rem" }}>
+                  Espace actif : <strong>{user.firstName || user.email}</strong>
                 </p>
-                <div className="landing-hero__buttons">
-                  <Link href="/dashboard" className="btn btn--primary btn--lg">
-                    Accéder au tableau de bord →
+                <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
+                  <Link href="/dashboard" className="btn btn--primary btn--md">
+                    Accéder au tableau de bord
                   </Link>
-                  <Link href="/import" className="btn btn--outline btn--lg">
-                    Importer mes documents
+                  <Link href="/simulateur" className="btn btn--outline btn--md">
+                    Ouvrir le Simulateur
                   </Link>
                 </div>
               </div>
             ) : (
-              <div className="landing-hero__cta">
-                <div className="landing-hero__buttons">
-                  <Link href="/inscription" className="btn btn--primary btn--lg">
-                    Commencer gratuitement →
+              <div>
+                <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap", marginBottom: "0.5rem" }}>
+                  <Link href="/inscription" className="btn btn--primary btn--md">
+                    Créer un compte
                   </Link>
-                  <Link href="/connexion" className="btn btn--outline btn--lg">
-                    Déjà un compte ? Se connecter
+                  <Link href="/connexion" className="btn btn--outline btn--md">
+                    Se connecter
                   </Link>
                 </div>
-                <p className="landing-trust">
-                  Gratuit pour démarrer · Aucune carte requise · Mise en route en 2 min
+                <p style={{ fontSize: "0.75rem", color: "#6B7280", margin: 0 }}>
+                  Sans engagement • Aucune carte bancaire requise
                 </p>
               </div>
             )}
           </div>
 
-          <div className="landing-hero__visual">
-            <DashboardMockup />
+          {/* Démonstration Produit Haute Fidélité */}
+          <div>
+            <LiveProductShowcase />
           </div>
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className="landing-stats">
-        <div className="landing-stats__grid">
-          {STATS.map((s) => (
-            <div key={s.label} className="landing-stat">
-              <strong className="landing-stat__value">{s.value}</strong>
-              <span className="landing-stat__label">{s.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Comment ça marche ── */}
-      <section className="landing-steps-section">
-        <p className="landing-section-badge">COMMENT ÇA MARCHE</p>
-        <h2 className="landing-section-title">Opérationnel en 3 étapes</h2>
-        <p className="landing-section-subtitle">
-          Pas de configuration complexe. Commencez à obtenir des insights en moins de 5 minutes.
-        </p>
-
-        <div className="landing-steps">
-          {STEPS.map((step) => (
-            <article key={step.n} className="landing-step">
-              <div className="landing-step__number">{step.n}</div>
-              <h3>{step.title}</h3>
-              <p>{step.desc}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* ── CTA Banner ── */}
-      <section className="landing-cta-banner">
-        <div className="landing-cta-banner__inner">
-          <h2>Prêt à piloter votre activité avec l&apos;intelligence artificielle ?</h2>
-          <p>
-            Rejoignez les PME et entreprises qui prennent des décisions plus rapides,
-            plus éclairées, chaque jour.
+      {/* ── 3 Piliers Fonctionnels ── */}
+      <section style={{ padding: "2.5rem 0", borderTop: "1px solid #E5E7EB" }}>
+        <div style={{ marginBottom: "1.75rem" }}>
+          <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#111827", margin: "0 0 0.25rem" }}>
+            Modules d&apos;exploitation intégrés
+          </h2>
+          <p style={{ fontSize: "0.875rem", color: "#6B7280", margin: 0 }}>
+            Une couverture complète du cycle commercial pour les PME.
           </p>
-          <div className="landing-cta-banner__buttons">
-            <Link href="/inscription" className="btn btn--white btn--lg">
-              Créer mon compte gratuitement →
-            </Link>
-            <Link href="/connexion" className="btn btn--ghost-white btn--lg">
-              Se connecter
-            </Link>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
+          
+          <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", padding: "1.25rem", borderRadius: "6px" }}>
+            <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#111827", margin: "0 0 0.4rem" }}>
+              Catalogue &amp; Stocks
+            </h3>
+            <p style={{ fontSize: "0.8125rem", color: "#4B5563", lineHeight: 1.55, margin: 0 }}>
+              Suivi unitaire des articles, coûts d&apos;achat, prix de vente et seuils de réapprovisionnement.
+              Déstockage automatique à chaque vente.
+            </p>
           </div>
-          <p className="landing-cta-banner__note">
-            Gratuit pour démarrer · Sans engagement · Annulez à tout moment
-          </p>
+
+          <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", padding: "1.25rem", borderRadius: "6px" }}>
+            <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#111827", margin: "0 0 0.4rem" }}>
+              Simulateur What-If
+            </h3>
+            <p style={{ fontSize: "0.8125rem", color: "#4B5563", lineHeight: 1.55, margin: 0 }}>
+              Testez des hypothèses de prix et de volumes pour anticiper votre rentabilité brute
+              et estimer votre bénéfice net en FCFA.
+            </p>
+          </div>
+
+          <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", padding: "1.25rem", borderRadius: "6px" }}>
+            <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#111827", margin: "0 0 0.4rem" }}>
+              Bilans Financiers PDF
+            </h3>
+            <p style={{ fontSize: "0.8125rem", color: "#4B5563", lineHeight: 1.55, margin: 0 }}>
+              Édition instantanée de rapports d&apos;exploitation avec récapitulatif des marges,
+              chiffres d&apos;affaires et indicateurs de rotation.
+            </p>
+          </div>
+
         </div>
       </section>
     </div>
   );
 }
+

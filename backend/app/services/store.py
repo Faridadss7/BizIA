@@ -104,6 +104,23 @@ class JsonStore:
             self._dump(data)
             return copy.deepcopy(product)
 
+    def delete_product(self, sku_or_id: str) -> bool:
+        """Supprime un produit par SKU ou par ID."""
+        target = str(sku_or_id or "").strip()
+        if not target:
+            return False
+        with self._lock:
+            data = self._load()
+            initial_count = len(data["products"])
+            data["products"] = [
+                p for p in data["products"]
+                if str(p.get("id")) != target and _sku_key(p.get("sku")) != _sku_key(target)
+            ]
+            deleted = len(data["products"]) < initial_count
+            if deleted:
+                self._dump(data)
+            return deleted
+
     def add_sale(self, payload: dict[str, Any]) -> dict[str, Any]:
         product_sku = str(payload.get("product_sku") or "").strip()
         if not product_sku:
@@ -116,6 +133,20 @@ class JsonStore:
             data["sales"].append(sale)
             self._dump(data)
             return copy.deepcopy(sale)
+
+    def delete_sale(self, sale_id: str) -> bool:
+        """Supprime une vente par ID."""
+        target = str(sale_id or "").strip()
+        if not target:
+            return False
+        with self._lock:
+            data = self._load()
+            initial_count = len(data["sales"])
+            data["sales"] = [s for s in data["sales"] if str(s.get("id")) != target]
+            deleted = len(data["sales"]) < initial_count
+            if deleted:
+                self._dump(data)
+            return deleted
 
     def extend_dataset(
         self,
@@ -480,7 +511,10 @@ def get_store() -> JsonStore:
 
 def get_user_store(user_id: str) -> JsonStore:
     """Store métier isolé d'un compte authentifié."""
-    key = str(uuid.UUID(str(user_id)))
+    try:
+        key = str(uuid.UUID(str(user_id)))
+    except (ValueError, TypeError, AttributeError):
+        key = str(user_id).strip() or "default_user"
     if key not in _user_stores:
         base = get_store().path
         _user_stores[key] = JsonStore(base.parent / "users" / f"{key}.json")
@@ -489,7 +523,10 @@ def get_user_store(user_id: str) -> JsonStore:
 
 def get_company_store(company_id: str) -> JsonStore:
     """Store métier isolé d'une entreprise (Multi-entreprises V2)."""
-    key = str(uuid.UUID(str(company_id)))
+    try:
+        key = str(uuid.UUID(str(company_id)))
+    except (ValueError, TypeError, AttributeError):
+        key = str(company_id).strip() or "default_company"
     if key not in _company_stores:
         base = get_store().path
         _company_stores[key] = JsonStore(base.parent / "companies" / f"{key}.json")

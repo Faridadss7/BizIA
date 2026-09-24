@@ -1,3 +1,8 @@
+# Sync temporaire (téléchargements GitHub locaux)
+_remote_sync/
+_status.txt
+_branches.txt
+
 # OS
 .DS_Store
 Thumbs.db
@@ -48,6 +53,8 @@ data/uploads/*
 !data/samples/**
 !docs/**/*.pdf
 
-# Logs
+# Logs & Scratch
 *.log
 npm-debug.log*
+scratch_*.py
+scratch/

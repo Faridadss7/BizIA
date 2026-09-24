@@ -94,6 +94,10 @@ export const api = {
         method: "POST",
         body: JSON.stringify(body),
       }),
+    delete: (skuOrId: string) =>
+      request<{ deleted: boolean; sku_or_id: string }>(`/api/products/${skuOrId}`, {
+        method: "DELETE",
+      }),
   },
   sales: {
     list: () => request<{ items: Sale[] }>("/api/sales"),
@@ -101,6 +105,10 @@ export const api = {
       request<{ item: Sale | null }>("/api/sales", {
         method: "POST",
         body: JSON.stringify(body),
+      }),
+    delete: (id: string) =>
+      request<{ deleted: boolean; sale_id: string }>(`/api/sales/${id}`, {
+        method: "DELETE",
       }),
   },
   ingestFile: (file: File) => {
@@ -124,8 +132,26 @@ export const api = {
   runAnalysis: () => request<{ result: AnalysisResult | null }>("/api/analysis/run", { method: "POST" }),
   summary: () => request<{ result: AnalysisResult | null }>("/api/analysis/summary"),
   alerts: () => request<{ items: Alert[] }>("/api/alerts"),
-  chat: (message: string) =>
-    request<ChatReply>("/api/chat/messages", { method: "POST", body: JSON.stringify({ message }) }),
+  chat: (message: string, history?: { role: string; content: string }[]) =>
+    request<ChatReply>("/api/chat/messages", { method: "POST", body: JSON.stringify({ message, history }) }),
+  chatVoice: (audioBlob?: Blob, transcript?: string, history?: { role: string; content: string }[]) => {
+    const form = new FormData();
+    if (audioBlob) {
+      form.append("audio_file", audioBlob, "voice_message.webm");
+    }
+    if (transcript) {
+      form.append("transcript", transcript);
+    }
+    if (history && history.length > 0) {
+      form.append("history", JSON.stringify(history));
+    }
+    return request<ChatReply>("/api/chat/voice", { method: "POST", body: form });
+  },
+  generateTable: (prompt: string, template: string = "products") =>
+    request<{ title: string; template: string; rows: any[] }>("/api/chat/generate-table", {
+      method: "POST",
+      body: JSON.stringify({ prompt, template }),
+    }),
   reports: {
     download: async (format: "pdf" | "docx") => {
       let response: Response;

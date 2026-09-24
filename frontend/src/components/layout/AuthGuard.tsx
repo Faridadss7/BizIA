@@ -15,7 +15,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
 
   const isProtected = pathname != null && PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
-  if (isLoading) {
+  if (isProtected && isLoading) {
     return (
       <div className="auth-guard-loading">
         <Spinner label="Vérification de votre session…" />

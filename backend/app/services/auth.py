@@ -68,20 +68,30 @@ def login(email: str, password: str) -> dict[str, Any]:
     store = get_store()
     normalized = email.strip().lower()
     user = store.find_user_by_email(normalized)
-    if not user and normalized == "demo@bizia.africa" and password == "password123":
-        user = store.add_user(
-            {
-                "id": str(uuid.uuid4()),
-                "first_name": "Invité",
-                "last_name": "Démo",
-                "email": "demo@bizia.africa",
-                "password_hash": password_hash.hash("password123"),
-            }
-        )
-        store.ensure_default_company(user["id"], "BizIA Démo")
     stored_hash = str(user.get("password_hash") or "") if user else ""
     if not user or not stored_hash or not password_hash.verify(password, stored_hash):
         raise ApiError(401, "invalid_credentials", "E-mail ou mot de passe incorrect.")
+    return _new_session(user)
+
+
+def google_login(email: str, first_name: str = "", last_name: str = "") -> dict[str, Any]:
+    store = get_store()
+    normalized = email.strip().lower()
+    user = store.find_user_by_email(normalized)
+    if not user:
+        f_name = first_name.strip() or normalized.split("@")[0].capitalize()
+        l_name = last_name.strip() or "Google"
+        user = store.add_user(
+            {
+                "id": str(uuid.uuid4()),
+                "first_name": f_name,
+                "last_name": l_name,
+                "email": normalized,
+                "password_hash": password_hash.hash(secrets.token_urlsafe(32)),
+            }
+        )
+        comp_name = f"Entreprise {f_name} {l_name}".strip()
+        store.ensure_default_company(user["id"], comp_name)
     return _new_session(user)
 
 

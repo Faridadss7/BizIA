@@ -18,10 +18,13 @@ class Settings(BaseSettings):
     data_dir: str = "data"
     upload_dir: str = "data/uploads"
     database_path: str = "data/local/bizia.json"
-    llm_provider: str = "none"
+    llm_provider: str = "auto"
     gemini_api_key: str = Field(default="", repr=False)
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.5-flash"
     gemini_enrich_analysis: bool = True
+    groq_api_key: str = Field(default="", repr=False)
+    groq_model: str = "llama-3.3-70b-versatile"
+    groq_whisper_model: str = "whisper-large-v3-turbo"
     max_upload_bytes: int = 20 * 1024 * 1024
     default_low_stock_threshold: float = 5
     web_dist: str = "frontend/out"

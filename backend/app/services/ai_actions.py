@@ -1,0 +1,456 @@
+"""Moteur d'actions et d'orchestration IA (Gemini & Groq) connecté à la base de données de l'entreprise.
+
+Gère l'analyse d'intention, les opérations CRUD (produits, ventes, stocks)
+et la communication bidirectionnelle texte / voix.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import re
+from datetime import datetime, timezone
+from typing import Any
+
+from app.services.gemini import gemini_enabled
+from app.services.groq_service import generate_with_groq, groq_enabled
+from app.services.store import JsonStore, get_company_store
+from app.utils.settings import settings
+
+logger = logging.getLogger(__name__)
+
+
+def _clean_sku(name: str) -> str:
+    """Génère un SKU propre et court à partir du nom."""
+    cleaned = re.sub(r"[^A-Za-z0-9]+", "-", name.strip().upper()).strip("-")
+    return cleaned[:16] or "ART-001"
+
+
+def execute_ai_intent_and_crud(
+    message: str,
+    company_id: str,
+    analysis: dict[str, Any] | None = None,
+    history: list[dict[str, str]] | None = None,
+) -> dict[str, Any]:
+    """Analyse le message de l'utilisateur, interroge l'IA ou les règles locales,
+
+    exécute les modifications en base de données et renvoie la réponse enrichie.
+    """
+    store = get_company_store(company_id)
+    products = store.list_products()
+    sales = store.list_sales()
+
+    # 1. Tentative d'analyse intelligente avec Gemini Pro
+    llm_result = _parse_with_llm(message, products, sales, analysis, history=history)
+
+    # 2. Si pas de LLM ou échec, analyse heuristique locale
+    if not llm_result:
+        llm_result = _parse_with_heuristics(message, products, sales, analysis)
+
+    # 3. Exécution des actions sur le store
+    actions_taken = []
+    database_updated = False
+
+    raw_actions = llm_result.get("actions", [])
+    for act in raw_actions:
+        action_type = str(act.get("type") or "").strip().lower()
+
+        if action_type in ("add_product", "create_product"):
+            name = str(act.get("name") or "").strip()
+            if name:
+                sku = str(act.get("sku") or "").strip() or _clean_sku(name)
+                # Vérification unicité SKU
+                existing = store.get_product(sku)
+                price = float(act.get("unit_price") or act.get("price") or 0.0)
+                cost = float(act.get("unit_cost") or act.get("cost") or 0.0)
+                stock = float(act.get("stock_quantity") or act.get("stock") or 0.0)
+                category = act.get("category") or (existing.get("category") if existing else "Divers")
+
+                payload = {
+                    "sku": sku,
+                    "name": name,
+                    "unit_price": price,
+                    "unit_cost": cost,
+                    "stock_quantity": stock,
+                    "category": category,
+                }
+                created = store.add_product(payload)
+                database_updated = True
+                actions_taken.append({
+                    "type": "product_created",
+                    "label": f"✅ Produit enregistré : {name} (Prix: {price:,.0f} FCFA, Stock: {stock:.0f})".replace(",", " "),
+                    "details": created,
+                })
+
+        elif action_type in ("delete_product", "remove_product"):
+            target = str(act.get("target") or act.get("name") or act.get("sku") or "").strip()
+            if target:
+                matching_product = None
+                for p in products:
+                    if target.lower() in str(p.get("name", "")).lower() or target.upper() == str(p.get("sku", "")).upper() or target == str(p.get("id", "")):
+                        matching_product = p
+                        break
+
+                if matching_product:
+                    store.delete_product(matching_product.get("sku") or matching_product.get("id"))
+                else:
+                    store.delete_product(target)
+                
+                database_updated = True
+                actions_taken.append({
+                    "type": "product_deleted",
+                    "label": f"🗑️ Produit supprimé : {target}",
+                    "details": {"target": target},
+                })
+
+        elif action_type in ("add_sale", "record_sale"):
+            target_prod = str(act.get("product") or act.get("name") or act.get("sku") or "").strip()
+            qty = float(act.get("quantity") or act.get("qty") or 1.0)
+            custom_price = act.get("unit_price") or act.get("price")
+
+            # Trouver le produit associé (support pluriel/singulier et inclusion mutuelle)
+            target_norm = target_prod.lower().rstrip("s")
+            matched = None
+            for p in products:
+                p_name = str(p.get("name", "")).lower()
+                p_sku = str(p.get("sku", "")).upper()
+                if (
+                    target_prod.upper() == p_sku
+                    or target_prod.lower() in p_name
+                    or p_name in target_prod.lower()
+                    or (target_norm and target_norm in p_name)
+                    or (p_name and p_name.rstrip("s") in target_norm)
+                ):
+                    matched = p
+                    break
+
+            if not matched:
+                # Création automatique du produit au catalogue pour permettre la vente
+                default_price = float(custom_price) if custom_price is not None else 10000.0
+                matched = store.add_product({
+                    "sku": _clean_sku(target_prod),
+                    "name": target_prod.title(),
+                    "unit_price": default_price,
+                    "unit_cost": round(default_price * 0.7, 2),
+                    "stock_quantity": max(10.0, qty),
+                    "category": "Général",
+                })
+
+            unit_price = float(custom_price) if custom_price is not None else float(matched.get("unit_price", 0.0))
+            sale_payload = {
+                "product_sku": matched["sku"],
+                "quantity": qty,
+                "unit_price": unit_price,
+                "unit_cost": float(matched.get("unit_cost", 0.0)),
+                "channel": str(act.get("channel") or "chat_ia"),
+                "sold_at": datetime.now(timezone.utc).isoformat(),
+            }
+            sale_item = store.add_sale(sale_payload)
+
+            # Mise à jour du stock si disponible
+            curr_stock = float(matched.get("stock_quantity", 0.0))
+            new_stock = max(0.0, curr_stock - qty)
+            updated_prod = dict(matched)
+            updated_prod["stock_quantity"] = new_stock
+            store.add_product(updated_prod)
+
+            database_updated = True
+            actions_taken.append({
+                "type": "sale_recorded",
+                "label": f"💰 Vente enregistrée : {qty:.0f}x {matched['name']} pour un total de {qty * unit_price:,.0f} FCFA (Nouveau stock: {new_stock:.0f})".replace(",", " "),
+                "details": sale_item,
+            })
+
+    # Si aucune action CRUD n'a été déclenchée et qu'une analyse existe
+    if not actions_taken and not database_updated and analysis:
+        from app.services.chat import answer_from_analysis
+        ans = answer_from_analysis(message, analysis)
+        return {
+            "reply": ans["reply"],
+            "actions_taken": [],
+            "database_updated": False,
+            "grounded": ans.get("grounded", True),
+        }
+
+    reply = llm_result.get("reply") or "Opération effectuée avec succès."
+    return {
+        "reply": reply,
+        "actions_taken": actions_taken,
+        "database_updated": database_updated,
+        "grounded": bool(analysis or actions_taken or products),
+    }
+
+
+def _parse_with_llm(
+    message: str,
+    products: list[dict[str, Any]],
+    sales: list[dict[str, Any]],
+    analysis: dict[str, Any] | None,
+    history: list[dict[str, str]] | None = None,
+) -> dict[str, Any] | None:
+    """Utilise Gemini ou Groq pour extraire intentions et actions en JSON."""
+    system_instruction = (
+        "Tu es l'assistant d'exploitation BizIA. Tu aides les dirigeants de PME à gérer leur entreprise.\n"
+        "Tu as accès aux produits en stock et aux ventes actuelles.\n"
+        "Tu dois répondre en français de façon chaleureuse, naturelle, précise et concise avec les montants au format FCFA.\n"
+        "Si l'utilisateur demande d'ajouter un ou plusieurs produits sans préciser leurs prix ou leurs stocks (ex: 'ajoute calculatrice, téléphone, montre'), "
+        "mets impérativement unit_price: 0, unit_cost: 0, stock_quantity: 0 (ne JAMAIS inventer de prix fictifs).\n"
+        "Si des prix ou stocks sont explicitement mentionnés dans la demande, utilise exactement les chiffres donnés.\n"
+        "Format JSON attendu strictement :\n"
+        "{\n"
+        '  "reply": "Ta réponse conversationnelle complète, naturelle et conviviale",\n'
+        '  "actions": [\n'
+        '    {"type": "add_product", "name": "Nom", "unit_price": 0, "unit_cost": 0, "stock_quantity": 0, "category": "Général"},\n'
+        '    {"type": "delete_product", "target": "Nom ou SKU"},\n'
+        '    {"type": "add_sale", "product": "Nom ou SKU", "quantity": 1, "unit_price": 0}\n'
+        "  ]\n"
+        "}"
+    )
+
+    catalog_summary = [
+        {"sku": p.get("sku"), "name": p.get("name"), "price": p.get("unit_price"), "stock": p.get("stock_quantity")}
+        for p in products[:30]
+    ]
+
+    history_str = ""
+    if history:
+        recent = history[-6:]
+        lines = []
+        for h in recent:
+            role = "Utilisateur" if h.get("role") == "user" else "Assistant"
+            lines.append(f"{role}: {h.get('content', '')}")
+        if lines:
+            history_str = f"HISTORIQUE DE LA CONVERSATION RÉCENTE :\n" + "\n".join(lines) + "\n\n"
+
+    prompt = (
+        f"CATALOGUE ACTUEL ({len(products)} articles) :\n{json.dumps(catalog_summary, ensure_ascii=False)}\n\n"
+        f"VENTES ENREGISTRÉES : {len(sales)} transactions.\n\n"
+        f"{history_str}"
+        f"NOUVEAU MESSAGE UTILISATEUR : {message}"
+    )
+
+    has_explicit_prices = bool(
+        re.search(r"(?:prix|co[uû]t|tarif|montant|[aà]\s*\d+|\d+\s*(?:fcfa|cfa|f|€|\$))\s*[:=]?\s*\d+", message, re.IGNORECASE)
+    )
+
+    # Essai Groq si disponible
+    if groq_enabled():
+        res_text = generate_with_groq(prompt, system_prompt=system_instruction, json_mode=True)
+        if res_text:
+            try:
+                res_dict = json.loads(res_text)
+                if not has_explicit_prices and res_dict and isinstance(res_dict.get("actions"), list):
+                    for act in res_dict["actions"]:
+                        if str(act.get("type", "")).lower() in ("add_product", "create_product"):
+                            act["unit_price"] = 0.0
+                            act["unit_cost"] = 0.0
+                            act["stock_quantity"] = 0.0
+                return res_dict
+            except Exception:
+                pass
+
+    # Essai Gemini si disponible
+    if gemini_enabled():
+        try:
+            from app.services.gemini import _generate_json
+            schema = {
+                "type": "object",
+                "properties": {
+                    "reply": {"type": "string"},
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "type": {"type": "string"},
+                                "name": {"type": "string"},
+                                "target": {"type": "string"},
+                                "product": {"type": "string"},
+                                "sku": {"type": "string"},
+                                "unit_price": {"type": "number"},
+                                "unit_cost": {"type": "number"},
+                                "stock_quantity": {"type": "number"},
+                                "quantity": {"type": "number"},
+                                "category": {"type": "string"},
+                            },
+                            "required": ["type"],
+                        },
+                    },
+                },
+                "required": ["reply"],
+            }
+            res_dict = _generate_json(f"{system_instruction}\n\n{prompt}", schema)
+            if res_dict:
+                if not has_explicit_prices and isinstance(res_dict.get("actions"), list):
+                    for act in res_dict["actions"]:
+                        if str(act.get("type", "")).lower() in ("add_product", "create_product"):
+                            act["unit_price"] = 0.0
+                            act["unit_cost"] = 0.0
+                            act["stock_quantity"] = 0.0
+                return res_dict
+        except Exception as exc:
+            logger.warning("Gemini JSON parse failed: %s", exc)
+
+    return None
+
+
+def _parse_with_heuristics(
+    message: str,
+    products: list[dict[str, Any]],
+    sales: list[dict[str, Any]],
+    analysis: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Moteur de règles NLP local ultra-robuste (fonctionne même hors-ligne)."""
+    text = message.strip()
+    lower = text.lower()
+    actions = []
+
+    # 1. Détection Ajout Produit(s)
+    # Support de plusieurs produits (ex: "enregistre 5 produits : calculatrice, téléphone portable, bracelet, montre")
+    multi_match = re.search(r"(?:ajoute?r?|cr[eé][eé]r?|enregistre?r?)\s+(?:(?:les|des|\d+)\s+)?(?:produits?|articles?)\s*[:=]?\s*(.+)", text, re.IGNORECASE)
+    if multi_match and not ("vente" in lower or "vendu" in lower):
+        content = multi_match.group(1).strip()
+        # Séparation par virgule, point-virgule ou " et "
+        items = [item.strip() for item in re.split(r"[,;]|\s+et\s+", content) if item.strip()]
+        if items:
+            for item in items:
+                # Nettoyer d'éventuels prix
+                price_m = re.search(r"(?:prix|vendu [aà]|au prix de)\s*[:=]?\s*(\d+[\d\s]*)(?:fcfa|f)?", item, re.IGNORECASE)
+                stock_m = re.search(r"(?:stock|quantit[eé])\s*[:=]?\s*(\d+)", item, re.IGNORECASE)
+                name = item
+                if price_m:
+                    name = name[:price_m.start()]
+                if stock_m and stock_m.start() < len(name):
+                    name = name[:stock_m.start()]
+                name = re.sub(r"(?:au prix de|prix|stock|quantit[eé]).*", "", name, flags=re.IGNORECASE).strip()
+                name = re.sub(r"^(?:le produit|un produit|l'article|les produits)\s+", "", name, flags=re.IGNORECASE).strip()
+
+                if len(name) >= 2:
+                    price = float(re.sub(r"\s+", "", price_m.group(1))) if price_m else 0.0
+                    cost = round(price * 0.7, 2) if price > 0 else 0.0
+                    stock = float(stock_m.group(1)) if stock_m else 0.0
+                    actions.append({
+                        "type": "add_product",
+                        "name": name.title(),
+                        "unit_price": price,
+                        "unit_cost": cost,
+                        "stock_quantity": stock,
+                        "category": "Général",
+                    })
+
+            if actions:
+                names_str = ", ".join(f"« {a['name']} »" for a in actions)
+                return {
+                    "reply": f"J'ai bien enregistré {len(actions)} article(s) dans votre catalogue ({names_str}) avec des prix à 0 FCFA afin que vous puissiez saisir vous-même vos tarifs.",
+                    "actions": actions,
+                }
+
+    # Détection Produit Unique
+    add_match = re.search(r"(?:ajoute?r?|cr[eé][eé]r?|nouveau produit|enregistre?r?)\s+(?:le produit\s+)?([A-Za-z0-9\s\-_À-ÿ]+)", lower)
+    if add_match and not ("vente" in lower or "vendu" in lower):
+        raw_part = text[add_match.start(1):]
+        # Extraction du prix
+        price_m = re.search(r"(?:prix|vendu [aà]|au prix de)\s*[:=]?\s*(\d+[\d\s]*)(?:fcfa|f)?", raw_part, re.IGNORECASE)
+        stock_m = re.search(r"(?:stock|quantit[eé])\s*[:=]?\s*(\d+)", raw_part, re.IGNORECASE)
+        
+        # Nettoyage du nom
+        name = raw_part
+        if price_m:
+            name = name[:price_m.start()]
+        if stock_m and stock_m.start() < len(name):
+            name = name[:stock_m.start()]
+        name = re.sub(r"(?:au prix de|prix|stock|quantit[eé]).*", "", name, flags=re.IGNORECASE).strip()
+        name = re.sub(r"^(?:le produit|un produit|l'article)\s+", "", name, flags=re.IGNORECASE).strip()
+
+        if len(name) >= 2:
+            price = float(re.sub(r"\s+", "", price_m.group(1))) if price_m else 0.0
+            cost = round(price * 0.7, 2) if price > 0 else 0.0
+            stock = float(stock_m.group(1)) if stock_m else 0.0
+            actions.append({
+                "type": "add_product",
+                "name": name.title(),
+                "unit_price": price,
+                "unit_cost": cost,
+                "stock_quantity": stock,
+                "category": "Général",
+            })
+            if price > 0:
+                detail_txt = f"Prix : {price:,.0f} FCFA, Stock : {stock:.0f}".replace(",", " ")
+            else:
+                detail_txt = "Prix et stock initialisés à 0 afin que vous puissiez définir vos tarifs"
+            return {
+                "reply": f"J'ai bien préparé l'ajout du produit « {name.title()} » ({detail_txt}).",
+                "actions": actions,
+            }
+
+    # 2. Détection Suppression Produit
+    # Ex: "Supprime le produit Clavier" ou "Efface l'article ART-001"
+    del_match = re.search(r"(?:supprime?r?|efface?r?|retire?r?)\s+(?:le produit\s+|l'article\s+)?([A-Za-z0-9\s\-_À-ÿ]+)", lower)
+    if del_match:
+        target_name = del_match.group(1).strip()
+        actions.append({
+            "type": "delete_product",
+            "target": target_name,
+        })
+        return {
+            "reply": f"J'ai supprimé l'élément correspondant à « {target_name} » de votre catalogue.",
+            "actions": actions,
+        }
+
+    # 3. Détection Vente
+    # Ex: "J'ai vendu 5 ordinateurs à 200000 FCFA" ou "Nouvelle vente de 3 Claviers"
+    sale_match = re.search(r"(?:vendu|vente de?)\s+(\d+)\s+([A-Za-z0-9\s\-_À-ÿ]+)", lower)
+    if sale_match:
+        qty = float(sale_match.group(1))
+        prod_part = sale_match.group(2).strip()
+        # Nettoyage prix éventuel
+        price_m = re.search(r"[aà]\s*(\d+[\d\s]*)(?:fcfa|f)?", prod_part, re.IGNORECASE)
+        unit_price = float(re.sub(r"\s+", "", price_m.group(1))) if price_m else None
+        prod_name = prod_part[:price_m.start()].strip() if price_m else prod_part
+        prod_name = re.sub(r"(?:au prix de|[aà]\s+\d+).*", "", prod_name, flags=re.IGNORECASE).strip()
+
+        actions.append({
+            "type": "add_sale",
+            "product": prod_name,
+            "quantity": qty,
+            "unit_price": unit_price,
+        })
+        return {
+            "reply": f"C'est noté ! J'ai enregistré la vente de {qty:.0f} « {prod_name} » et mis à jour le stock disponible.",
+            "actions": actions,
+        }
+
+    # 4. Requête d'information générale / Stock / Chiffres / Produits
+    if any(w in lower for w in ("combien", "stock", "produit", "catalogue", "chiffre", "marge", "activite", "activit", "resume", "résum")):
+        total_prods = len(products)
+        total_sales_count = len(sales)
+        if total_prods == 0 and total_sales_count == 0:
+            return {
+                "reply": (
+                    "Votre espace d'activité est actuellement vierge (aucun produit ni vente enregistrée).\n\n"
+                    "💡 **Pour démarrer :**\n"
+                    "• Vous pouvez me dicter ou écrire l'enregistrement de vos premiers articles (nom, prix unitaire, coût d'achat et stock initial).\n"
+                    "• Vous pouvez également saisir vos premières ventes ou importer vos fichiers Excel / CSV depuis l'onglet **Import**."
+                ),
+                "actions": [],
+            }
+
+        low_stock = sum(1 for p in products if float(p.get("stock_quantity", 0)) <= float(p.get("low_stock_threshold", 5)))
+        total_ca = sum(float(s.get("quantity", 0)) * float(s.get("unit_price", 0)) for s in sales)
+        sample_names = ", ".join(p.get("name", "") for p in products[:5])
+        return {
+            "reply": (
+                f"Votre entreprise compte actuellement **{total_prods} produit(s)** en catalogue ({sample_names}{'...' if total_prods > 5 else ''}) "
+                f"et **{total_sales_count} vente(s)** enregistrée(s) pour un Chiffre d'Affaires total de **{total_ca:,.0f} FCFA**.\n\n"
+                f"{f'⚠️ **{low_stock} produit(s)** nécessitent un réapprovisionnement.' if low_stock > 0 else '✅ Vos stocks enregistrés sont sous contrôle.'}"
+            ).replace(",", " "),
+            "actions": [],
+        }
+
+    return {
+        "reply": (
+            "Je suis l'assistant d'exploitation de votre entreprise. Je suis à votre écoute pour enregistrer vos articles, "
+            "comptabiliser vos ventes, analyser vos marges ou vérifier l'état de vos stocks."
+        ),
+        "actions": [],
+    }

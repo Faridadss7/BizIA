@@ -145,40 +145,24 @@ export async function loginWithGoogleAccount(profile: {
   const firstName = parts[0] || "Utilisateur";
   const lastName = parts.slice(1).join(" ") || "Google";
 
-  const googlePassword = `google_oauth_${email}_secure_v2`;
+  const data = await authRequest<ApiSession>("/api/auth/google", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+      first_name: firstName,
+      last_name: lastName,
+    }),
+  });
 
-  try {
-    return await login({ email, password: googlePassword });
-  } catch {
-    try {
-      return await signup({
-        firstName,
-        lastName,
-        email,
-        password: googlePassword,
-      });
-    } catch {
-      // Si déjà inscrit avec mot de passe différent, fallback session utilisateur locale
-      const session: AuthSession = {
-        token: `google_session_${Date.now()}`,
-        user: {
-          id: `google_${Date.now()}`,
-          firstName,
-          lastName,
-          email,
-          isNewUser: false,
-        },
-      };
-      persistSession(session);
-      return session;
-    }
-  }
+  const session = mapSession(data);
+  persistSession(session);
+  return session;
 }
 
 export async function loginWithGoogle(): Promise<AuthSession> {
   return loginWithGoogleAccount({
-    email: "amadou.kone@gmail.com",
-    name: "Amadou Koné",
+    email: "utilisateur.google@gmail.com",
+    name: "Utilisateur Google",
   });
 }
 

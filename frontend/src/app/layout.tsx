@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { AppShell } from "@/components/layout/AppShell";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CompanyProvider } from "@/contexts/CompanyContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   title: "BizIA — Intelligence & Performance Commerciale",
@@ -27,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={inter.className}>
+      <body>
         <AuthProvider>
           <CompanyProvider>
             <ToastProvider>

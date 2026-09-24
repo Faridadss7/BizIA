@@ -7,10 +7,12 @@ import { useAuth } from "@/contexts/AuthContext";
 const CONTACT_EMAIL = "contact@bizia.app";
 
 const NAVIGATION = [
+  ["/", "Accueil"],
+  ["/dashboard", "Tableau de bord"],
   ["/produits", "Produits"],
   ["/ventes", "Ventes"],
   ["/import", "Import & export"],
-  ["/dashboard", "Tableau de bord"],
+  ["/simulateur", "Simulateur Excel"],
   ["/chat", "Assistant"],
 ] as const;
 
