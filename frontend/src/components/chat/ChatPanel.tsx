@@ -141,7 +141,7 @@ export function ChatPanel() {
     setError(null);
 
     const userMsgId = `u-${Date.now()}`;
-    const userLabel = transcript ? `🎤 ${transcript}` : "🎤 Message vocal...";
+    const userLabel = transcript ? transcript : "Message vocal en cours...";
     const historyPayload = messages.map((m) => ({ role: m.role, content: m.content }));
 
     setMessages((prev) => [...prev, { id: userMsgId, role: "user", content: userLabel }]);
@@ -151,12 +151,12 @@ export function ChatPanel() {
       const recognized = reply.transcript || transcript;
       if (recognized && recognized !== "Message vocal non reconnu ou vide.") {
         setMessages((prev) =>
-          prev.map((m) => (m.id === userMsgId ? { ...m, content: `🎤 ${recognized}` } : m))
+          prev.map((m) => (m.id === userMsgId ? { ...m, content: recognized } : m))
         );
       } else {
         setMessages((prev) =>
           prev.map((m) =>
-            m.id === userMsgId ? { ...m, content: "🎤 Message vocal" } : m
+            m.id === userMsgId ? { ...m, content: "Message vocal" } : m
           )
         );
       }

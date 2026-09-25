@@ -289,7 +289,7 @@ export function LiveProductShowcase() {
           </div>
 
           <div style={{ background: "#F8FAFC", padding: "0.65rem 0.75rem", borderRadius: "6px", border: "1px solid #E2E8F0", fontSize: "0.75rem", color: "#475569" }}>
-            💡 <strong>Conseil IA :</strong> Votre article <em>Calculatrice</em> génère 47% de marge avec une rotation élevée. Pensez à réapprovisionner avant rupture.
+            <strong>Recommandation :</strong> Votre article <em>Calculatrice</em> génère 47% de marge avec une rotation élevée. Pensez à réapprovisionner avant rupture.
           </div>
         </div>
       )}

@@ -78,7 +78,7 @@ def execute_ai_intent_and_crud(
                 database_updated = True
                 actions_taken.append({
                     "type": "product_created",
-                    "label": f"✅ Produit enregistré : {name} (Prix: {price:,.0f} FCFA, Stock: {stock:.0f})".replace(",", " "),
+                    "label": f"Produit enregistré : {name} (Prix: {price:,.0f} FCFA, Stock: {stock:.0f})".replace(",", " "),
                     "details": created,
                 })
 
@@ -99,7 +99,7 @@ def execute_ai_intent_and_crud(
                 database_updated = True
                 actions_taken.append({
                     "type": "product_deleted",
-                    "label": f"🗑️ Produit supprimé : {target}",
+                    "label": f"Produit supprimé : {target}",
                     "details": {"target": target},
                 })
 
@@ -157,7 +157,7 @@ def execute_ai_intent_and_crud(
             database_updated = True
             actions_taken.append({
                 "type": "sale_recorded",
-                "label": f"💰 Vente enregistrée : {qty:.0f}x {matched['name']} pour un total de {qty * unit_price:,.0f} FCFA (Nouveau stock: {new_stock:.0f})".replace(",", " "),
+                "label": f"Vente enregistrée : {qty:.0f}x {matched['name']} pour un total de {qty * unit_price:,.0f} FCFA (Nouveau stock: {new_stock:.0f})".replace(",", " "),
                 "details": sale_item,
             })
 
@@ -428,7 +428,7 @@ def _parse_with_heuristics(
             return {
                 "reply": (
                     "Votre espace d'activité est actuellement vierge (aucun produit ni vente enregistrée).\n\n"
-                    "💡 **Pour démarrer :**\n"
+                    "**Pour démarrer :**\n"
                     "• Vous pouvez me dicter ou écrire l'enregistrement de vos premiers articles (nom, prix unitaire, coût d'achat et stock initial).\n"
                     "• Vous pouvez également saisir vos premières ventes ou importer vos fichiers Excel / CSV depuis l'onglet **Import**."
                 ),
@@ -442,7 +442,7 @@ def _parse_with_heuristics(
             "reply": (
                 f"Votre entreprise compte actuellement **{total_prods} produit(s)** en catalogue ({sample_names}{'...' if total_prods > 5 else ''}) "
                 f"et **{total_sales_count} vente(s)** enregistrée(s) pour un Chiffre d'Affaires total de **{total_ca:,.0f} FCFA**.\n\n"
-                f"{f'⚠️ **{low_stock} produit(s)** nécessitent un réapprovisionnement.' if low_stock > 0 else '✅ Vos stocks enregistrés sont sous contrôle.'}"
+                f"{f'Alerte stock : **{low_stock} produit(s)** nécessitent un réapprovisionnement.' if low_stock > 0 else 'Vos stocks enregistrés sont sous contrôle.'}"
             ).replace(",", " "),
             "actions": [],
         }

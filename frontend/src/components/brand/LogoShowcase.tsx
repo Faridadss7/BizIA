@@ -306,7 +306,7 @@ export function LogoShowcase() {
           </h2>
           <p style={{ fontSize: "0.875rem", color: "var(--color-text-muted, #64748b)", lineHeight: 1.5, marginBottom: "1rem" }}>
             <strong>Style Haute Technologie & Décision (Linear, Datadog).</strong><br />
-            Hexagone isométrique à 3 facettes : Données Brutes (Indigo) ➔ Intelligence IA (Violet) ➔ Rentabilité & Action (Émeraude).
+            Hexagone isométrique à 3 facettes : Données Brutes (Indigo) → Intelligence IA (Violet) → Rentabilité & Action (Émeraude).
           </p>
           <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
             <span style={{ fontSize: "0.75rem", background: "#EEF2FF", color: "#4338CA", padding: "0.25rem 0.5rem", borderRadius: 6, fontWeight: 600 }}>Intelligence IA</span>
