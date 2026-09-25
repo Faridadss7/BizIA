@@ -86,18 +86,19 @@ export function SiteFooter() {
               </li>
             )}
             <li>
-              <a href="tel:0141822125" className="site-footer__link" style={{ fontWeight: 600, color: "var(--color-primary)" }}>
-                📞 01 41 82 21 25 (Appel &amp; Support)
+              <a
+                href="https://wa.me/2290141822125?text=Bonjour%20BizIA%2C%20j%27aimerais%20avoir%20de%20l%27aide%20sur%20la%20plateforme."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="site-footer__link"
+                style={{ fontWeight: 600, color: "#1D4ED8" }}
+              >
+                💬 Nous écrire sur WhatsApp (01 41 82 21 25)
               </a>
             </li>
             <li>
-              <a href="https://wa.me/2290141822125" target="_blank" rel="noopener noreferrer" className="site-footer__link">
-                💬 WhatsApp Support
-              </a>
-            </li>
-            <li>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="site-footer__link">
-                ✉️ {CONTACT_EMAIL}
+              <a href="tel:0141822125" className="site-footer__link">
+                📞 Nous appeler : 01 41 82 21 25
               </a>
             </li>
           </ul>
