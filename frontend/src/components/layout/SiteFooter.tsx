@@ -95,11 +95,6 @@ export function SiteFooter() {
                 Nous écrire
               </a>
             </li>
-            <li>
-              <a href="tel:0141822125" className="site-footer__link">
-                01 41 82 21 25
-              </a>
-            </li>
           </ul>
         </div>
       </div>
