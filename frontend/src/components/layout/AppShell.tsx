@@ -39,9 +39,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isAuthPage = pathname != null && AUTH_ROUTES.includes(pathname);
+  const isPresentation = pathname === "/pitch" || pathname === "/presentation";
   const isHome = pathname === "/";
   const activeNavLinks = isAuthenticated ? NAV_LINKS : GUEST_NAV_LINKS;
-  const showNav = !isAuthPage && !isLoading;
+  const showNav = !isAuthPage && !isLoading && !isPresentation;
+
+  if (isPresentation) {
+    return <>{children}</>;
+  }
 
   async function handleLogout() {
     await logout();

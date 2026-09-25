@@ -228,15 +228,30 @@ def extract_document_with_gemini(
         part = types.Part.from_bytes(data=payload, mime_type=clean_mime)
         for model_name in _model_candidates():
             try:
-                response = _client().models.generate_content(
-                    model=model_name,
-                    contents=[prompt, part],
-                    config=_config(
-                        8_000,
-                        response_mime_type="application/json",
-                        response_json_schema=schema,
-                    ),
-                )
+                try:
+                    response = _client().models.generate_content(
+                        model=model_name,
+                        contents=[prompt, part],
+                        config=_config(
+                            8_000,
+                            response_mime_type="application/json",
+                            response_json_schema=schema,
+                        ),
+                    )
+                except Exception as inner_err:
+                    if "INVALID_ARGUMENT" in str(inner_err) or "thinking" in str(inner_err).lower():
+                        response = _client().models.generate_content(
+                            model=model_name,
+                            contents=[prompt, part],
+                            config={
+                                "temperature": 0.1,
+                                "max_output_tokens": 8_000,
+                                "response_mime_type": "application/json",
+                            },
+                        )
+                    else:
+                        raise inner_err
+
                 raw_text = (response.text or "").strip()
                 if not raw_text:
                     continue
@@ -274,15 +289,16 @@ def _config(max_output_tokens: int, **extra: Any) -> dict[str, Any]:
     return {
         "temperature": 0.1,
         "max_output_tokens": max_output_tokens,
+        "thinking_config": {"thinking_budget": 0},
         "automatic_function_calling": {"disable": True},
         **extra,
     }
 
 
 def _model_candidates() -> list[str]:
-    primary = settings.gemini_model or "gemini-3.5-flash-lite"
-    candidates: list[str] = []
-    for m in ("gemini-3.5-flash-lite", primary, "gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash"):
+    primary = settings.gemini_model or "gemini-2.5-flash"
+    candidates: list[str] = [primary]
+    for m in ("gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash"):
         if m and m not in candidates:
             candidates.append(m)
     return candidates
