@@ -52,7 +52,7 @@ html_content = f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>BizIA - Présentation Officielle Projet</title>
+  <title>BizIA - Présentation Officielle Projet | Fata Nexus</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
@@ -82,7 +82,7 @@ html_content = f"""<!DOCTYPE html>
       height: 1080px;
       page-break-after: always;
       background: #FFFFFF;
-      padding: 45px 75px 35px 75px;
+      padding: 42px 70px 32px 70px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -105,7 +105,7 @@ html_content = f"""<!DOCTYPE html>
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 18px;
+      padding-bottom: 16px;
       border-bottom: 1px solid #E2E8F0;
     }}
 
@@ -135,7 +135,7 @@ html_content = f"""<!DOCTYPE html>
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 16px 0;
+      padding: 14px 0;
     }}
 
     .section-pill {{
@@ -150,7 +150,7 @@ html_content = f"""<!DOCTYPE html>
       border: 1px solid #DBEAFE;
       padding: 5px 12px;
       border-radius: 6px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }}
 
     .section-pill.green {{
@@ -160,19 +160,19 @@ html_content = f"""<!DOCTYPE html>
     }}
 
     .slide-heading {{
-      font-size: 35px;
+      font-size: 34px;
       font-weight: 800;
       color: #111827;
       letter-spacing: -0.02em;
       line-height: 1.2;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }}
 
     .slide-description {{
-      font-size: 16.5px;
+      font-size: 16px;
       color: #4B5563;
       line-height: 1.5;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
       max-width: 1400px;
     }}
 
@@ -180,19 +180,19 @@ html_content = f"""<!DOCTYPE html>
     .grid-4 {{
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
+      gap: 16px;
     }}
 
     .grid-3 {{
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 18px;
     }}
 
     .grid-2 {{
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      gap: 22px;
       align-items: center;
     }}
 
@@ -200,38 +200,71 @@ html_content = f"""<!DOCTYPE html>
       background: #FFFFFF;
       border: 1px solid #E2E8F0;
       border-radius: 12px;
-      padding: 22px;
+      padding: 20px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
       display: flex;
       flex-direction: column;
     }}
 
-    .card-title {{
-      font-size: 18px;
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 8px;
+    .member-card {{
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }}
 
-    .card-body {{
-      font-size: 14.5px;
-      color: #4B5563;
-      line-height: 1.55;
-    }}
-
-    .stat-val {{
-      font-size: 40px;
+    .member-name {{
+      font-size: 14px;
       font-weight: 800;
+      color: #111827;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }}
+
+    .member-role {{
+      font-size: 12px;
+      font-weight: 700;
       color: #1D4ED8;
-      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
       margin-bottom: 6px;
     }}
 
+    .member-desc {{
+      font-size: 12.5px;
+      color: #4B5563;
+      line-height: 1.45;
+    }}
+
+    .card-title {{
+      font-size: 17.5px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 6px;
+    }}
+
+    .card-body {{
+      font-size: 14px;
+      color: #4B5563;
+      line-height: 1.5;
+    }}
+
+    .stat-val {{
+      font-size: 38px;
+      font-weight: 800;
+      color: #1D4ED8;
+      line-height: 1;
+      margin-bottom: 4px;
+    }}
+
     .stat-lbl {{
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 600;
       color: #374151;
-      line-height: 1.4;
+      line-height: 1.35;
     }}
 
     /* Cadre de capture d'écran UI */
@@ -281,7 +314,7 @@ html_content = f"""<!DOCTYPE html>
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 14px;
+      padding-top: 12px;
       border-top: 1px solid #E2E8F0;
       font-size: 13px;
       color: #64748B;
@@ -366,7 +399,7 @@ html_content = f"""<!DOCTYPE html>
 <body>
 
   <!-- ========================================================================= -->
-  <!-- SLIDE 1 : COUVERTURE & PRESENTATION DU PROJET                             -->
+  <!-- SLIDE 1 : COUVERTURE & PRESENTATION DU PROJET (EQUIPE FATA NEXUS)          -->
   <!-- ========================================================================= -->
   <div class="slide">
     <div class="top-bar"></div>
@@ -379,35 +412,51 @@ html_content = f"""<!DOCTYPE html>
     </div>
 
     <div class="content">
-      <div class="section-pill">Présentation Officielle du Projet</div>
-      <h1 class="slide-heading">Intelligence Financière & Gestion Commerciale pour PME</h1>
-      <p class="slide-description">
-        Une plateforme tout-en-un combinant vision multimodale (Gemini OCR), importation intelligente de tableurs Excel/CSV, 
-        caisse vocale, mode hors-ligne PWA et calcul précis des marges nettes réelles en FCFA.
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+        <div>
+          <div class="section-pill">Groupe Fata Nexus &bull; Présentation Officielle</div>
+          <h1 class="slide-heading">Intelligence Financière & Gestion Commerciale pour PME</h1>
+        </div>
+        <div style="font-size: 13px; color: #64748B; font-weight: 600;">
+          Plateforme : <b>Next.js &bull; FastAPI &bull; Supabase &bull; Gemini</b>
+        </div>
+      </div>
+      
+      <p class="slide-description" style="margin-bottom: 16px;">
+        Une suite unifiée combinant vision multimodale (Gemini OCR), importation intelligente Excel/CSV, 
+        caisse vocale, mode PWA hors-ligne et pilotage précis des marges nettes réelles en FCFA.
       </p>
 
+      <!-- Grille des 4 membres de Fata Nexus -->
       <div class="grid-4">
-        <div class="card">
-          <div class="stat-val">44M+</div>
-          <div class="stat-lbl">PME & commerces cibles en Afrique de l'Ouest</div>
+        <div class="member-card">
+          <div class="member-role">Lead IA, Data & Backend</div>
+          <div class="member-name">ADISSO Y. B. Farid</div>
+          <div class="member-desc">Scan OCR Gemini Vision, simulateur What-If, modélisation ML et pipelines data backend.</div>
         </div>
-        <div class="card">
-          <div class="stat-val">2.4s</div>
-          <div class="stat-lbl">Extraction instantanée d'un reçu manuscrit par photo</div>
+
+        <div class="member-card">
+          <div class="member-role">Lead Frontend & UI/UX</div>
+          <div class="member-name">AHOLOU H. I. Christelle</div>
+          <div class="member-desc">Développement de l'interface utilisateur, design system, ergonomie et intégration PWA.</div>
         </div>
-        <div class="card">
-          <div class="stat-val">100%</div>
-          <div class="stat-lbl">Opérationnel hors-ligne en boutique (PWA)</div>
+
+        <div class="member-card">
+          <div class="member-role">Lead QA, Tests & Coord.</div>
+          <div class="member-name">ESSEGNON K. O. Bienvenu</div>
+          <div class="member-desc">Validation continue, suite de tests automatisés, gestion de versions Git et coordination.</div>
         </div>
-        <div class="card">
-          <div class="stat-val">4</div>
-          <div class="stat-lbl">Collaborateurs engagés dans l'équipe projet</div>
+
+        <div class="member-card">
+          <div class="member-role">Database & Backend</div>
+          <div class="member-name">HOUEGBE Uriel</div>
+          <div class="member-desc">Modélisation de la base PostgreSQL/Supabase, sécurité RLS et endpoints API backend.</div>
         </div>
       </div>
     </div>
 
     <div class="footer">
-      <div>Équipe Projet BizIA &bull; Présentation Jury</div>
+      <div>Groupe Fata Nexus &bull; Présentation Jury</div>
       <div>1 / 8</div>
     </div>
   </div>
@@ -778,7 +827,7 @@ html_file = "presentation_deck.html"
 with open(html_file, "w", encoding="utf-8") as f:
     f.write(html_content)
 
-print("HTML master deck generated successfully with exact Concept 1 SVG logo and real base64 screenshots!")
+print("HTML master deck generated successfully with Fata Nexus team cards!")
 
 # Render to PDF using Edge headless
 edge_path = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
