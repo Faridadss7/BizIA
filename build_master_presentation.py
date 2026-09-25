@@ -11,30 +11,24 @@ def get_base64_img(path):
             return f"data:image/png;base64,{encoded}"
     return ""
 
-img_home = get_base64_img("presentation_assets/screen_home.png")
 img_sim = get_base64_img("presentation_assets/screen_simulator.png")
 img_scan = get_base64_img("presentation_assets/screen_scanner.png")
 img_import = get_base64_img("presentation_assets/screen_import.png")
+img_chat = get_base64_img("presentation_assets/screen_chat.png")
 
-logo_svg = """<svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+# Exact official SVG logo from frontend/public/logo.svg
+logo_svg = """<svg width="42" height="42" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="40" rx="10" fill="url(#bizia-grad)" />
+  <path d="M10 28V18h4v10h-4zm8-6v6h4v-6h-4zm8 3v3h4v-3h-4z" fill="white" opacity="0.95"/>
+  <path d="M10 28h20" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  <circle cx="30" cy="12" r="3" fill="#93c5fd"/>
+  <path d="M30 9v6M27 12h6" stroke="#1e40af" stroke-width="1.2" stroke-linecap="round"/>
   <defs>
-    <linearGradient id="bizia-c1-base" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stopColor="#1D4ED8" />
-      <stop offset="50%" stopColor="#2563EB" />
-      <stop offset="100%" stopColor="#3B82F6" />
-    </linearGradient>
-    <linearGradient id="bizia-c1-accent" x1="30" y1="20" x2="85" y2="75" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stopColor="#38BDF8" />
-      <stop offset="100%" stopColor="#06B6D4" />
+    <linearGradient id="bizia-grad" x1="0" y1="0" x2="40" y2="40">
+      <stop stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#4f46e5"/>
     </linearGradient>
   </defs>
-  <rect width="100" height="100" rx="24" fill="url(#bizia-c1-base)" />
-  <path d="M24 22C24 19.7909 25.7909 18 28 18H38C40.2091 18 42 19.7909 42 22V78C42 80.2091 40.2091 82 38 82H28C25.7909 82 24 80.2091 24 78V22Z" fill="white" />
-  <path d="M38 18H58C67.9411 18 76 26.0589 76 36C76 45.9411 67.9411 54 58 54H38V18Z" fill="white" fillOpacity="0.96" />
-  <path d="M48 28H56C60.4183 28 64 31.5817 64 36C64 40.4183 60.4183 44 56 44H48V28Z" fill="url(#bizia-c1-base)" />
-  <path d="M38 46H62C72.4934 46 81 54.5066 81 65C81 74.3888 74.1911 82 64.8023 82H38V46Z" fill="url(#bizia-c1-accent)" />
-  <path d="M48 56H61C65.9706 56 70 60.0294 70 65C70 69.9706 65.9706 74 61 74H48V56Z" fill="url(#bizia-c1-base)" />
-  <path d="M74 24L82 16M82 16H74M82 16V24" stroke="#38BDF8" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
 </svg>"""
 
 html_content = f"""<!DOCTYPE html>
@@ -79,17 +73,17 @@ html_content = f"""<!DOCTYPE html>
       overflow: hidden;
     }}
 
-    /* Bande supérieure bleue officielle */
+    /* Bande supérieure bleue */
     .top-bar {{
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       height: 6px;
-      background: #1D4ED8;
+      background: linear-gradient(90deg, #2563EB, #4F46E5);
     }}
 
-    /* Header officiel BizIA */
+    /* Header officiel */
     .header {{
       display: flex;
       justify-content: space-between;
@@ -180,7 +174,7 @@ html_content = f"""<!DOCTYPE html>
     }}
 
     .slide-heading {{
-      font-size: 36px;
+      font-size: 35px;
       font-weight: 800;
       color: #111827;
       letter-spacing: -0.02em;
@@ -189,7 +183,7 @@ html_content = f"""<!DOCTYPE html>
     }}
 
     .slide-description {{
-      font-size: 17px;
+      font-size: 16.5px;
       color: #4B5563;
       line-height: 1.5;
       margin-bottom: 22px;
@@ -221,14 +215,9 @@ html_content = f"""<!DOCTYPE html>
       border: 1px solid #E2E8F0;
       border-radius: 12px;
       padding: 22px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
       display: flex;
       flex-direction: column;
-    }}
-
-    .card.highlight {{
-      border: 2px solid #1D4ED8;
-      background: #F8FAFC;
     }}
 
     .card-title {{
@@ -261,25 +250,25 @@ html_content = f"""<!DOCTYPE html>
 
     /* Cadre de capture d'écran UI */
     .screenshot-frame {{
-      background: #F8FAFC;
+      background: #FFFFFF;
       border: 1px solid #CBD5E1;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       display: flex;
       flex-direction: column;
     }}
 
     .screenshot-header {{
-      background: #F1F5F9;
+      background: #F8FAFC;
       border-bottom: 1px solid #E2E8F0;
-      padding: 7px 12px;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
+      gap: 8px;
+      font-size: 12.5px;
       font-weight: 600;
-      color: #64748B;
+      color: #475569;
     }}
 
     .dot {{
@@ -294,10 +283,11 @@ html_content = f"""<!DOCTYPE html>
 
     .screenshot-img {{
       width: 100%;
-      height: 340px;
+      height: 335px;
       object-fit: cover;
       object-position: top;
       display: block;
+      background: #FFFFFF;
     }}
 
     /* Footer */
@@ -336,14 +326,14 @@ html_content = f"""<!DOCTYPE html>
     }}
 
     .demo-title {{
-      font-size: 50px;
+      font-size: 48px;
       font-weight: 800;
       color: #111827;
       margin-bottom: 14px;
     }}
 
     .demo-subtitle {{
-      font-size: 22px;
+      font-size: 21px;
       color: #4B5563;
       max-width: 900px;
       line-height: 1.5;
@@ -352,12 +342,12 @@ html_content = f"""<!DOCTYPE html>
 
     .demo-box {{
       background: #F8FAFC;
-      border: 2px solid #DBEAFE;
+      border: 1px solid #DBEAFE;
       border-radius: 16px;
       padding: 20px 40px;
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 24px;
     }}
 
     .demo-step {{
@@ -438,7 +428,7 @@ html_content = f"""<!DOCTYPE html>
 
     <div class="footer">
       <div>Équipe Projet BizIA &bull; Présentation Jury</div>
-      <div>1 / 7</div>
+      <div>1 / 8</div>
     </div>
   </div>
 
@@ -464,7 +454,7 @@ html_content = f"""<!DOCTYPE html>
     <div class="content">
       <div class="section-pill">Pourquoi BizIA ?</div>
       <h1 class="slide-heading">Les 4 défis majeurs du commerce de proximité</h1>
-      <p class="slide-description">Les solutions occidentales classiques (ERP/SaaS) échouent face aux contraintes du terrain local.</p>
+      <p class="slide-description">Les solutions logicielles classiques échouent face aux contraintes réelles du terrain africain.</p>
 
       <div class="grid-4">
         <div class="card">
@@ -481,7 +471,7 @@ html_content = f"""<!DOCTYPE html>
           </div>
         </div>
 
-        <div class="card highlight">
+        <div class="card">
           <div class="card-title">3. Coupures d'Internet</div>
           <div class="card-body">
             Blocage immédiat des logiciels 100% Cloud lors des coupures d'électricité et d'internet mobile au comptoir.
@@ -491,7 +481,7 @@ html_content = f"""<!DOCTYPE html>
         <div class="card">
           <div class="card-title">4. Marge Nette Ignorée</div>
           <div class="card-body">
-            Confusion entre chiffre d'affaires et bénéfice net réel, masquant les produits à perte et les fuites de cash.
+            Confusion entre chiffre d'affaires et bénéfice net réel, masquant les produits à perte et les fuites de trésorerie.
           </div>
         </div>
       </div>
@@ -499,7 +489,7 @@ html_content = f"""<!DOCTYPE html>
 
     <div class="footer">
       <div>bizia.vercel.app &bull; Problématiques & Diagnostic</div>
-      <div>2 / 7</div>
+      <div>2 / 8</div>
     </div>
   </div>
 
@@ -533,7 +523,7 @@ html_content = f"""<!DOCTYPE html>
           <div class="card-body">Photo d'une facture ou bon de livraison manuscrit : extraction des articles, prix d'achat et mise à jour immédiate du stock.</div>
         </div>
 
-        <div class="card highlight">
+        <div class="card">
           <div class="card-title">Importation Excel & CSV</div>
           <div class="card-body">Glisser-déposer de tableurs existants, détection intelligente des colonnes, réconciliation avec le catalogue et calcul de rentabilité.</div>
         </div>
@@ -548,7 +538,7 @@ html_content = f"""<!DOCTYPE html>
           <div class="card-body">Enregistrement rapide des ventes à la voix (français et dialectes locaux) ou au clic, avec impression de reçus.</div>
         </div>
 
-        <div class="card highlight">
+        <div class="card">
           <div class="card-title">Mode PWA Hors-Ligne</div>
           <div class="card-body">Fonctionnement complet sans connexion internet (IndexedDB) avec réplication automatique dès retour du réseau.</div>
         </div>
@@ -562,7 +552,7 @@ html_content = f"""<!DOCTYPE html>
 
     <div class="footer">
       <div>bizia.vercel.app &bull; Fonctionnalités Implémentées</div>
-      <div>3 / 7</div>
+      <div>3 / 8</div>
     </div>
   </div>
 
@@ -601,7 +591,7 @@ html_content = f"""<!DOCTYPE html>
           </div>
         </div>
 
-        <div class="card highlight">
+        <div class="card">
           <div class="card-title">Backend & Base de Données</div>
           <div class="card-body">
             &bull; <b>FastAPI (Python 3.12) :</b> Moteur asynchrone sous Cloud.<br>
@@ -625,12 +615,12 @@ html_content = f"""<!DOCTYPE html>
 
     <div class="footer">
       <div>bizia.vercel.app &bull; Infrastructure & Sécurité</div>
-      <div>4 / 7</div>
+      <div>4 / 8</div>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SLIDE 5 : DEMONSTRATION VISUELLE (CAPTURES REELLES DU SITE)               -->
+  <!-- SLIDE 5 : DEMONSTRATION : SCAN OCR & IMPORT TABLEUR (CAPTURES REELLES)    -->
   <!-- ========================================================================= -->
   <div class="slide">
     <div class="top-bar"></div>
@@ -639,25 +629,74 @@ html_content = f"""<!DOCTYPE html>
         {logo_svg}
         <div class="brand-text">
           <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">INTERFACE EN ACTION</div>
+          <div class="brand-sub">CAPTURES : SCANNER & IMPORT</div>
         </div>
       </div>
       <div class="live-tag">
         <div class="live-dot"></div>
-        CAPTURES REELLES DU SITE
+        CAPTURES REELLES DE L'APPLICATION
       </div>
     </div>
 
     <div class="content">
-      <div class="section-pill">Démonstration Visuelle</div>
-      <h1 class="slide-heading">Aperçu réel du Simulateur What-If et de l'Import Tableur</h1>
-      <p class="slide-description">Visualisation directe des données en FCFA, calcul automatique des bénéfices et zone d'importation.</p>
+      <div class="section-pill">Interface Utilisateur</div>
+      <h1 class="slide-heading">Scanner OCR de Factures & Importation de Tableurs</h1>
+      <p class="slide-description">Numérisation instantanée des bons fournisseurs et intégration directe des fichiers Excel de stock.</p>
 
       <div class="grid-2">
         <div class="screenshot-frame">
           <div class="screenshot-header">
             <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-            <span>Simulateur What-If & Marges Réelles en FCFA (bizia.vercel.app/simulateur)</span>
+            <span>Module Scanner OCR de Factures & Reçus Manuscrits</span>
+          </div>
+          <img src="{img_scan}" class="screenshot-img" alt="Scanner OCR">
+        </div>
+
+        <div class="screenshot-frame">
+          <div class="screenshot-header">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span>Module d'Importation Intelligente CSV / Excel</span>
+          </div>
+          <img src="{img_import}" class="screenshot-img" alt="Importation Tableur">
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>bizia.vercel.app/scanner &bull; bizia.vercel.app/import</div>
+      <div>5 / 8</div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- SLIDE 6 : DEMONSTRATION : SIMULATEUR & ASSISTANT VOCAL (CAPTURES REELLES)  -->
+  <!-- ========================================================================= -->
+  <div class="slide">
+    <div class="top-bar"></div>
+    <div class="header">
+      <div class="brand-wrap">
+        {logo_svg}
+        <div class="brand-text">
+          <div class="brand-name">Biz<span>IA</span></div>
+          <div class="brand-sub">CAPTURES : SIMULATEUR & CAISSE VOCALE</div>
+        </div>
+      </div>
+      <div class="live-tag">
+        <div class="live-dot"></div>
+        CAPTURES REELLES DE L'APPLICATION
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="section-pill">Interface Utilisateur</div>
+      <h1 class="slide-heading">Simulateur What-If des Marges & Caisse Vocale</h1>
+      <p class="slide-description">Calcul de rentabilité en direct en FCFA et enregistrement fluide des ventes à la voix.</p>
+
+      <div class="grid-2">
+        <div class="screenshot-frame">
+          <div class="screenshot-header">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span>Simulateur What-If & Marges Réelles en FCFA</span>
           </div>
           <img src="{img_sim}" class="screenshot-img" alt="Simulateur What-If">
         </div>
@@ -665,21 +704,21 @@ html_content = f"""<!DOCTYPE html>
         <div class="screenshot-frame">
           <div class="screenshot-header">
             <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-            <span>Module d'Importation CSV & Tableurs Excel (bizia.vercel.app/import)</span>
+            <span>Assistant Financier & Caisse à Dictée Vocale</span>
           </div>
-          <img src="{img_import}" class="screenshot-img" alt="Import CSV">
+          <img src="{img_chat}" class="screenshot-img" alt="Caisse Vocale">
         </div>
       </div>
     </div>
 
     <div class="footer">
-      <div>bizia.vercel.app/simulateur &bull; bizia.vercel.app/import</div>
-      <div>5 / 7</div>
+      <div>bizia.vercel.app/simulateur &bull; bizia.vercel.app/chat</div>
+      <div>6 / 8</div>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SLIDE 6 : MODELE ECONOMIQUE FUTUR & STRATEGIE GO-TO-MARKET                -->
+  <!-- SLIDE 7 : MODELE ECONOMIQUE FUTUR & STRATEGIE GO-TO-MARKET                -->
   <!-- ========================================================================= -->
   <div class="slide">
     <div class="top-bar"></div>
@@ -712,7 +751,7 @@ html_content = f"""<!DOCTYPE html>
           </div>
         </div>
 
-        <div class="card highlight">
+        <div class="card">
           <div class="card-title">Phase 2 : Lancement Commercial</div>
           <div class="card-body">
             &bull; <b>Paiements Locaux :</b> Intégration Mobile Money (MTN, Moov, Orange, Wave), FedaPay et Stripe.<br><br>
@@ -734,12 +773,12 @@ html_content = f"""<!DOCTYPE html>
 
     <div class="footer">
       <div>bizia.vercel.app &bull; Modèle Économique & Lancement</div>
-      <div>6 / 7</div>
+      <div>7 / 8</div>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- SLIDE 7 : DEMONSTRATION EN DIRECT (SPECIALE JURY)                         -->
+  <!-- SLIDE 8 : DEMONSTRATION EN DIRECT (SPECIALE JURY)                         -->
   <!-- ========================================================================= -->
   <div class="slide">
     <div class="top-bar"></div>
@@ -789,7 +828,7 @@ html_content = f"""<!DOCTYPE html>
 
     <div class="footer">
       <div>Plateforme en ligne : <b>https://bizia.vercel.app</b></div>
-      <div>7 / 7</div>
+      <div>8 / 8</div>
     </div>
   </div>
 

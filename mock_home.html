@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F8FAFC; margin: 0; padding: 24px; color: #111827; }
+.card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.title { font-size: 20px; font-weight: 700; color: #111827; }
+.badge { background: #EFF6FF; color: #1D4ED8; font-weight: 700; font-size: 13px; padding: 6px 12px; border-radius: 6px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: #F1F5F9; color: #475569; text-align: left; padding: 12px; border-bottom: 1px solid #CBD5E1; font-weight: 600; }
+td { padding: 12px; border-bottom: 1px solid #E2E8F0; color: #1E293B; }
+.pill-green { background: #ECFDF5; color: #065F46; padding: 4px 8px; border-radius: 9999px; font-weight: 700; font-size: 12px; }
+.kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+.kpi-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px; }
+.kpi-val { font-size: 22px; font-weight: 800; color: #1D4ED8; }
+.kpi-lbl { font-size: 12px; color: #64748B; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="title">Simulateur What-If & Marges Réelles (FCFA)</div>
+    <div class="badge">Données en direct</div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Produit</th>
+        <th>Coût Achat</th>
+        <th>Prix Vente</th>
+        <th>Marge Réelle</th>
+        <th>Ventes Sim.</th>
+        <th>Bénéfice Net</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Smartphone 4G Pro</b></td>
+        <td>45 000 F</td>
+        <td><b>65 000 F</b></td>
+        <td><span class="pill-green">+30.8% (20 000 F)</span></td>
+        <td>18 unités</td>
+        <td><b>360 000 FCFA</b></td>
+      </tr>
+      <tr>
+        <td><b>Montre Connectée AMOLED V2</b></td>
+        <td>12 000 F</td>
+        <td><b>20 000 F</b></td>
+        <td><span class="pill-green">+40.0% (8 000 F)</span></td>
+        <td>34 unités</td>
+        <td><b>272 000 FCFA</b></td>
+      </tr>
+      <tr>
+        <td><b>Calculatrice Scientifique</b></td>
+        <td>3 500 F</td>
+        <td><b>6 000 F</b></td>
+        <td><span class="pill-green">+41.7% (2 500 F)</span></td>
+        <td>45 unités</td>
+        <td><b>112 500 FCFA</b></td>
+      </tr>
+      <tr>
+        <td><b>Écouteurs Sans-Fil TWS</b></td>
+        <td>5 000 F</td>
+        <td><b>9 500 F</b></td>
+        <td><span class="pill-green">+47.4% (4 500 F)</span></td>
+        <td>26 unités</td>
+        <td><b>117 000 FCFA</b></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="kpi-row">
+    <div class="kpi-box">
+      <div class="kpi-val">2 372 000 FCFA</div>
+      <div class="kpi-lbl">Chiffre d'Affaires Simulé</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-val">+861 500 FCFA</div>
+      <div class="kpi-lbl">Bénéfice Net d'Exploitation</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-val">36.3%</div>
+      <div class="kpi-lbl">Taux de Marge Moyenne</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

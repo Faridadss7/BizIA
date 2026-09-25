@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F8FAFC; margin: 0; padding: 24px; color: #111827; }
+.card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.title { font-size: 20px; font-weight: 700; color: #111827; }
+.badge { background: #ECFDF5; color: #065F46; font-weight: 700; font-size: 13px; padding: 6px 12px; border-radius: 6px; }
+.scan-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; }
+.photo-box { border: 2px dashed #93C5FD; background: #EFF6FF; border-radius: 8px; padding: 20px; text-align: center; }
+.photo-tag { font-size: 13px; font-weight: 700; color: #1D4ED8; margin-top: 8px; }
+.ocr-result { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px; }
+.ocr-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #E2E8F0; font-size: 13.5px; }
+.ocr-total { display: flex; justify-content: space-between; padding-top: 12px; font-weight: 800; font-size: 15px; color: #1D4ED8; }
+.btn-val { background: #1D4ED8; color: #FFF; font-weight: 700; font-size: 13px; border: none; padding: 10px 16px; border-radius: 6px; margin-top: 12px; width: 100%; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="title">Scanner de Reçus & Factures (Gemini Vision OCR)</div>
+    <div class="badge">Extraction Réussie (2.4s)</div>
+  </div>
+  <div class="scan-grid">
+    <div class="photo-box">
+      <div style="font-size: 32px; color: #2563EB;">[PHOTO FACTURE FOURNISSEUR]</div>
+      <div class="photo-tag">Bon de Livraison N° 2026-098</div>
+      <div style="font-size: 12px; color: #64748B; margin-top: 4px;">Fournisseur : Grossiste Cotonou</div>
+    </div>
+    <div class="ocr-result">
+      <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; color: #1E293B;">Articles Détectés & Mis en Stock :</div>
+      <div class="ocr-item"><span>10x Sac de Ciment 50kg</span><b>48 000 FCFA</b></div>
+      <div class="ocr-item"><span>25x Fer à Béton 10mm</span><b>75 000 FCFA</b></div>
+      <div class="ocr-item"><span>5x Rouleau Grillage Galva</span><b>32 500 FCFA</b></div>
+      <div class="ocr-total"><span>Total Facture :</span><span>155 500 FCFA</span></div>
+      <button class="btn-val">Valider et Mettre à Jour le Stock</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
