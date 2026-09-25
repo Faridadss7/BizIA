@@ -30,19 +30,33 @@ def current_company(
     user: dict[str, Any] = Depends(current_user),
     x_company_id: str | None = Header(default=None, alias="X-Company-ID"),
 ) -> dict[str, Any]:
-    """Dépendance FastAPI pour récupérer et valider l'entreprise active de la requête."""
+    """Dépendance FastAPI pour récupérer l'entreprise active avec isolation stricte et auto-guérison sur ID périmé."""
     user_id = str(user["id"])
     if x_company_id and x_company_id.strip():
         target_id = x_company_id.strip()
         comp = supabase_client.get_company(target_id, user_id)
-        if not comp:
-            raise ApiError(403, "company_access_denied", "Accès refusé ou entreprise inexistante.")
-        return comp
+        if comp:
+            return comp
+        # Si l'entreprise existe dans la base mais que l'utilisateur n'y a pas accès -> 403 strict
+        if supabase_client.company_exists(target_id):
+            raise ApiError(403, "company_access_denied", "Accès refusé à cette entreprise.")
+        # Si l'ID n'existe nulle part (ancien ID localStorage périmé), repli sur la première entreprise de l'utilisateur
 
     companies = supabase_client.list_companies(user_id)
-    if not companies:
-        raise ApiError(404, "company_not_found", "Aucune entreprise disponible pour cet utilisateur.")
-    return companies[0]
+    if companies:
+        return companies[0]
+
+    # Auto-création d'une entreprise par défaut si aucune n'existe encore
+    first_name = user.get("first_name", "") or ""
+    last_name = user.get("last_name", "") or ""
+    name = f"{first_name} {last_name}".strip()
+    company_name = f"Entreprise {name}" if name else "Mon Entreprise"
+    return supabase_client.create_company(
+        user_id=user_id,
+        name=company_name,
+        category="Commerce Général",
+        currency="FCFA",
+    )
 
 
 @router.post("/register", status_code=201)

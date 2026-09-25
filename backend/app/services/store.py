@@ -338,6 +338,11 @@ class JsonStore:
             result["role"] = member.get("role", "member")
             return result
 
+    def company_exists(self, company_id: str) -> bool:
+        with self._lock:
+            data = self._load()
+            return any(str(c.get("id")) == str(company_id) for c in data.get("companies", []))
+
     def update_company_for_user(
         self, company_id: str, user_id: str, updates: dict[str, Any]
     ) -> dict[str, Any] | None:

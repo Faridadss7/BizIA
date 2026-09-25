@@ -138,6 +138,18 @@ def get_company(company_id: str, user_id: str) -> dict[str, Any] | None:
     return get_store().get_company_for_user(company_id, user_id)
 
 
+def company_exists(company_id: str) -> bool:
+    client = get_supabase_client()
+    if client is not None:
+        try:
+            res = client.table("companies").select("id").eq("id", company_id).execute()
+            if res.data:
+                return True
+        except Exception:
+            pass
+    return get_store().company_exists(company_id)
+
+
 def update_company(
     company_id: str, user_id: str, updates: dict[str, Any]
 ) -> dict[str, Any] | None:
