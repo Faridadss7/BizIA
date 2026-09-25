@@ -270,15 +270,10 @@ def _client() -> Any:
 
 
 def _config(max_output_tokens: int, **extra: Any) -> dict[str, Any]:
-    """Restitution factuelle plutôt que raisonnement : le budget va à la réponse.
-
-    Sans `thinking_budget` à zéro, `gemini-2.5-flash` consomme les tokens en
-    réflexion interne et tronque la sortie JSON.
-    """
+    """Configuration optimisée pour réponses déterministes et compatibles tous modèles."""
     return {
-        "temperature": 0.2,
+        "temperature": 0.1,
         "max_output_tokens": max_output_tokens,
-        "thinking_config": {"thinking_budget": 0},
         "automatic_function_calling": {"disable": True},
         **extra,
     }
@@ -286,10 +281,10 @@ def _config(max_output_tokens: int, **extra: Any) -> dict[str, Any]:
 
 def _model_candidates() -> list[str]:
     primary = settings.gemini_model or "gemini-3.5-flash-lite"
-    candidates = [primary]
-    for alt in ("gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.8-flash"):
-        if alt not in candidates:
-            candidates.append(alt)
+    candidates: list[str] = []
+    for m in ("gemini-3.5-flash-lite", primary, "gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash"):
+        if m and m not in candidates:
+            candidates.append(m)
     return candidates
 
 
