@@ -84,7 +84,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="muted">…</span>
               ) : isAuthenticated && user ? (
                 <>
-                  <span className="header__user">{user.firstName}</span>
+                  <div className="header__user-pill" title={`${user.firstName} ${user.lastName || ""}`}>
+                    <span className="header__avatar">{user.firstName?.[0]?.toUpperCase() || "U"}</span>
+                    <span className="header__user">{user.firstName}</span>
+                  </div>
                   <button type="button" className="btn btn--outline btn--sm" onClick={handleLogout}>
                     Déconnexion
                   </button>
