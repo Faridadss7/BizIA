@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>BizIA - Présentation Officielle</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    @page {
+      size: 1920px 1080px;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #080C15;
+      color: #F8FAFC;
+    }
+
+    .slide {
+      width: 1920px;
+      height: 1080px;
+      page-break-after: always;
+      position: relative;
+      background: radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.08), transparent 40%),
+                  radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.05), transparent 40%),
+                  #080C15;
+      padding: 60px 80px 50px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Top Accent Line */
+    .top-stripe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #2563EB, #60A5FA, #10B981);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-badge {
+      background: #2563EB;
+      color: #FFF;
+      font-weight: 800;
+      font-size: 20px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #94A3B8;
+    }
+
+    .tag-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34D399;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 9999px;
+    }
+
+    .tag-live-dot {
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+    }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 30px 0;
+    }
+
+    .hero-title {
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: #FFFFFF;
+      margin-bottom: 16px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #60A5FA, #93C5FD);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 22px;
+      color: #94A3B8;
+      max-width: 1200px;
+      line-height: 1.5;
+      margin-bottom: 40px;
+    }
+
+    /* Grid Layouts */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
+
+    /* Cards */
+    .card {
+      background: #0E1526;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card.highlight {
+      border-color: rgba(59, 130, 246, 0.5);
+      background: #101A33;
+    }
+
+    .card-tag {
+      align-self: flex-start;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #60A5FA;
+      background: rgba(37, 99, 235, 0.15);
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 12px;
+    }
+
+    .card-text {
+      font-size: 15px;
+      color: #94A3B8;
+      line-height: 1.6;
+    }
+
+    .card-stat {
+      font-size: 44px;
+      font-weight: 800;
+      color: #60A5FA;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .card-stat-label {
+      font-size: 14px;
+      color: #94A3B8;
+      font-weight: 500;
+    }
+
+    /* Full Width Banner */
+    .banner {
+      background: #0E1526;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    .banner-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 4px;
+    }
+
+    .banner-desc {
+      font-size: 14px;
+      color: #94A3B8;
+    }
+
+    .banner-url {
+      font-size: 16px;
+      font-weight: 700;
+      color: #38BDF8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+      color: #64748B;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1 : COUVERTURE & VISION -->
+  <div class="slide">
+    <div class="top-stripe"></div>
+    <div class="header">
+      <div class="brand">
+        <div class="logo-badge">BizIA</div>
+        <div class="brand-title">Intelligence Financière & Gestion Commerciale</div>
+      </div>
+      <div class="tag-live">
+        <div class="tag-live-dot"></div>
+        PLATEFORME EN PRODUCTION
+      </div>
+    </div>
+
+    <div class="content">
+      <h1 class="hero-title">Automatisation, Vision Multimodale<br>et <span>Pilotage de Trésorerie pour PME</span></h1>
+      <p class="hero-subtitle">
+        La première solution tout-en-un conçue pour éliminer la saisie manuelle grâce à l'OCR Gemini Vision, la commande vocale et la résilience hors-ligne PWA.
+      </p>
+
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-stat">44M+</div>
+          <div class="card-stat-label">PME cibles en Afrique subsaharienne</div>
+        </div>
+        <div class="card">
+          <div class="card-stat">2.4s</div>
+          <div class="card-stat-label">Scan OCR instantané de facture manuscrite</div>
+        </div>
+        <div class="card">
+          <div class="card-stat">100%</div>
+          <div class="card-stat-label">Fonctionnement hors-ligne garanti (PWA)</div>
+        </div>
+        <div class="card">
+          <div class="card-stat">0 FCFA</div>
+          <div class="card-stat-label">Saisie manuelle ou formation requise</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>bizia.vercel.app &bull; Application Web & Mobile PWA</div>
+      <div>1 / 5</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 : LES 3 DEFIS TERRAIN -->
+  <div class="slide">
+    <div class="top-stripe"></div>
+    <div class="header">
+      <div class="brand">
+        <div class="logo-badge">BizIA</div>
+        <div class="brand-title">Problématiques du Secteur & Réponses</div>
+      </div>
+      <div class="tag-live">
+        <div class="tag-live-dot"></div>
+        INNOVATION TERRAIN
+      </div>
+    </div>
+
+    <div class="content">
+      <h1 class="hero-title">Pourquoi les logiciels classiques <span>échouent sur le terrain</span></h1>
+      <p class="hero-subtitle">BizIA résout directement les 3 points de friction majeurs des commerçants.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-tag">Vision OCR</div>
+          <div class="card-title">1. Factures & Reçus Papiers</div>
+          <div class="card-text">
+            <b>Obstacle :</b> Bons de livraison manuscrits, reçus perdus, erreurs d'écriture quotidiennes.<br><br>
+            <b>Solution BizIA :</b> Une simple photo avec le smartphone suffit. L'IA extrait les articles, prix d'achat et met à jour le stock instantanément.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-tag">Hors-Ligne PWA</div>
+          <div class="card-title">2. Coupures d'Internet</div>
+          <div class="card-text">
+            <b>Obstacle :</b> Les ERP Cloud occidentaux bloquent le commerce dès que la 4G/WiFi est coupée.<br><br>
+            <b>Solution BizIA :</b> Mode PWA Offline-First. Enregistrement des ventes hors-ligne et synchronisation automatique dès le retour du réseau.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-tag">Rentabilité Réelle</div>
+          <div class="card-title">3. Calcul Réel des Marges</div>
+          <div class="card-text">
+            <b>Obstacle :</b> Confusion fréquente entre chiffre d'affaires et bénéfice net réel.<br><br>
+            <b>Solution BizIA :</b> Déduction automatique du coût des marchandises et charges pour un suivi de marge nette en direct en FCFA.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>bizia.vercel.app &bull; Résilience & Inclusion Financière</div>
+      <div>2 / 5</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 : FONCTIONNALITES CLES -->
+  <div class="slide">
+    <div class="top-stripe"></div>
+    <div class="header">
+      <div class="brand">
+        <div class="logo-badge">BizIA</div>
+        <div class="brand-title">Fonctionnalités de la Plateforme</div>
+      </div>
+      <div class="tag-live">
+        <div class="tag-live-dot"></div>
+        SUITE COMPLETE
+      </div>
+    </div>
+
+    <div class="content">
+      <h1 class="hero-title">Une suite complète pensée pour la <span>rapidité d'exécution</span></h1>
+      <p class="hero-subtitle">Conçue pour un usage intensif au comptoir comme en direction générale.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-tag">Gemini Vision</div>
+          <div class="card-title">Scanner de Reçus</div>
+          <div class="card-text">Extraction multimodale instantanée des articles, quantités et prix d'achat à partir d'une photo.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-tag">Voice AI</div>
+          <div class="card-title">Assistant Vocal</div>
+          <div class="card-text">Enregistrement fluide des ventes à la voix en français et dialectes locaux au comptoir.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-tag">Stocks</div>
+          <div class="card-title">Catalogue & Alertes</div>
+          <div class="card-text">Suivi en temps réel des stocks, valorisation d'inventaire et alertes automatiques de réapprovisionnement.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-tag">Analytics</div>
+          <div class="card-title">Simulateur de Marges</div>
+          <div class="card-text">Audit de rentabilité par produit, calcul du seuil d'équilibre et scénarios prédictifs de croissance.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-tag">Pilotage</div>
+          <div class="card-title">Tableau de Bord</div>
+          <div class="card-text">Indicateurs de performance en temps réel : CA journalier, marge brute, panier moyen et bénéfice net.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-tag">Interopérabilité</div>
+          <div class="card-title">Import & Export PDF</div>
+          <div class="card-text">Glisser-déposer de tableurs Excel existants et génération de bilans financiers certifiés pour les banques.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>bizia.vercel.app &bull; Modules Opérationnels</div>
+      <div>3 / 5</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 : ARCHITECTURE & SECURITE -->
+  <div class="slide">
+    <div class="top-stripe"></div>
+    <div class="header">
+      <div class="brand">
+        <div class="logo-badge">BizIA</div>
+        <div class="brand-title">Infrastructure & Sécurité</div>
+      </div>
+      <div class="tag-live">
+        <div class="tag-live-dot"></div>
+        HAUTE DISPONIBILITE
+      </div>
+    </div>
+
+    <div class="content">
+      <h1 class="hero-title">Une architecture <span>robuste, moderne et sécurisée</span></h1>
+      <p class="hero-subtitle">Pipeline asynchrone conçu pour la vitesse et le cloisonnement strict des données.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-tag">Frontend & Client</div>
+          <div class="card-title">Interface & Expérience Utilisateur</div>
+          <div class="card-text">
+            &bull; <b>Next.js 14 App Router & TypeScript :</b> Rendu ultra-rapide et code typé de bout en bout.<br>
+            &bull; <b>Design System Sombre & FinTech :</b> Visibilité optimale en boutique et contrastes soignés.<br>
+            &bull; <b>Service Worker & IndexedDB :</b> Enregistrement local des ventes et réplication asynchrone.<br>
+            &bull; <b>Format PWA :</b> Installation directe sur smartphones iOS et Android sans passer par les stores.
+          </div>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-tag">Backend & Intelligence</div>
+          <div class="card-title">Serveur & Modèles IA</div>
+          <div class="card-text">
+            &bull; <b>FastAPI (Python) :</b> API asynchrone performante hébergée sous infrastructure Cloud.<br>
+            &bull; <b>Supabase PostgreSQL & RLS :</b> Cloisonnement strict des données par entreprise (Row Level Security).<br>
+            &bull; <b>Google Gemini 3.5 & 3.8 Flash :</b> Pipeline de vision multimodale avec basculement automatique.<br>
+            &bull; <b>Qualité & Tests :</b> 79 tests automatisés validés en continu.
+          </div>
+        </div>
+      </div>
+
+      <div class="banner">
+        <div>
+          <div class="banner-title">Cloisonnement & Confidentialité des Données</div>
+          <div class="banner-desc">Toutes les transactions et inventaires sont chiffrés en transit (TLS 1.3) et au repos avec sauvegardes quotidiennes.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>bizia.vercel.app &bull; Standards Industriels</div>
+      <div>4 / 5</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 : MODELE ECONOMIQUE & ACCES -->
+  <div class="slide">
+    <div class="top-stripe"></div>
+    <div class="header">
+      <div class="brand">
+        <div class="logo-badge">BizIA</div>
+        <div class="brand-title">Modèle Économique & Accès</div>
+      </div>
+      <div class="tag-live">
+        <div class="tag-live-dot"></div>
+        ACCESSIBILITE
+      </div>
+    </div>
+
+    <div class="content">
+      <h1 class="hero-title">Une tarification transparente <span>accessible à chaque commerçant</span></h1>
+      <p class="hero-subtitle">Du marchand individuel à la chaîne de distribution régionale.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-tag">Freemium</div>
+          <div class="card-title">Offre Découverte</div>
+          <div class="card-text">
+            <b style="font-size: 20px; color: #FFF;">0 FCFA / mois</b><br><br>
+            &bull; 50 scans OCR / mois<br>
+            &bull; Enregistrement vocal des ventes<br>
+            &bull; Mode PWA hors-ligne inclus<br>
+            &bull; Jusqu'à 200 produits en catalogue
+          </div>
+        </div>
+
+        <div class="card highlight">
+          <div class="card-tag">Recommandé</div>
+          <div class="card-title">Offre Professionnelle</div>
+          <div class="card-text">
+            <b style="font-size: 20px; color: #60A5FA;">5 000 FCFA / mois</b><br><br>
+            &bull; <b>Scans OCR illimités</b><br>
+            &bull; Multi-caissiers & utilisateurs<br>
+            &bull; Bilans financiers PDF exportables<br>
+            &bull; Alertes de marge et de stock par IA
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-tag">Institutionnel</div>
+          <div class="card-title">Partenariats Bancaires</div>
+          <div class="card-text">
+            <b style="font-size: 20px; color: #FFF;">Sur Mesure</b><br><br>
+            &bull; API de certification des flux PME<br>
+            &bull; Évaluation du risque de crédit<br>
+            &bull; Connexion microfinance & banques
+          </div>
+        </div>
+      </div>
+
+      <div class="banner">
+        <div>
+          <div class="banner-title">Tester la solution dès maintenant</div>
+          <div class="banner-desc">L'application complète est déployée et fonctionnelle en direct.</div>
+        </div>
+        <div class="banner-url">https://bizia.vercel.app</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>bizia.vercel.app &bull; Intelligence Financière & Gestion Commerciale</div>
+      <div>5 / 5</div>
+    </div>
+  </div>
+
+</body>
+</html>
