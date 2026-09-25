@@ -209,25 +209,45 @@ def extract_document_with_gemini(
         "required": ["document_type", "products", "sales", "warnings"],
         "additionalProperties": False,
     }
+
+    mime_lower = (mime_type or "").lower()
+    if "pdf" in mime_lower:
+        clean_mime = "application/pdf"
+    elif "png" in mime_lower:
+        clean_mime = "image/png"
+    elif "webp" in mime_lower:
+        clean_mime = "image/webp"
+    elif "heic" in mime_lower or "heif" in mime_lower:
+        clean_mime = "image/heic"
+    else:
+        clean_mime = "image/jpeg"
+
     try:
         from google.genai import types
 
-        response = _client().models.generate_content(
-            model=settings.gemini_model,
-            contents=[
-                prompt,
-                types.Part.from_bytes(data=payload, mime_type=mime_type),
-            ],
-            config=_config(
-                8_000,
-                response_mime_type="application/json",
-                response_json_schema=schema,
-            ),
-        )
-        extracted = json.loads(response.text or "")
-        if not _valid_document_extraction(extracted):
-            return None
-        return extracted
+        part = types.Part.from_bytes(data=payload, mime_type=clean_mime)
+        for model_name in _model_candidates():
+            try:
+                response = _client().models.generate_content(
+                    model=model_name,
+                    contents=[prompt, part],
+                    config=_config(
+                        8_000,
+                        response_mime_type="application/json",
+                        response_json_schema=schema,
+                    ),
+                )
+                raw_text = (response.text or "").strip()
+                if not raw_text:
+                    continue
+                extracted = json.loads(raw_text)
+                if _valid_document_extraction(extracted):
+                    logger.info("Extraction documentaire Gemini réussie avec %s", model_name)
+                    return extracted
+            except Exception as e:
+                logger.warning("Essai d'extraction avec %s échoué: %s", model_name, e)
+                continue
+        return None
     except Exception:
         logger.exception("Reconnaissance Gemini indisponible; essai de l'extracteur local.")
         return None
