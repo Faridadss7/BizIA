@@ -16,20 +16,37 @@ img_scan = get_base64_img("presentation_assets/screen_scanner.png")
 img_import = get_base64_img("presentation_assets/screen_import.png")
 img_chat = get_base64_img("presentation_assets/screen_chat.png")
 
-# Exact official SVG logo from frontend/public/logo.svg
-logo_svg = """<svg width="42" height="42" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="40" height="40" rx="10" fill="url(#bizia-grad)" />
-  <path d="M10 28V18h4v10h-4zm8-6v6h4v-6h-4zm8 3v3h4v-3h-4z" fill="white" opacity="0.95"/>
-  <path d="M10 28h20" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-  <circle cx="30" cy="12" r="3" fill="#93c5fd"/>
-  <path d="M30 9v6M27 12h6" stroke="#1e40af" stroke-width="1.2" stroke-linecap="round"/>
-  <defs>
-    <linearGradient id="bizia-grad" x1="0" y1="0" x2="40" y2="40">
-      <stop stop-color="#2563eb"/>
-      <stop offset="1" stop-color="#4f46e5"/>
-    </linearGradient>
-  </defs>
-</svg>"""
+# Exact official SVG logo from BizIALogo.tsx (Concept 1)
+logo_svg_brand = """<div style="display: flex; align-items: center; gap: 14px;">
+  <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bizia-c1-base" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#1D4ED8" />
+        <stop offset="50%" stop-color="#2563EB" />
+        <stop offset="100%" stop-color="#3B82F6" />
+      </linearGradient>
+      <linearGradient id="bizia-c1-accent" x1="30" y1="20" x2="85" y2="75" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#38BDF8" />
+        <stop offset="100%" stop-color="#06B6D4" />
+      </linearGradient>
+    </defs>
+    <rect width="100" height="100" rx="24" fill="url(#bizia-c1-base)" />
+    <path d="M24 22C24 19.7909 25.7909 18 28 18H38C40.2091 18 42 19.7909 42 22V78C42 80.2091 40.2091 82 38 82H28C25.7909 82 24 80.2091 24 78V22Z" fill="white" />
+    <path d="M38 18H58C67.9411 18 76 26.0589 76 36C76 45.9411 67.9411 54 58 54H38V18Z" fill="white" fill-opacity="0.96" />
+    <path d="M48 28H56C60.4183 28 64 31.5817 64 36C64 40.4183 60.4183 44 56 44H48V28Z" fill="url(#bizia-c1-base)" />
+    <path d="M38 46H62C72.4934 46 81 54.5066 81 65C81 74.3888 74.1911 82 64.8023 82H38V46Z" fill="url(#bizia-c1-accent)" />
+    <path d="M48 56H61C65.9706 56 70 60.0294 70 65C70 69.9706 65.9706 74 61 74H48V56Z" fill="url(#bizia-c1-base)" />
+    <path d="M74 24L82 16M82 16H74M82 16V24" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <div style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: #0F172A; line-height: 1;">
+      Biz<span style="color: #2563EB; font-weight: 900;">IA</span>
+    </div>
+    <div style="font-size: 12px; letter-spacing: 0.04em; font-weight: 600; color: #64748B; margin-top: 3px;">
+      PME &amp; entreprises
+    </div>
+  </div>
+</div>"""
 
 html_content = f"""<!DOCTYPE html>
 <html lang="fr">
@@ -80,7 +97,7 @@ html_content = f"""<!DOCTYPE html>
       left: 0;
       right: 0;
       height: 6px;
-      background: linear-gradient(90deg, #2563EB, #4F46E5);
+      background: linear-gradient(90deg, #1D4ED8, #2563EB, #3B82F6);
     }}
 
     /* Header officiel */
@@ -90,37 +107,6 @@ html_content = f"""<!DOCTYPE html>
       align-items: center;
       padding-bottom: 18px;
       border-bottom: 1px solid #E2E8F0;
-    }}
-
-    .brand-wrap {{
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }}
-
-    .brand-text {{
-      display: flex;
-      flex-direction: column;
-    }}
-
-    .brand-name {{
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: #111827;
-      line-height: 1.1;
-    }}
-
-    .brand-name span {{
-      color: #2563EB;
-      font-weight: 900;
-    }}
-
-    .brand-sub {{
-      font-size: 12px;
-      color: #64748B;
-      font-weight: 600;
-      letter-spacing: 0.04em;
     }}
 
     .live-tag {{
@@ -385,13 +371,7 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide">
     <div class="top-bar"></div>
     <div class="header">
-      <div class="brand-wrap">
-        {logo_svg}
-        <div class="brand-text">
-          <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">PME &amp; ENTREPRISES</div>
-        </div>
-      </div>
+      {logo_svg_brand}
       <div class="live-tag">
         <div class="live-dot"></div>
         APPLICATION EN PRODUCTION : BIZIA.VERCEL.APP
@@ -438,13 +418,7 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide">
     <div class="top-bar"></div>
     <div class="header">
-      <div class="brand-wrap">
-        {logo_svg}
-        <div class="brand-text">
-          <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">DIAGNOSTIC DU TERRAIN</div>
-        </div>
-      </div>
+      {logo_svg_brand}
       <div class="live-tag">
         <div class="live-dot"></div>
         DIAGNOSTIC SECTORIEL
@@ -499,13 +473,7 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide">
     <div class="top-bar"></div>
     <div class="header">
-      <div class="brand-wrap">
-        {logo_svg}
-        <div class="brand-text">
-          <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">MODULES FONCTIONNELS</div>
-        </div>
-      </div>
+      {logo_svg_brand}
       <div class="live-tag">
         <div class="live-dot"></div>
         SUITE COMPLETE
@@ -562,13 +530,7 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide">
     <div class="top-bar"></div>
     <div class="header">
-      <div class="brand-wrap">
-        {logo_svg}
-        <div class="brand-text">
-          <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">INFRASTRUCTURE & CODE</div>
-        </div>
-      </div>
+      {logo_svg_brand}
       <div class="live-tag">
         <div class="live-dot"></div>
         STANDARDS INDUSTRIELS
@@ -625,13 +587,7 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide">
     <div class="top-bar"></div>
     <div class="header">
-      <div class="brand-wrap">
-        {logo_svg}
-        <div class="brand-text">
-          <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">CAPTURES : SCANNER & IMPORT</div>
-        </div>
-      </div>
+      {logo_svg_brand}
       <div class="live-tag">
         <div class="live-dot"></div>
         CAPTURES REELLES DE L'APPLICATION
@@ -674,13 +630,7 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide">
     <div class="top-bar"></div>
     <div class="header">
-      <div class="brand-wrap">
-        {logo_svg}
-        <div class="brand-text">
-          <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">CAPTURES : SIMULATEUR & CAISSE VOCALE</div>
-        </div>
-      </div>
+      {logo_svg_brand}
       <div class="live-tag">
         <div class="live-dot"></div>
         CAPTURES REELLES DE L'APPLICATION
@@ -723,13 +673,7 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide">
     <div class="top-bar"></div>
     <div class="header">
-      <div class="brand-wrap">
-        {logo_svg}
-        <div class="brand-text">
-          <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">STRATEGIE & MONETISATION</div>
-        </div>
-      </div>
+      {logo_svg_brand}
       <div class="live-tag">
         <div class="live-dot"></div>
         MODELE ECONOMIQUE
@@ -783,13 +727,7 @@ html_content = f"""<!DOCTYPE html>
   <div class="slide">
     <div class="top-bar"></div>
     <div class="header">
-      <div class="brand-wrap">
-        {logo_svg}
-        <div class="brand-text">
-          <div class="brand-name">Biz<span>IA</span></div>
-          <div class="brand-sub">DEMONSTRATION LIVE</div>
-        </div>
-      </div>
+      {logo_svg_brand}
       <div class="live-tag">
         <div class="live-dot"></div>
         SERVEUR ACTIF & DISPONIBLE
@@ -840,7 +778,7 @@ html_file = "presentation_deck.html"
 with open(html_file, "w", encoding="utf-8") as f:
     f.write(html_content)
 
-print("HTML master deck generated successfully with SVG logo and real base64 screenshots!")
+print("HTML master deck generated successfully with exact Concept 1 SVG logo and real base64 screenshots!")
 
 # Render to PDF using Edge headless
 edge_path = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
@@ -878,7 +816,10 @@ for t in target_files:
 # Verify with pypdfium2
 pdf = pdfium.PdfDocument("BizIA_Presentation_Officielle.pdf")
 print(f"Total verified pages in PDF: {len(pdf)}")
+os.makedirs("presentation_slides_img", exist_ok=True)
 for i, page in enumerate(pdf):
+    image = page.render(scale=1.5).to_pil()
+    image.save(f"presentation_slides_img/slide_{i+1}.png")
     txt = page.get_textpage().get_text_range()
     first_line = txt.strip().split("\n")[0] if txt else ""
     print(f"Slide {i+1}: {first_line[:80]}")
