@@ -20,117 +20,130 @@
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background-color: #080C15;
-      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F8FAFC;
+      color: #111827;
+      font-size: 16px;
     }
 
     .slide {
       width: 1920px;
       height: 1080px;
       page-break-after: always;
-      position: relative;
-      background: radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.08), transparent 40%),
-                  radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.05), transparent 40%),
-                  #080C15;
-      padding: 60px 80px 50px 80px;
+      background: #FFFFFF;
+      padding: 60px 80px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      position: relative;
       overflow: hidden;
     }
 
-    /* Top Accent Line */
-    .top-stripe {
+    /* Top Blue Brand Stripe */
+    .brand-stripe {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       height: 6px;
-      background: linear-gradient(90deg, #2563EB, #60A5FA, #10B981);
+      background: #1D4ED8;
     }
 
-    /* Header */
+    /* Header matching BizIA Navbar */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding-bottom: 24px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid #E2E8F0;
     }
 
-    .brand {
+    .brand-box {
       display: flex;
       align-items: center;
       gap: 16px;
     }
 
-    .logo-badge {
-      background: #2563EB;
-      color: #FFF;
+    .brand-logo {
+      background: #1D4ED8;
+      color: #FFFFFF;
       font-weight: 800;
-      font-size: 20px;
-      padding: 6px 14px;
+      font-size: 22px;
+      padding: 8px 18px;
       border-radius: 8px;
-      letter-spacing: 0.5px;
+      letter-spacing: -0.5px;
     }
 
-    .brand-title {
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
       font-size: 18px;
-      font-weight: 600;
-      color: #94A3B8;
+      font-weight: 700;
+      color: #111827;
     }
 
-    .tag-live {
+    .brand-subtitle {
+      font-size: 13px;
+      color: #64748B;
+      font-weight: 500;
+    }
+
+    .live-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #34D399;
-      font-size: 13px;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      color: #065F46;
+      font-size: 14px;
       font-weight: 700;
-      padding: 6px 14px;
+      padding: 8px 16px;
       border-radius: 9999px;
     }
 
-    .tag-live-dot {
-      width: 8px;
-      height: 8px;
+    .live-dot {
+      width: 10px;
+      height: 10px;
       background: #10B981;
       border-radius: 50%;
     }
 
-    /* Content Area */
-    .content {
+    /* Main Body */
+    .main-body {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 30px 0;
+      padding: 24px 0;
     }
 
-    .hero-title {
-      font-size: 52px;
+    .section-tag {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #1D4ED8;
+      margin-bottom: 8px;
+    }
+
+    .slide-title {
+      font-size: 42px;
       font-weight: 800;
+      color: #111827;
       letter-spacing: -0.02em;
-      line-height: 1.15;
-      color: #FFFFFF;
-      margin-bottom: 16px;
+      line-height: 1.2;
+      margin-bottom: 12px;
     }
 
-    .hero-title span {
-      background: linear-gradient(135deg, #60A5FA, #93C5FD);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-subtitle {
-      font-size: 22px;
-      color: #94A3B8;
-      max-width: 1200px;
+    .slide-desc {
+      font-size: 20px;
+      color: #4B5563;
       line-height: 1.5;
-      margin-bottom: 40px;
+      margin-bottom: 36px;
+      max-width: 1400px;
     }
 
     /* Grid Layouts */
@@ -152,20 +165,20 @@
       gap: 32px;
     }
 
-    /* Cards */
-    .card {
-      background: #0E1526;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 32px 28px;
+    /* Cards matching BizIA Design System */
+    .ui-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
-      position: relative;
     }
 
-    .card.highlight {
-      border-color: rgba(59, 130, 246, 0.5);
-      background: #101A33;
+    .ui-card.highlight {
+      border: 2px solid #1D4ED8;
+      background: #F8FAFC;
     }
 
     .card-tag {
@@ -173,73 +186,113 @@
       font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #60A5FA;
-      background: rgba(37, 99, 235, 0.15);
+      color: #1D4ED8;
+      background: #EFF6FF;
+      border: 1px solid #DBEAFE;
       padding: 4px 10px;
       border-radius: 6px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
-    .card-title {
+    .card-tag.success {
+      color: #065F46;
+      background: #ECFDF5;
+      border-color: #A7F3D0;
+    }
+
+    .card-heading {
       font-size: 22px;
       font-weight: 700;
-      color: #FFFFFF;
-      margin-bottom: 12px;
+      color: #111827;
+      margin-bottom: 10px;
     }
 
-    .card-text {
-      font-size: 15px;
-      color: #94A3B8;
+    .card-body {
+      font-size: 16px;
+      color: #4B5563;
       line-height: 1.6;
     }
 
-    .card-stat {
-      font-size: 44px;
+    .stat-number {
+      font-size: 48px;
       font-weight: 800;
-      color: #60A5FA;
+      color: #1D4ED8;
       line-height: 1;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
-    .card-stat-label {
-      font-size: 14px;
-      color: #94A3B8;
-      font-weight: 500;
+    .stat-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #374151;
+      line-height: 1.4;
     }
 
-    /* Full Width Banner */
-    .banner {
-      background: #0E1526;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 24px 32px;
+    /* UI Mockup Card */
+    .mockup-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 15px;
+    }
+
+    .mockup-table th {
+      background: #F1F5F9;
+      color: #334155;
+      font-weight: 700;
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid #CBD5E1;
+    }
+
+    .mockup-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #E2E8F0;
+      color: #1E293B;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #ECFDF5;
+      color: #065F46;
+    }
+
+    /* Bottom Banner */
+    .bottom-banner {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 20px 28px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       margin-top: 24px;
     }
 
     .banner-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
-      color: #FFF;
-      margin-bottom: 4px;
+      color: #111827;
+      margin-bottom: 2px;
     }
 
-    .banner-desc {
+    .banner-sub {
       font-size: 14px;
-      color: #94A3B8;
+      color: #64748B;
     }
 
-    .banner-url {
+    .banner-link {
       font-size: 16px;
       font-weight: 700;
-      color: #38BDF8;
-      background: rgba(56, 189, 248, 0.1);
-      padding: 8px 16px;
+      color: #1D4ED8;
+      background: #EFF6FF;
+      padding: 8px 18px;
       border-radius: 8px;
-      border: 1px solid rgba(56, 189, 248, 0.2);
+      border: 1px solid #BFDBFE;
     }
 
     /* Footer */
@@ -248,294 +301,348 @@
       justify-content: space-between;
       align-items: center;
       padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid #E2E8F0;
       font-size: 14px;
       color: #64748B;
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
 
-  <!-- SLIDE 1 : COUVERTURE & VISION -->
+  <!-- SLIDE 1 : COUVERTURE & CHIFFRES CLES -->
   <div class="slide">
-    <div class="top-stripe"></div>
+    <div class="brand-stripe"></div>
     <div class="header">
-      <div class="brand">
-        <div class="logo-badge">BizIA</div>
-        <div class="brand-title">Intelligence Financière & Gestion Commerciale</div>
+      <div class="brand-box">
+        <div class="brand-logo">BizIA</div>
+        <div class="brand-meta">
+          <div class="brand-name">BizIA - Plateforme de Gestion Commerciale & Financière</div>
+          <div class="brand-subtitle">Conçue pour les commerces, grossistes et PME</div>
+        </div>
       </div>
-      <div class="tag-live">
-        <div class="tag-live-dot"></div>
-        PLATEFORME EN PRODUCTION
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        APPLICATION EN LIGNE : BIZIA.VERCEL.APP
       </div>
     </div>
 
-    <div class="content">
-      <h1 class="hero-title">Automatisation, Vision Multimodale<br>et <span>Pilotage de Trésorerie pour PME</span></h1>
-      <p class="hero-subtitle">
-        La première solution tout-en-un conçue pour éliminer la saisie manuelle grâce à l'OCR Gemini Vision, la commande vocale et la résilience hors-ligne PWA.
+    <div class="main-body">
+      <div class="section-tag">Présentation Officielle</div>
+      <h1 class="slide-title">Pilotez vos ventes, stocks et marges réelles en temps réel.</h1>
+      <p class="slide-desc">
+        BizIA combine la saisie par scan photo (Gemini OCR), la commande vocale au comptoir, 
+        la résilience hors-ligne (PWA) et le calcul précis de la rentabilité nette en FCFA.
       </p>
 
       <div class="grid-4">
-        <div class="card">
-          <div class="card-stat">44M+</div>
-          <div class="card-stat-label">PME cibles en Afrique subsaharienne</div>
+        <div class="ui-card">
+          <div class="stat-number">44M+</div>
+          <div class="stat-label">PME & commerces cibles en Afrique subsaharienne</div>
         </div>
-        <div class="card">
-          <div class="card-stat">2.4s</div>
-          <div class="card-stat-label">Scan OCR instantané de facture manuscrite</div>
+
+        <div class="ui-card">
+          <div class="stat-number">2.4s</div>
+          <div class="stat-label">Extraction instantanée d'un reçu ou bon manuscrit</div>
         </div>
-        <div class="card">
-          <div class="card-stat">100%</div>
-          <div class="card-stat-label">Fonctionnement hors-ligne garanti (PWA)</div>
+
+        <div class="ui-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Fonctionnement hors-ligne garanti (PWA)</div>
         </div>
-        <div class="card">
-          <div class="card-stat">0 FCFA</div>
-          <div class="card-stat-label">Saisie manuelle ou formation requise</div>
+
+        <div class="ui-card">
+          <div class="stat-number">0 FCFA</div>
+          <div class="stat-label">Saisie manuelle fastidieuse ou formation requise</div>
         </div>
       </div>
     </div>
 
     <div class="footer">
-      <div>bizia.vercel.app &bull; Application Web & Mobile PWA</div>
+      <div>BizIA &bull; Gestion Commerciale & Intelligence Financière</div>
       <div>1 / 5</div>
     </div>
   </div>
 
-  <!-- SLIDE 2 : LES 3 DEFIS TERRAIN -->
+  <!-- SLIDE 2 : LES DEFIS TERRAIN & REPONSES BIZIA -->
   <div class="slide">
-    <div class="top-stripe"></div>
+    <div class="brand-stripe"></div>
     <div class="header">
-      <div class="brand">
-        <div class="logo-badge">BizIA</div>
-        <div class="brand-title">Problématiques du Secteur & Réponses</div>
+      <div class="brand-box">
+        <div class="brand-logo">BizIA</div>
+        <div class="brand-meta">
+          <div class="brand-name">Problématiques Terrain & Réponses Concrètes</div>
+          <div class="brand-subtitle">Adapté aux réalités quotidiennes des boutiques et grossistes</div>
+        </div>
       </div>
-      <div class="tag-live">
-        <div class="tag-live-dot"></div>
+      <div class="live-badge">
+        <div class="live-dot"></div>
         INNOVATION TERRAIN
       </div>
     </div>
 
-    <div class="content">
-      <h1 class="hero-title">Pourquoi les logiciels classiques <span>échouent sur le terrain</span></h1>
-      <p class="hero-subtitle">BizIA résout directement les 3 points de friction majeurs des commerçants.</p>
+    <div class="main-body">
+      <div class="section-tag">Diagnostic & Solution</div>
+      <h1 class="slide-title">Pourquoi les logiciels classiques échouent sur le terrain</h1>
+      <p class="slide-desc">BizIA résout directement les 3 points de rupture historiques du commerce de proximité.</p>
 
       <div class="grid-3">
-        <div class="card">
+        <div class="ui-card">
           <div class="card-tag">Vision OCR</div>
-          <div class="card-title">1. Factures & Reçus Papiers</div>
-          <div class="card-text">
-            <b>Obstacle :</b> Bons de livraison manuscrits, reçus perdus, erreurs d'écriture quotidiennes.<br><br>
-            <b>Solution BizIA :</b> Une simple photo avec le smartphone suffit. L'IA extrait les articles, prix d'achat et met à jour le stock instantanément.
+          <div class="card-heading">1. Factures & Bons Manuscrits</div>
+          <div class="card-body">
+            <b>Le problème :</b> Bons de livraison papier, reçus volants et erreurs quotidiennes de recopiage.<br><br>
+            <b>La réponse BizIA :</b> Une photo suffit. Gemini extrait les articles, prix d'achat et quantités pour mettre à jour le stock en un instant.
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-tag">Hors-Ligne PWA</div>
-          <div class="card-title">2. Coupures d'Internet</div>
-          <div class="card-text">
-            <b>Obstacle :</b> Les ERP Cloud occidentaux bloquent le commerce dès que la 4G/WiFi est coupée.<br><br>
-            <b>Solution BizIA :</b> Mode PWA Offline-First. Enregistrement des ventes hors-ligne et synchronisation automatique dès le retour du réseau.
+        <div class="ui-card">
+          <div class="card-tag success">PWA Hors-Ligne</div>
+          <div class="card-heading">2. Coupures de Connexion</div>
+          <div class="card-body">
+            <b>Le problème :</b> Les logiciels SaaS occidentaux se bloquent dès que la 4G/WiFi est coupée.<br><br>
+            <b>La réponse BizIA :</b> Mode PWA Offline-First. Encaissez normalement sans réseau, synchronisation automatique dès le retour du signal.
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-tag">Rentabilité Réelle</div>
-          <div class="card-title">3. Calcul Réel des Marges</div>
-          <div class="card-text">
-            <b>Obstacle :</b> Confusion fréquente entre chiffre d'affaires et bénéfice net réel.<br><br>
-            <b>Solution BizIA :</b> Déduction automatique du coût des marchandises et charges pour un suivi de marge nette en direct en FCFA.
+        <div class="ui-card">
+          <div class="card-tag">Rentabilité</div>
+          <div class="card-heading">3. Calcul Réel des Marges</div>
+          <div class="card-body">
+            <b>Le problème :</b> Confusion courante entre chiffre d'affaires et bénéfice net.<br><br>
+            <b>La réponse BizIA :</b> Déduction automatique du coût des marchandises et charges pour un suivi clair du bénéfice net en FCFA.
           </div>
         </div>
       </div>
     </div>
 
     <div class="footer">
-      <div>bizia.vercel.app &bull; Résilience & Inclusion Financière</div>
+      <div>bizia.vercel.app &bull; Résilience Opérationnelle</div>
       <div>2 / 5</div>
     </div>
   </div>
 
-  <!-- SLIDE 3 : FONCTIONNALITES CLES -->
+  <!-- SLIDE 3 : SUITE FONCTIONNELLE COMPLETE -->
   <div class="slide">
-    <div class="top-stripe"></div>
+    <div class="brand-stripe"></div>
     <div class="header">
-      <div class="brand">
-        <div class="logo-badge">BizIA</div>
-        <div class="brand-title">Fonctionnalités de la Plateforme</div>
+      <div class="brand-box">
+        <div class="brand-logo">BizIA</div>
+        <div class="brand-meta">
+          <div class="brand-name">Modules Opérationnels de la Plateforme</div>
+          <div class="brand-subtitle">Une interface pensée pour la rapidité au comptoir et en gestion</div>
+        </div>
       </div>
-      <div class="tag-live">
-        <div class="tag-live-dot"></div>
+      <div class="live-badge">
+        <div class="live-dot"></div>
         SUITE COMPLETE
       </div>
     </div>
 
-    <div class="content">
-      <h1 class="hero-title">Une suite complète pensée pour la <span>rapidité d'exécution</span></h1>
-      <p class="hero-subtitle">Conçue pour un usage intensif au comptoir comme en direction générale.</p>
+    <div class="main-body">
+      <div class="section-tag">Fonctionnalités Clés</div>
+      <h1 class="slide-title">Une suite d'outils unifiée pour toute l'activité</h1>
+      <p class="slide-desc">Tous les leviers de croissance et de gestion centralisés sur une seule plateforme intuitive.</p>
 
       <div class="grid-3">
-        <div class="card">
-          <div class="card-tag">Gemini Vision</div>
-          <div class="card-title">Scanner de Reçus</div>
-          <div class="card-text">Extraction multimodale instantanée des articles, quantités et prix d'achat à partir d'une photo.</div>
+        <div class="ui-card">
+          <div class="card-tag">Vision AI</div>
+          <div class="card-heading">Scanner de Reçus</div>
+          <div class="card-body">Numérisation et extraction intelligente des factures d'achat et bons de livraison par photo.</div>
         </div>
 
-        <div class="card">
+        <div class="ui-card">
           <div class="card-tag">Voice AI</div>
-          <div class="card-title">Assistant Vocal</div>
-          <div class="card-text">Enregistrement fluide des ventes à la voix en français et dialectes locaux au comptoir.</div>
+          <div class="card-heading">Caisse & Commande Vocale</div>
+          <div class="card-body">Enregistrement rapide des ventes à la voix en français et dialectes locaux directement au comptoir.</div>
         </div>
 
-        <div class="card">
+        <div class="ui-card">
           <div class="card-tag">Stocks</div>
-          <div class="card-title">Catalogue & Alertes</div>
-          <div class="card-text">Suivi en temps réel des stocks, valorisation d'inventaire et alertes automatiques de réapprovisionnement.</div>
+          <div class="card-heading">Gestion de Stock & Alertes</div>
+          <div class="card-body">Inventaire en temps réel, valorisation automatique et alertes proactives de réapprovisionnement.</div>
         </div>
 
-        <div class="card">
-          <div class="card-tag">Analytics</div>
-          <div class="card-title">Simulateur de Marges</div>
-          <div class="card-text">Audit de rentabilité par produit, calcul du seuil d'équilibre et scénarios prédictifs de croissance.</div>
+        <div class="ui-card">
+          <div class="card-tag">Simulateur</div>
+          <div class="card-heading">Simulateur What-If</div>
+          <div class="card-body">Tableur interactif pour tester l'impact des variations de prix sur la marge brute et le bénéfice net.</div>
         </div>
 
-        <div class="card">
+        <div class="ui-card">
           <div class="card-tag">Pilotage</div>
-          <div class="card-title">Tableau de Bord</div>
-          <div class="card-text">Indicateurs de performance en temps réel : CA journalier, marge brute, panier moyen et bénéfice net.</div>
+          <div class="card-heading">Tableau de Bord & KPIs</div>
+          <div class="card-body">Indicateurs de performance en direct : CA journalier, marge réelle, panier moyen et top ventes.</div>
         </div>
 
-        <div class="card">
-          <div class="card-tag">Interopérabilité</div>
-          <div class="card-title">Import & Export PDF</div>
-          <div class="card-text">Glisser-déposer de tableurs Excel existants et génération de bilans financiers certifiés pour les banques.</div>
+        <div class="ui-card">
+          <div class="card-tag">Rapports</div>
+          <div class="card-heading">Export & Bilans PDF</div>
+          <div class="card-body">Génération en un clic de bilans certifiés conformes pour les banques et microfinances partenaires.</div>
         </div>
       </div>
     </div>
 
     <div class="footer">
-      <div>bizia.vercel.app &bull; Modules Opérationnels</div>
+      <div>bizia.vercel.app &bull; Modules Métiers</div>
       <div>3 / 5</div>
     </div>
   </div>
 
-  <!-- SLIDE 4 : ARCHITECTURE & SECURITE -->
+  <!-- SLIDE 4 : APERCU DE L'INTERFACE & SIMULATEUR -->
   <div class="slide">
-    <div class="top-stripe"></div>
+    <div class="brand-stripe"></div>
     <div class="header">
-      <div class="brand">
-        <div class="logo-badge">BizIA</div>
-        <div class="brand-title">Infrastructure & Sécurité</div>
+      <div class="brand-box">
+        <div class="brand-logo">BizIA</div>
+        <div class="brand-meta">
+          <div class="brand-name">Aperçu Réel de l'Expérience Utilisateur</div>
+          <div class="brand-subtitle">Démonstration du Simulateur de Marge et de l'Analyse Commerciale</div>
+        </div>
       </div>
-      <div class="tag-live">
-        <div class="tag-live-dot"></div>
-        HAUTE DISPONIBILITE
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        DONNEES REELLES FCFA
       </div>
     </div>
 
-    <div class="content">
-      <h1 class="hero-title">Une architecture <span>robuste, moderne et sécurisée</span></h1>
-      <p class="hero-subtitle">Pipeline asynchrone conçu pour la vitesse et le cloisonnement strict des données.</p>
+    <div class="main-body">
+      <div class="section-tag">Interface & Analytics</div>
+      <h1 class="slide-title">Clarté visuelle et simulation financière instantanée</h1>
+      <p class="slide-desc">Visualisez directement l'impact sur vos bénéfices réels avant toute décision commerciale.</p>
 
       <div class="grid-2">
-        <div class="card">
-          <div class="card-tag">Frontend & Client</div>
-          <div class="card-title">Interface & Expérience Utilisateur</div>
-          <div class="card-text">
-            &bull; <b>Next.js 14 App Router & TypeScript :</b> Rendu ultra-rapide et code typé de bout en bout.<br>
-            &bull; <b>Design System Sombre & FinTech :</b> Visibilité optimale en boutique et contrastes soignés.<br>
-            &bull; <b>Service Worker & IndexedDB :</b> Enregistrement local des ventes et réplication asynchrone.<br>
-            &bull; <b>Format PWA :</b> Installation directe sur smartphones iOS et Android sans passer par les stores.
-          </div>
+        <div class="ui-card highlight">
+          <div class="card-tag">Simulateur What-If</div>
+          <div class="card-heading">Tableau Interactif des Produits</div>
+          <table class="mockup-table">
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th>Prix Vente</th>
+                <th>Coût Achat</th>
+                <th>Marge %</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Smartphone 4G Pro</b></td>
+                <td>65 000 F</td>
+                <td>45 000 F</td>
+                <td><span class="badge-pill">+30.8%</span></td>
+                <td>En Stock (18)</td>
+              </tr>
+              <tr>
+                <td><b>Montre Connectée V2</b></td>
+                <td>20 000 F</td>
+                <td>12 000 F</td>
+                <td><span class="badge-pill">+40.0%</span></td>
+                <td>En Stock (34)</td>
+              </tr>
+              <tr>
+                <td><b>Calculatrice Scientifique</b></td>
+                <td>6 000 F</td>
+                <td>3 500 F</td>
+                <td><span class="badge-pill">+41.7%</span></td>
+                <td>En Stock (45)</td>
+              </tr>
+              <tr>
+                <td><b>Écouteurs Sans-Fil TWS</b></td>
+                <td>9 500 F</td>
+                <td>5 000 F</td>
+                <td><span class="badge-pill">+47.4%</span></td>
+                <td>En Stock (26)</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="card highlight">
-          <div class="card-tag">Backend & Intelligence</div>
-          <div class="card-title">Serveur & Modèles IA</div>
-          <div class="card-text">
-            &bull; <b>FastAPI (Python) :</b> API asynchrone performante hébergée sous infrastructure Cloud.<br>
-            &bull; <b>Supabase PostgreSQL & RLS :</b> Cloisonnement strict des données par entreprise (Row Level Security).<br>
-            &bull; <b>Google Gemini 3.5 & 3.8 Flash :</b> Pipeline de vision multimodale avec basculement automatique.<br>
-            &bull; <b>Qualité & Tests :</b> 79 tests automatisés validés en continu.
+        <div class="ui-card">
+          <div class="card-tag">Architecture & Sécurité</div>
+          <div class="card-heading">Standards Technologiques</div>
+          <div class="card-body" style="font-size: 15px;">
+            &bull; <b>Frontend :</b> Next.js 14 App Router, React, Tailwind CSS, TypeScript.<br><br>
+            &bull; <b>Backend API :</b> FastAPI asynchrone ultra-rapide sous infrastructure Cloud.<br><br>
+            &bull; <b>Base de Données :</b> Supabase PostgreSQL avec Row Level Security (RLS).<br><br>
+            &bull; <b>Intelligence Artificielle :</b> Google Gemini 3.5 & 3.8 Flash avec basculement automatique.<br><br>
+            &bull; <b>Mode PWA :</b> Installation directe sur smartphones iOS / Android.
           </div>
-        </div>
-      </div>
-
-      <div class="banner">
-        <div>
-          <div class="banner-title">Cloisonnement & Confidentialité des Données</div>
-          <div class="banner-desc">Toutes les transactions et inventaires sont chiffrés en transit (TLS 1.3) et au repos avec sauvegardes quotidiennes.</div>
         </div>
       </div>
     </div>
 
     <div class="footer">
-      <div>bizia.vercel.app &bull; Standards Industriels</div>
+      <div>bizia.vercel.app &bull; Interface & Performance</div>
       <div>4 / 5</div>
     </div>
   </div>
 
-  <!-- SLIDE 5 : MODELE ECONOMIQUE & ACCES -->
+  <!-- SLIDE 5 : OFFRES & DEPLOIEMENT -->
   <div class="slide">
-    <div class="top-stripe"></div>
+    <div class="brand-stripe"></div>
     <div class="header">
-      <div class="brand">
-        <div class="logo-badge">BizIA</div>
-        <div class="brand-title">Modèle Économique & Accès</div>
+      <div class="brand-box">
+        <div class="brand-logo">BizIA</div>
+        <div class="brand-meta">
+          <div class="brand-name">Modèle Économique & Accès à la Plateforme</div>
+          <div class="brand-subtitle">Une tarification transparente et adaptée à chaque commerçant</div>
+        </div>
       </div>
-      <div class="tag-live">
-        <div class="tag-live-dot"></div>
+      <div class="live-badge">
+        <div class="live-dot"></div>
         ACCESSIBILITE
       </div>
     </div>
 
-    <div class="content">
-      <h1 class="hero-title">Une tarification transparente <span>accessible à chaque commerçant</span></h1>
-      <p class="hero-subtitle">Du marchand individuel à la chaîne de distribution régionale.</p>
+    <div class="main-body">
+      <div class="section-tag">Offres & Déploiement</div>
+      <h1 class="slide-title">Une solution immédiatement accessible et rentable</h1>
+      <p class="slide-desc">Des plans dimensionnés pour accompagner la croissance de chaque commerce.</p>
 
       <div class="grid-3">
-        <div class="card">
-          <div class="card-tag">Freemium</div>
-          <div class="card-title">Offre Découverte</div>
-          <div class="card-text">
-            <b style="font-size: 20px; color: #FFF;">0 FCFA / mois</b><br><br>
-            &bull; 50 scans OCR / mois<br>
+        <div class="ui-card">
+          <div class="card-tag">Découverte</div>
+          <div class="card-heading">Plan Gratuit</div>
+          <div class="card-body">
+            <b style="font-size: 24px; color: #111827;">0 FCFA</b><br><br>
+            &bull; 50 scans de reçus / mois<br>
             &bull; Enregistrement vocal des ventes<br>
-            &bull; Mode PWA hors-ligne inclus<br>
-            &bull; Jusqu'à 200 produits en catalogue
+            &bull; Mode hors-ligne PWA inclus<br>
+            &bull; Jusqu'à 200 produits
           </div>
         </div>
 
-        <div class="card highlight">
-          <div class="card-tag">Recommandé</div>
-          <div class="card-title">Offre Professionnelle</div>
-          <div class="card-text">
-            <b style="font-size: 20px; color: #60A5FA;">5 000 FCFA / mois</b><br><br>
+        <div class="ui-card highlight">
+          <div class="card-tag success">Recommandé</div>
+          <div class="card-heading">Plan Professionnel</div>
+          <div class="card-body">
+            <b style="font-size: 24px; color: #1D4ED8;">5 000 FCFA / mois</b><br><br>
             &bull; <b>Scans OCR illimités</b><br>
             &bull; Multi-caissiers & utilisateurs<br>
             &bull; Bilans financiers PDF exportables<br>
-            &bull; Alertes de marge et de stock par IA
+            &bull; Alertes de stock & marge par IA
           </div>
         </div>
 
-        <div class="card">
+        <div class="ui-card">
           <div class="card-tag">Institutionnel</div>
-          <div class="card-title">Partenariats Bancaires</div>
-          <div class="card-text">
-            <b style="font-size: 20px; color: #FFF;">Sur Mesure</b><br><br>
+          <div class="card-heading">Partenariats Bancaires</div>
+          <div class="card-body">
+            <b style="font-size: 24px; color: #111827;">Sur Mesure</b><br><br>
             &bull; API de certification des flux PME<br>
             &bull; Évaluation du risque de crédit<br>
-            &bull; Connexion microfinance & banques
+            &bull; Accompagnement à la bancarisation
           </div>
         </div>
       </div>
 
-      <div class="banner">
+      <div class="bottom-banner">
         <div>
-          <div class="banner-title">Tester la solution dès maintenant</div>
-          <div class="banner-desc">L'application complète est déployée et fonctionnelle en direct.</div>
+          <div class="banner-title">Accéder à la plateforme en direct</div>
+          <div class="banner-sub">Testez l'application complète sur ordinateur ou smartphone dès maintenant.</div>
         </div>
-        <div class="banner-url">https://bizia.vercel.app</div>
+        <div class="banner-link">https://bizia.vercel.app</div>
       </div>
     </div>
 
