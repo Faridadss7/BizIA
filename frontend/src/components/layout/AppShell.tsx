@@ -9,6 +9,7 @@ import { ApiStatusBanner } from "@/components/layout/ApiStatusBanner";
 import { AuthGuard } from "@/components/layout/AuthGuard";
 import { CompanySelector } from "@/components/layout/CompanySelector";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { NetworkStatusIndicator } from "@/components/layout/NetworkStatusIndicator";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -16,6 +17,7 @@ const NAV_LINKS = [
   ["/", "Accueil"],
   ["/produits", "Produits"],
   ["/ventes", "Ventes"],
+  ["/scanner", "Scanner"],
   ["/import", "Import"],
   ["/simulateur", "Simulateur Excel"],
   ["/dashboard", "Dashboard"],
@@ -28,7 +30,7 @@ const GUEST_NAV_LINKS = [
 ] as const;
 
 const AUTH_ROUTES = ["/connexion", "/inscription", "/mot-de-passe-oublie"];
-const PROTECTED_ROUTES = ["/produits", "/ventes", "/import", "/simulateur", "/dashboard", "/chat"];
+const PROTECTED_ROUTES = ["/produits", "/ventes", "/scanner", "/import", "/simulateur", "/dashboard", "/chat"];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -80,6 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           )}
 
           <div className="header__right">
+            <NetworkStatusIndicator />
             <ThemeToggle />
 
             <div className="header__auth">

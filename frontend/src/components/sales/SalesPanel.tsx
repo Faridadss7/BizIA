@@ -10,6 +10,7 @@ import { AppPageLayout } from "@/components/layout/AppPageLayout";
 import { Spinner } from "@/components/ui/Spinner";
 import { useCompany } from "@/contexts/CompanyContext";
 import { api } from "@/services/api";
+import { addOfflineSale } from "@/services/offlineSync";
 import type { Product, Sale } from "@/types";
 import { formatCurrency, formatDate } from "@/utils/format";
 
@@ -56,7 +57,11 @@ export function SalesPanel() {
       setItems(sales.items ?? []);
       setProducts(catalog.items ?? []);
     } catch (err) {
-      setLoadError(err instanceof Error ? err.message : "Impossible de charger les ventes.");
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        setLoadError("Mode hors-ligne : affichage des données locales.");
+      } else {
+        setLoadError(err instanceof Error ? err.message : "Impossible de charger les ventes.");
+      }
     } finally {
       setLoading(false);
     }
@@ -99,6 +104,28 @@ export function SalesPanel() {
     setError(null);
     setSuccess(null);
 
+    const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
+
+    if (isOffline) {
+      const prodName = products.find((p) => p.sku === form.product_sku)?.name || form.product_sku;
+      addOfflineSale({
+        product_sku: form.product_sku.trim(),
+        product_name: prodName,
+        quantity: form.quantity,
+        unit_price: form.unit_price,
+        total_amount: form.quantity * form.unit_price,
+        sold_at: form.sold_at ? new Date(form.sold_at).toISOString() : new Date().toISOString(),
+        channel: form.channel || "Boutique",
+      });
+
+      setSuccess(
+        `Vente enregistrée en mode hors-ligne : ${form.quantity} × ${formatCurrency(form.unit_price, currentCompany.currency || "FCFA")}. Elle sera synchronisée au retour du réseau.`
+      );
+      setForm(EMPTY);
+      setSubmitting(false);
+      return;
+    }
+
     try {
       await api.sales.create({
         product_sku: form.product_sku.trim(),
@@ -117,7 +144,21 @@ export function SalesPanel() {
       setForm(EMPTY);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'enregistrement.");
+      // Offline fallback when network drops
+      const prodName = products.find((p) => p.sku === form.product_sku)?.name || form.product_sku;
+      addOfflineSale({
+        product_sku: form.product_sku.trim(),
+        product_name: prodName,
+        quantity: form.quantity,
+        unit_price: form.unit_price,
+        total_amount: form.quantity * form.unit_price,
+        sold_at: form.sold_at ? new Date(form.sold_at).toISOString() : new Date().toISOString(),
+        channel: form.channel || "Boutique",
+      });
+      setSuccess(
+        `Connexion instable : vente sauvegardée localement (${form.quantity}x ${prodName}). Elle sera synchronisée automatiquement.`
+      );
+      setForm(EMPTY);
     } finally {
       setSubmitting(false);
     }
@@ -128,6 +169,15 @@ export function SalesPanel() {
       eyebrow={`Transactions • ${currentCompany.name}`}
       title="Ventes"
       description={`Enregistrez et suivez les ventes de ${currentCompany.name}. Données strictement rattachées à votre entreprise courante.`}
+      actions={
+        <Link href="/scanner" className="btn btn--outline btn--sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          Scanner un reçu
+        </Link>
+      }
     >
       <div className="page-grid">
         <form className="card card--glass form-card" onSubmit={handleSubmit}>

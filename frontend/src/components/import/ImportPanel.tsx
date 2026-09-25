@@ -11,7 +11,8 @@ import { AppPageLayout } from "@/components/layout/AppPageLayout";
 import { Spinner } from "@/components/ui/Spinner";
 import { api } from "@/services/api";
 import type { IngestionPreview, IngestionResult } from "@/types";
-import { FILE_INPUT_ACCEPT, formatLabel, isAcceptedDocument } from "@/utils/fileFormats";
+import { ReceiptScanner } from "@/components/scanner/ReceiptScanner";
+import { isAcceptedDocument, FILE_INPUT_ACCEPT, formatLabel } from "@/utils/fileFormats";
 import { getApiErrorMessage } from "@/utils/apiError";
 
 function plural(count: number, singular: string, plural = `${singular}s`): string {
@@ -41,6 +42,7 @@ function describeImport(result: IngestionResult): string {
 
 export function ImportPanel() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [activeTab, setActiveTab] = useState<"files" | "scanner">("files");
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -103,8 +105,33 @@ export function ImportPanel() {
     <AppPageLayout
       eyebrow="Données"
       title="Import & export"
+      description="Importez vos catalogues, fichiers de ventes ou numérisez vos reçus et factures papier avec l'IA."
     >
-      <div className="card card--glass import-zone">
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem" }}>
+        <button
+          type="button"
+          className={`btn btn--sm ${activeTab === "files" ? "btn--primary" : "btn--outline"}`}
+          onClick={() => setActiveTab("files")}
+        >
+          Fichiers & Tableurs (CSV, Excel, PDF)
+        </button>
+        <button
+          type="button"
+          className={`btn btn--sm ${activeTab === "scanner" ? "btn--primary" : "btn--outline"}`}
+          onClick={() => setActiveTab("scanner")}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          Scanner Reçu / Facture (Caméra OCR)
+        </button>
+      </div>
+
+      {activeTab === "scanner" ? (
+        <ReceiptScanner />
+      ) : (
+        <div className="card card--glass import-zone">
         <div
           className={`dropzone ${dragging ? "dropzone--active" : ""} ${file ? "dropzone--has-file" : ""}`}
           onDragOver={(e) => {
@@ -190,6 +217,7 @@ export function ImportPanel() {
           )}
         </div>
       </div>
+      )}
 
       {preview && (
         <ImportPreview
