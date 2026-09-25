@@ -1,0 +1,79 @@
+================================================================================
+                    BIZIA - PROTOCOLE & GUIDE DE TEST COMPLET
+                    GROUPE : FATA NEXUS
+================================================================================
+
+Membres de l'Equipe :
+- ADISSO Yélognissè Babatoundé Farid (Lead IA, Data & Backend)
+- AHOLOU Houéfa Immaculée Christelle (Lead Frontend & UI/UX)
+- ESSEGNON Katchifê Olouwa Bienvenu (Lead QA, Tests & Coordination)
+- HOUEGBE Uriel (Database & Backend)
+
+Plateforme en Production : https://bizia.vercel.app
+Serveur Backend : https://bizia-backend.onrender.com
+
+--------------------------------------------------------------------------------
+CONTENU DU KIT DE TEST :
+--------------------------------------------------------------------------------
+1. ETAPES_DE_TEST_BIZIA.txt          -> Ce fichier d'instructions
+2. catalogue_import_test.csv        -> Fichier CSV de 8 produits pour l'import
+3. facture_test_fournisseur.jpg     -> Facture fournisseur pour tester l'OCR
+4. BizIA_Presentation_Officielle.pdf -> Diaporama officiel (8 slides)
+
+--------------------------------------------------------------------------------
+ETAPES DE TEST & DEMONSTRATION PAS A PAS :
+--------------------------------------------------------------------------------
+
+ETAPE 1 : SIMULATEUR WHAT-IF & MARGES (Sans connexion)
+------------------------------------------------------
+- URL : https://bizia.vercel.app/ ou https://bizia.vercel.app/simulateur
+- Action : Ajustez le curseur de variation de prix (+10%, +15%).
+- Resultat attendu : Recalcul instantane de la marge brute, du chiffre d'affaires
+  et du benefice net en FCFA.
+
+ETAPE 2 : SCANNER OCR DE FACTURE (Gemini Vision)
+------------------------------------------------
+- URL : https://bizia.vercel.app/scanner
+- Action : Glissez le fichier "facture_test_fournisseur.jpg" dans la zone de scan
+  (ou prenez une photo directe avec votre smartphone) et cliquez sur "Analyser".
+- Resultat attendu en ~2.4s : Extraction automatique des articles (Ciment, Fer a
+  beton, Riz, Huile, Lait, Sucre), des quantites et des prix d'achat, avec
+  mise a jour du stock en 1 clic.
+
+ETAPE 3 : IMPORTATION INTELLIGENTE CSV & EXCEL
+----------------------------------------------
+- URL : https://bizia.vercel.app/import
+- Action : Glissez le fichier "catalogue_import_test.csv" et confirmez.
+- Resultat attendu : Mapping automatique des colonnes (SKU, Designation, Prix
+  d'achat, Prix de vente, Quantite) et integration directe au catalogue.
+
+ETAPE 4 : CAISSE & COMMANDE VOCALE
+----------------------------------
+- URL : https://bizia.vercel.app/chat
+- Action : Cliquez sur le Microphone et dites distinctement :
+  "Vendu 3 cartons de lait Bonnet Rouge et 2 sacs de riz 25kg a M. Dossou"
+  (ou tapez le texte dans le champ de discussion).
+- Resultat attendu : Detection de l'intention, calcul du total (71 000 FCFA),
+  calcul de la marge nette (+15 000 FCFA) et validation du destockage.
+
+ETAPE 5 : TABLEAU DE BORD & BILAN FINANCIER PDF
+-----------------------------------------------
+- URL : https://bizia.vercel.app/dashboard
+- Action : Consultez les indicateurs de performance (CA, marge nette, panier moyen)
+  et cliquez sur "Exporter le Bilan PDF".
+- Resultat attendu : Telechargement d'un rapport financier officiel certifie.
+
+ETAPE 6 : TEST DU MODE PWA HORS-LIGNE
+-------------------------------------
+- Action : Sur smartphone, installez l'application sur l'ecran d'accueil.
+  Coupez la connexion internet (Mode Avion), enregistrez une vente, puis
+  reactivez la connexion.
+- Resultat attendu : La vente reste stockee en local sur IndexedDB et se
+  synchronise automatiquement vers la base PostgreSQL des le retour du reseau.
+
+--------------------------------------------------------------------------------
+LIENS RAPIDES :
+- Application Web : https://bizia.vercel.app
+- Presentation PDF : https://bizia.vercel.app/BizIA_Presentation_Officielle.pdf
+- Mode Plein Ecran Pitch : https://bizia.vercel.app/pitch
+================================================================================
