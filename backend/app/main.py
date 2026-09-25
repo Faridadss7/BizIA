@@ -17,13 +17,22 @@ app = FastAPI(
     version="0.2.0",
 )
 
-_origins = settings.cors_origin_list
+_allowed_origins = [
+    "https://bizia.vercel.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+if settings.cors_origins and settings.cors_origins != "*":
+    _allowed_origins.extend(settings.cors_origin_list)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_origins,
-    allow_credentials=_origins != ["*"],
+    allow_origins=_allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app|https://.*\.onrender\.com|http://localhost:\d+|http://127\.0\.0\.1:\d+",
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 app.include_router(api_router, prefix="/api")

@@ -86,8 +86,18 @@ export function SiteFooter() {
               </li>
             )}
             <li>
+              <a href="tel:0141822125" className="site-footer__link" style={{ fontWeight: 600, color: "var(--color-primary)" }}>
+                📞 01 41 82 21 25 (Appel &amp; Support)
+              </a>
+            </li>
+            <li>
+              <a href="https://wa.me/2290141822125" target="_blank" rel="noopener noreferrer" className="site-footer__link">
+                💬 WhatsApp Support
+              </a>
+            </li>
+            <li>
               <a href={`mailto:${CONTACT_EMAIL}`} className="site-footer__link">
-                Nous écrire
+                ✉️ {CONTACT_EMAIL}
               </a>
             </li>
           </ul>

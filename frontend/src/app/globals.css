@@ -1,7 +1,7 @@
 :root {
   color-scheme: light;
 
-  /* Couleurs — FinTech Sobre & Éditoriale (aucun dégradé violet / orbe) */
+  /* Couleurs — FinTech Sobre & Éditoriale (Mode Clair) */
   --color-primary: #1d4ed8;
   --color-primary-hover: #1e40af;
   --color-secondary: #0f766e;
@@ -31,20 +31,212 @@
   --space-xl: 1.75rem;
   --space-2xl: 2.5rem;
 
-  /* Rayons nets et précis (4px à 6px max) */
+  /* Rayons nets et précis */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
 
   /* Ombres ultra-légères et fonctionnelles */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
 
   /* Layout */
   --header-height: 56px;
   --max-width: 1080px;
   --max-width-auth: 420px;
+}
+
+/* ═══════════════════════════════════════════
+   MODE SOMBRE (Dark Mode — Theme System)
+   ═══════════════════════════════════════════ */
+[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  --color-primary: #3b82f6;
+  --color-primary-hover: #60a5fa;
+  --color-secondary: #14b8a6;
+  --color-accent: #38bdf8;
+  --color-bg: #090d16;
+  --color-bg-elevated: #0f172a;
+  --color-surface: #0f172a;
+  --color-surface-hover: #1e293b;
+  --color-border: #1e293b;
+  --color-border-focus: #3b82f6;
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.12);
+  --color-info: #0ea5e9;
+  --color-info-bg: rgba(14, 165, 233, 0.12);
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.6);
+}
+
+/* Adaptations spécifiques Mode Sombre */
+[data-theme="dark"] body {
+  background-color: #090d16;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .header {
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid #1e293b;
+}
+
+[data-theme="dark"] .bizia-logo__name {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .company-selector__trigger {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .company-selector__name {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .company-selector__dropdown {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .company-selector__item {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .company-selector__item:hover {
+  background: #1e293b;
+}
+
+[data-theme="dark"] .header__user-pill {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .header__user {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .header__logout {
+  background: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .header__logout:hover {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .header__link {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .header__link:hover {
+  color: #f8fafc;
+  background: #1e293b;
+}
+
+[data-theme="dark"] .header__link--active {
+  color: #60a5fa !important;
+  background: rgba(59, 130, 246, 0.18) !important;
+}
+
+[data-theme="dark"] .card {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+
+[data-theme="dark"] .btn--outline {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #60a5fa !important;
+}
+
+[data-theme="dark"] .btn--outline:hover:not(:disabled) {
+  background: #1e293b !important;
+  border-color: #3b82f6 !important;
+  color: #93c5fd !important;
+}
+
+[data-theme="dark"] .btn--secondary {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .btn--secondary:hover:not(:disabled) {
+  background: #334155 !important;
+}
+
+[data-theme="dark"] .site-footer {
+  background: #090d16;
+  border-top-color: #1e293b;
+}
+
+/* Bouton bascule de thème */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-toggle-btn:hover {
+  color: var(--color-text);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+[data-theme="dark"] .theme-toggle-btn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f59e0b;
+}
+
+/* ═══════════════════════════════════════════
+   MICRO-INTERACTIONS APPLE & LINEAR
+   ═══════════════════════════════════════════ */
+.btn {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+
+.card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
 }
 
 * {
@@ -5099,4 +5291,104 @@ label {
   border-color: var(--color-primary, #2563eb);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVITÉ MAXIMALE (Mobile, Tablette, Desktop)
+   ═══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .header__links {
+    display: none !important;
+  }
+
+  .header__menu-btn {
+    display: flex !important;
+  }
+
+  .header__mobile-drawer {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.75rem 1rem;
+    gap: 4px;
+    box-shadow: var(--shadow-lg);
+    z-index: 99;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .header__mobile-drawer--open {
+    max-height: 400px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  [data-theme="dark"] .header__mobile-drawer {
+    background: rgba(15, 23, 42, 0.98);
+    border-bottom-color: #1e293b;
+  }
+
+  .header__mobile-drawer .header__link {
+    width: 100%;
+    height: 42px;
+    justify-content: flex-start;
+    padding: 0 1rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+
+  .company-selector__name {
+    max-width: 90px;
+  }
+
+  .landing-hero__grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .header__inner {
+    padding: 0 0.75rem;
+    gap: 8px;
+  }
+
+  .header__user-pill {
+    padding: 0 4px;
+  }
+
+  .header__user {
+    display: none;
+  }
+
+  .company-selector__badge {
+    display: none;
+  }
+
+  .company-selector__trigger {
+    padding: 0 6px;
+  }
+
+  .bizia-logo__tagline {
+    display: none;
+  }
+
+  .main {
+    padding: 1rem 0.75rem;
+  }
+
+  .site-footer__inner {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+}
+
 
