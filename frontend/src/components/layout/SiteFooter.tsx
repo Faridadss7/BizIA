@@ -91,14 +91,13 @@ export function SiteFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="site-footer__link"
-                style={{ fontWeight: 600, color: "#1D4ED8" }}
               >
-                💬 Nous écrire sur WhatsApp (01 41 82 21 25)
+                Nous écrire
               </a>
             </li>
             <li>
               <a href="tel:0141822125" className="site-footer__link">
-                📞 Nous appeler : 01 41 82 21 25
+                01 41 82 21 25
               </a>
             </li>
           </ul>
