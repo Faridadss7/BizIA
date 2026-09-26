@@ -182,7 +182,20 @@ export function ImportPanel() {
           ))}
         </div>
 
-        {error && <Alert variant="error">{error}</Alert>}
+        {error && (
+          <Alert variant="error">
+            <div>
+              <p style={{ margin: "0 0 0.5rem" }}>{error}</p>
+              {(error.includes("Jeton") || error.includes("authentification") || error.includes("Session") || error.includes("connecter")) && (
+                <div style={{ marginTop: "0.5rem" }}>
+                  <a href="/connexion" className="btn btn--primary btn--sm" style={{ display: "inline-block" }}>
+                    Se connecter à BizIA
+                  </a>
+                </div>
+              )}
+            </div>
+          </Alert>
+        )}
 
         {result && (
           <Alert variant={addedRows ? "success" : "warning"} title={result.filename}>

@@ -236,7 +236,18 @@ export function ReceiptScanner({ onSuccess, standalone = false }: ReceiptScanner
 
       {error && (
         <div style={{ marginBottom: "1rem" }}>
-          <Alert variant="error">{error}</Alert>
+          <Alert variant="error">
+            <div>
+              <p style={{ margin: "0 0 0.5rem" }}>{error}</p>
+              {(error.includes("Jeton") || error.includes("authentification") || error.includes("Session") || error.includes("connecter")) && (
+                <div style={{ marginTop: "0.5rem" }}>
+                  <a href="/connexion" className="btn btn--primary btn--sm" style={{ display: "inline-block" }}>
+                    Se connecter à BizIA
+                  </a>
+                </div>
+              )}
+            </div>
+          </Alert>
         </div>
       )}
 
