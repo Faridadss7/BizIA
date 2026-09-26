@@ -15,14 +15,32 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const STORAGE_KEY_ACTIVE = "bizia_active_company_id";
 
-const DEFAULT_FALLBACK_COMPANY: Company = {
-  id: "default-comp",
-  name: "Mon Entreprise",
-  currency: "FCFA",
-  category: "Commerce Général",
-  role: "owner",
-  created_at: new Date().toISOString(),
-};
+const DEMO_COMPANIES_PRESET: Company[] = [
+  {
+    id: "default-comp",
+    name: "Mon Entreprise (Principal)",
+    currency: "FCFA",
+    category: "Commerce Général",
+    role: "owner",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "demo-electronique",
+    name: "Boutique High-Tech Cotonou",
+    currency: "FCFA",
+    category: "Électronique & Informatique",
+    role: "owner",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "demo-grossiste",
+    name: "Grossiste Alimentaire Dantokpa",
+    currency: "FCFA",
+    category: "Distribution & Agroalimentaire",
+    role: "owner",
+    created_at: new Date().toISOString(),
+  },
+];
 
 type CompanyContextValue = {
   companies: Company[];
@@ -40,13 +58,16 @@ const CompanyContext = createContext<CompanyContextValue | null>(null);
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
-  const [companies, setCompanies] = useState<Company[]>([DEFAULT_FALLBACK_COMPANY]);
-  const [currentCompanyId, setCurrentCompanyId] = useState<string>(DEFAULT_FALLBACK_COMPANY.id);
+  const [companies, setCompanies] = useState<Company[]>(DEMO_COMPANIES_PRESET);
+  const [currentCompanyId, setCurrentCompanyId] = useState<string>(DEMO_COMPANIES_PRESET[0].id);
   const [loading, setLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const refreshCompanies = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setCompanies(DEMO_COMPANIES_PRESET);
+      return;
+    }
     setLoading(true);
     try {
       const res = await api.companies.list();
@@ -62,27 +83,27 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
             localStorage.setItem(STORAGE_KEY_ACTIVE, items[0].id);
           }
         }
+      } else {
+        setCompanies(DEMO_COMPANIES_PRESET);
       }
     } catch {
       // Garde les données locales / par défaut en cas d'erreur réseau
+      setCompanies(DEMO_COMPANIES_PRESET);
     } finally {
       setLoading(false);
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      void refreshCompanies();
-    } else {
-      setCompanies([DEFAULT_FALLBACK_COMPANY]);
-      setCurrentCompanyId(DEFAULT_FALLBACK_COMPANY.id);
-    }
+    void refreshCompanies();
   }, [isAuthenticated, refreshCompanies]);
 
   const switchCompany = useCallback((companyId: string) => {
     setCurrentCompanyId(companyId);
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_ACTIVE, companyId);
+      // Dispatch storage event so other components know the company changed
+      window.dispatchEvent(new Event("storage"));
     }
   }, []);
 
@@ -128,7 +149,7 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   const closeCreateModal = useCallback(() => setIsCreateModalOpen(false), []);
 
   const currentCompany = useMemo(() => {
-    return companies.find((c) => c.id === currentCompanyId) ?? companies[0] ?? DEFAULT_FALLBACK_COMPANY;
+    return companies.find((c) => c.id === currentCompanyId) ?? companies[0] ?? DEMO_COMPANIES_PRESET[0];
   }, [companies, currentCompanyId]);
 
   const value = useMemo(

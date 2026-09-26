@@ -3,7 +3,19 @@
 import type { AuthSession, LoginPayload, SignupPayload, User } from "@/types/auth";
 
 const SESSION_KEY = "bizia_auth_session";
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const getAuthApiBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== "") {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== "undefined") {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      return "https://bizia-backend.onrender.com";
+    }
+  }
+  return "https://bizia-backend.onrender.com";
+};
+
+const API_URL = getAuthApiBaseUrl();
 
 export class AuthServiceError extends Error {
   code: "email_already_used" | "invalid_credentials" | "network_error";
@@ -66,10 +78,22 @@ async function authRequest<T>(path: string, init: RequestInit): Promise<T> {
   }
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const code = data?.error?.code;
+    const rawMsg = data?.error?.message ?? data?.detail ?? data?.message ?? response.statusText;
+    const msg =
+      typeof rawMsg === "string"
+        ? rawMsg
+        : Array.isArray(rawMsg)
+          ? rawMsg[0]?.msg || "Informations de formulaire invalides."
+          : "Authentification impossible.";
+
+    const isEmailUsed =
+      response.status === 409 ||
+      data?.error?.code === "email_already_used" ||
+      /déjà utilisé|already registered|already in use/i.test(msg);
+
     throw new AuthServiceError(
-      code === "email_already_used" ? code : "invalid_credentials",
-      data?.error?.message ?? "Authentification impossible.",
+      isEmailUsed ? "email_already_used" : "invalid_credentials",
+      msg,
     );
   }
   return data as T;

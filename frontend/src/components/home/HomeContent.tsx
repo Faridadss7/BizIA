@@ -3,40 +3,53 @@
 import Link from "next/link";
 import { LiveProductShowcase } from "@/components/home/LiveProductShowcase";
 import { useAuth } from "@/contexts/AuthContext";
-import { IconPackage, IconTrending, IconFile } from "@/components/icons/Icons";
+import { IconPackage, IconTrending, IconFile, IconSparkles } from "@/components/icons/Icons";
 
 export function HomeContent() {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, isLoading, isAuthenticated, login } = useAuth();
 
   return (
-    <div className="landing" style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem 1.5rem" }}>
+    <div className="landing" style={{ maxWidth: 1240, margin: "0 auto", padding: "1.5rem 1.25rem 3.5rem" }}>
       {/* ── Section Hero Principale ── */}
-      <section style={{ padding: "3rem 0 4rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "3.5rem", alignItems: "center" }}>
-          
+      <section style={{ padding: "2.5rem 0 3.5rem" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+            gap: "3rem",
+            alignItems: "center",
+          }}
+        >
           {/* Colonne Texte & Appel à l'action */}
           <div>
             <div
               style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
                 fontSize: "0.75rem",
                 fontWeight: 700,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
-                color: "#1D4ED8",
-                marginBottom: "0.75rem",
+                color: "var(--color-primary, #1D4ED8)",
+                backgroundColor: "var(--color-primary-subtle, rgba(29, 78, 216, 0.08))",
+                padding: "0.35rem 0.75rem",
+                borderRadius: "9999px",
+                marginBottom: "1rem",
               }}
             >
-              Gestion Commerciale &amp; Analyse Financière
+              <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "var(--color-primary, #1D4ED8)" }} />
+              Gestion Commerciale &amp; Analyse Financière IA
             </div>
 
             <h1
               style={{
-                fontSize: "2.1rem",
-                fontWeight: 750,
-                lineHeight: 1.25,
-                color: "#111827",
-                letterSpacing: "-0.025em",
-                margin: "0 0 1rem",
+                fontSize: "2.35rem",
+                fontWeight: 800,
+                lineHeight: 1.2,
+                color: "var(--color-text, #111827)",
+                letterSpacing: "-0.03em",
+                margin: "0 0 1.15rem",
               }}
             >
               Pilotez vos ventes, stocks et marges en temps réel.
@@ -44,79 +57,110 @@ export function HomeContent() {
 
             <p
               style={{
-                fontSize: "1rem",
+                fontSize: "1.05rem",
                 lineHeight: 1.6,
-                color: "#4B5563",
-                marginBottom: "1.75rem",
+                color: "var(--color-text-muted, #4B5563)",
+                marginBottom: "2rem",
               }}
             >
-              Conçu pour les commerçants, grossistes et PME : encaissez rapidement vos ventes,
-              simulez vos bénéfices avec le tableur What-If et éditez vos bilans financiers officiels.
+              Conçu pour les commerçants, grossistes et PME africaines : encaissez vos ventes au comptoir ou par dictée vocale, scannez vos factures avec l&apos;IA Vision, simulez vos bénéfices avec le tableur What-If et éditez vos bilans financiers officiels en FCFA.
             </p>
 
-            {/* Piliers fonctionnels sobres */}
+            {/* Grille de 4 Piliers Clés */}
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
                 gap: "0.85rem",
-                padding: "1rem",
-                background: "#F9FAFB",
-                border: "1px solid #E5E7EB",
-                borderRadius: "6px",
-                marginBottom: "1.75rem",
+                padding: "1.15rem",
+                background: "var(--color-surface, #F9FAFB)",
+                border: "1px solid var(--color-border, #E5E7EB)",
+                borderRadius: "8px",
+                marginBottom: "2rem",
               }}
             >
               <div>
-                <strong style={{ fontSize: "0.8125rem", color: "#111827", display: "block" }}>Caisse &amp; Déstockage</strong>
-                <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>Saisie ou dictée vocale</span>
+                <strong style={{ fontSize: "0.85rem", color: "var(--color-text, #111827)", display: "block", marginBottom: 2 }}>
+                  Caisse &amp; Déstockage
+                </strong>
+                <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)" }}>
+                  Saisie rapide &amp; Dictée vocale
+                </span>
               </div>
 
               <div>
-                <strong style={{ fontSize: "0.8125rem", color: "#111827", display: "block" }}>Simulateur What-If</strong>
-                <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>Marge brute en FCFA</span>
+                <strong style={{ fontSize: "0.85rem", color: "var(--color-text, #111827)", display: "block", marginBottom: 2 }}>
+                  Scanner OCR IA
+                </strong>
+                <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)" }}>
+                  Photo &amp; Factures PDF
+                </span>
               </div>
 
               <div>
-                <strong style={{ fontSize: "0.8125rem", color: "#111827", display: "block" }}>Bilans PDF Officiels</strong>
-                <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>Rapports de gestion</span>
+                <strong style={{ fontSize: "0.85rem", color: "var(--color-text, #111827)", display: "block", marginBottom: 2 }}>
+                  Simulateur What-If
+                </strong>
+                <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)" }}>
+                  Calcul de marge en FCFA
+                </span>
               </div>
 
               <div>
-                <strong style={{ fontSize: "0.8125rem", color: "#111827", display: "block" }}>Multi-Entreprises</strong>
-                <span style={{ fontSize: "0.75rem", color: "#6B7280" }}>Isolation des comptes</span>
+                <strong style={{ fontSize: "0.85rem", color: "var(--color-text, #111827)", display: "block", marginBottom: 2 }}>
+                  Multi-Entreprises
+                </strong>
+                <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)" }}>
+                  Isolation des comptes
+                </span>
               </div>
             </div>
 
-            {/* Boutons d'action sobres */}
+            {/* Boutons d'actions */}
             {isLoading ? (
               <p className="muted">Chargement…</p>
             ) : isAuthenticated && user ? (
               <div>
-                <p style={{ fontSize: "0.8125rem", color: "#6B7280", marginBottom: "0.5rem" }}>
-                  Espace actif : <strong>{user.firstName || user.email}</strong>
-                </p>
-                <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
                   <Link href="/dashboard" className="btn btn--primary btn--md">
-                    Accéder au tableau de bord
+                    Accéder au Tableau de bord
                   </Link>
-                  <Link href="/simulateur" className="btn btn--outline btn--md">
-                    Ouvrir le Simulateur
+                  <Link href="/chat" className="btn btn--outline btn--md">
+                    Assistant &amp; Voix
+                  </Link>
+                  <Link href="/scanner" className="btn btn--outline btn--md">
+                    Scanner une Facture
                   </Link>
                 </div>
+                <p style={{ fontSize: "0.8125rem", color: "var(--color-text-muted, #6B7280)", margin: 0 }}>
+                  Connecté en tant que <strong>{user.firstName || user.email}</strong>
+                </p>
               </div>
             ) : (
               <div>
-                <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap", marginBottom: "0.5rem" }}>
+                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "0.85rem" }}>
                   <Link href="/inscription" className="btn btn--primary btn--md">
                     Créer un compte
                   </Link>
-                  <Link href="/connexion" className="btn btn--outline btn--md">
+                  <button
+                    type="button"
+                    className="btn btn--outline btn--md"
+                    onClick={async () => {
+                      await login({ email: "demo@bizia.africa", password: "password123" }).catch(() => {
+                        window.location.href = "/connexion";
+                      });
+                    }}
+                  >
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      <IconSparkles size={16} /> Tester la Démo (1 clic)
+                    </span>
+                  </button>
+                  <Link href="/connexion" className="btn btn--ghost btn--md">
                     Se connecter
                   </Link>
                 </div>
-                <p style={{ fontSize: "0.75rem", color: "#6B7280", margin: 0 }}>
-                  Sans engagement • Aucune carte bancaire requise
+                <p style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)", margin: 0 }}>
+                  Accès gratuit • Données sécurisées • 100% conforme devises FCFA
                 </p>
               </div>
             )}
@@ -129,52 +173,153 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* ── 3 Piliers Fonctionnels ── */}
-      <section style={{ padding: "2.5rem 0", borderTop: "1px solid #E5E7EB" }}>
-        <div style={{ marginBottom: "1.75rem" }}>
-          <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#111827", margin: "0 0 0.25rem" }}>
-            Modules d&apos;exploitation intégrés
+      {/* ── 4 Cartes Fonctionnelles Complètes ── */}
+      <section style={{ padding: "2.5rem 0", borderTop: "1px solid var(--color-border, #E5E7EB)" }}>
+        <div style={{ marginBottom: "2rem" }}>
+          <h2 style={{ fontSize: "1.45rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.35rem" }}>
+            Modules d&apos;exploitation opérationnels
           </h2>
-          <p style={{ fontSize: "0.875rem", color: "#6B7280", margin: 0 }}>
-            Une couverture complète du cycle commercial pour les PME.
+          <p style={{ fontSize: "0.9rem", color: "var(--color-text-muted, #6B7280)", margin: 0 }}>
+            Une suite complète et intégrée pour gérer vos encaissements, vos stocks et vos bilans.
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))", gap: "1.25rem" }}>
           
-          <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", padding: "1.25rem", borderRadius: "6px" }}>
-            <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#111827", margin: "0 0 0.4rem" }}>
-              Catalogue &amp; Stocks
-            </h3>
-            <p style={{ fontSize: "0.8125rem", color: "#4B5563", lineHeight: 1.55, margin: 0 }}>
-              Suivi unitaire des articles, coûts d&apos;achat, prix de vente et seuils de réapprovisionnement.
-              Déstockage automatique à chaque vente.
-            </p>
-          </div>
+          <Link href="/chat" style={{ textDecoration: "none", color: "inherit" }}>
+            <div
+              className="card card--glass"
+              style={{
+                background: "var(--color-surface, #FFFFFF)",
+                border: "1px solid var(--color-border, #E5E7EB)",
+                padding: "1.5rem",
+                borderRadius: "8px",
+                height: "100%",
+                transition: "all 0.2s ease",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+                  <span className="badge badge--primary">Dictée Vocale</span>
+                  <span style={{ fontSize: "1.2rem" }}>🎙️</span>
+                </div>
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.5rem" }}>
+                  Assistant &amp; Caisse Vocale
+                </h3>
+                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted, #4B5563)", lineHeight: 1.55, margin: 0 }}>
+                  Dictez vos ventes au micro en français ou en langues locales. BizIA calcule le montant total, déduit le stock et met à jour la marge nette instantanément.
+                </p>
+              </div>
+              <div style={{ marginTop: "1rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-primary, #1D4ED8)" }}>
+                Ouvrir l&apos;assistant →
+              </div>
+            </div>
+          </Link>
 
-          <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", padding: "1.25rem", borderRadius: "6px" }}>
-            <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#111827", margin: "0 0 0.4rem" }}>
-              Simulateur What-If
-            </h3>
-            <p style={{ fontSize: "0.8125rem", color: "#4B5563", lineHeight: 1.55, margin: 0 }}>
-              Testez des hypothèses de prix et de volumes pour anticiper votre rentabilité brute
-              et estimer votre bénéfice net en FCFA.
-            </p>
-          </div>
+          <Link href="/scanner" style={{ textDecoration: "none", color: "inherit" }}>
+            <div
+              className="card card--glass"
+              style={{
+                background: "var(--color-surface, #FFFFFF)",
+                border: "1px solid var(--color-border, #E5E7EB)",
+                padding: "1.5rem",
+                borderRadius: "8px",
+                height: "100%",
+                transition: "all 0.2s ease",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+                  <span className="badge badge--success">Gemini Vision OCR</span>
+                  <span style={{ fontSize: "1.2rem" }}>📸</span>
+                </div>
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.5rem" }}>
+                  Scanner Reçus &amp; Factures
+                </h3>
+                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted, #4B5563)", lineHeight: 1.55, margin: 0 }}>
+                  Prenez en photo vos factures fournisseurs ou tickets de caisse via la caméra en direct. L&apos;IA extrait automatiquement les articles, prix d&apos;achat et quantités.
+                </p>
+              </div>
+              <div style={{ marginTop: "1rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-primary, #1D4ED8)" }}>
+                Scanner un document →
+              </div>
+            </div>
+          </Link>
 
-          <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", padding: "1.25rem", borderRadius: "6px" }}>
-            <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#111827", margin: "0 0 0.4rem" }}>
-              Bilans Financiers PDF
-            </h3>
-            <p style={{ fontSize: "0.8125rem", color: "#4B5563", lineHeight: 1.55, margin: 0 }}>
-              Édition instantanée de rapports d&apos;exploitation avec récapitulatif des marges,
-              chiffres d&apos;affaires et indicateurs de rotation.
-            </p>
-          </div>
+          <Link href="/simulateur" style={{ textDecoration: "none", color: "inherit" }}>
+            <div
+              className="card card--glass"
+              style={{
+                background: "var(--color-surface, #FFFFFF)",
+                border: "1px solid var(--color-border, #E5E7EB)",
+                padding: "1.5rem",
+                borderRadius: "8px",
+                height: "100%",
+                transition: "all 0.2s ease",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+                  <span className="badge badge--info">Rentabilité</span>
+                  <span style={{ fontSize: "1.2rem" }}>📊</span>
+                </div>
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.5rem" }}>
+                  Simulateur What-If
+                </h3>
+                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted, #4B5563)", lineHeight: 1.55, margin: 0 }}>
+                  Ajustez les prix et les volumes de vente avec des curseurs interactifs. Observez l&apos;impact en direct sur votre marge brute et votre résultat net.
+                </p>
+              </div>
+              <div style={{ marginTop: "1rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-primary, #1D4ED8)" }}>
+                Simuler les marges →
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/import" style={{ textDecoration: "none", color: "inherit" }}>
+            <div
+              className="card card--glass"
+              style={{
+                background: "var(--color-surface, #FFFFFF)",
+                border: "1px solid var(--color-border, #E5E7EB)",
+                padding: "1.5rem",
+                borderRadius: "8px",
+                height: "100%",
+                transition: "all 0.2s ease",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+                  <span className="badge badge--warning">Multi-Formats</span>
+                  <span style={{ fontSize: "1.2rem" }}>📁</span>
+                </div>
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.5rem" }}>
+                  Import CSV &amp; Excel
+                </h3>
+                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted, #4B5563)", lineHeight: 1.55, margin: 0 }}>
+                  Importez vos fichiers de catalogue ou historiques de ventes en un clic. Détection automatique des séparateurs (; ou ,) et encodages français.
+                </p>
+              </div>
+              <div style={{ marginTop: "1rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-primary, #1D4ED8)" }}>
+                Importer un fichier →
+              </div>
+            </div>
+          </Link>
 
         </div>
       </section>
     </div>
   );
 }
-

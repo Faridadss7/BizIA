@@ -15,22 +15,17 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const NAV_LINKS = [
   ["/", "Accueil"],
+  ["/dashboard", "Tableau de bord"],
   ["/produits", "Produits"],
   ["/ventes", "Ventes"],
-  ["/scanner", "Scanner"],
+  ["/scanner", "Scanner IA"],
   ["/import", "Import"],
-  ["/simulateur", "Simulateur Excel"],
-  ["/dashboard", "Dashboard"],
   ["/chat", "Assistant & Voix"],
-] as const;
-
-const GUEST_NAV_LINKS = [
-  ["/", "Accueil"],
-  ["/simulateur", "Simulateur Excel"],
+  ["/simulateur", "Simulateur What-If"],
 ] as const;
 
 const AUTH_ROUTES = ["/connexion", "/inscription", "/mot-de-passe-oublie"];
-const PROTECTED_ROUTES = ["/produits", "/ventes", "/scanner", "/import", "/simulateur", "/dashboard", "/chat"];
+const PROTECTED_ROUTES = ["/produits", "/ventes", "/scanner", "/import", "/dashboard", "/chat"];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -41,7 +36,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isAuthPage = pathname != null && AUTH_ROUTES.includes(pathname);
   const isPresentation = pathname === "/pitch" || pathname === "/presentation";
   const isHome = pathname === "/";
-  const activeNavLinks = isAuthenticated ? NAV_LINKS : GUEST_NAV_LINKS;
+  const activeNavLinks = NAV_LINKS;
   const showNav = !isAuthPage && !isLoading && !isPresentation;
 
   if (isPresentation) {
@@ -66,7 +61,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link href="/" className="header__brand" onClick={() => setMenuOpen(false)}>
               <BizIALogo size="md" showTagline />
             </Link>
-            {!isAuthPage && isAuthenticated && <CompanySelector />}
+            {!isAuthPage && <CompanySelector />}
           </div>
 
           {showNav && (

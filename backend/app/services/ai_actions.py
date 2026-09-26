@@ -137,17 +137,23 @@ def execute_ai_intent_and_crud(
                 })
 
             unit_price = float(custom_price) if custom_price is not None else float(matched.get("unit_price", 0.0))
+            unit_cost = float(matched.get("unit_cost", 0.0))
+            total_amount = qty * unit_price
+            total_cost = qty * unit_cost
+            net_margin = total_amount - total_cost
+            margin_pct = (net_margin / total_amount * 100) if total_amount > 0 else 0.0
+
             sale_payload = {
                 "product_sku": matched["sku"],
                 "quantity": qty,
                 "unit_price": unit_price,
-                "unit_cost": float(matched.get("unit_cost", 0.0)),
+                "unit_cost": unit_cost,
                 "channel": str(act.get("channel") or "chat_ia"),
                 "sold_at": datetime.now(timezone.utc).isoformat(),
             }
             sale_item = store.add_sale(sale_payload)
 
-            # Mise à jour du stock si disponible
+            # Mise à jour du stock si disponible (déstockage)
             curr_stock = float(matched.get("stock_quantity", 0.0))
             new_stock = max(0.0, curr_stock - qty)
             updated_prod = dict(matched)
@@ -155,10 +161,22 @@ def execute_ai_intent_and_crud(
             store.add_product(updated_prod)
 
             database_updated = True
+            margin_sign = "+" if net_margin >= 0 else ""
+            sale_summary = (
+                f"✅ Vente enregistrée avec succès :\n"
+                f"• Produit : {matched['name']}\n"
+                f"• Quantité : {qty:.0f} unité(s)\n"
+                f"• Prix unitaire : {unit_price:,.0f} FCFA\n"
+                f"• Total encaissé : {total_amount:,.0f} FCFA\n"
+                f"• Marge nette estimée : {margin_sign}{net_margin:,.0f} FCFA ({margin_pct:.1f}%)\n"
+                f"• Déstockage : {curr_stock:.0f} → {new_stock:.0f} restant(s)"
+            ).replace(",", " ")
+
             actions_taken.append({
                 "type": "sale_recorded",
-                "label": f"Vente enregistrée : {qty:.0f}x {matched['name']} pour un total de {qty * unit_price:,.0f} FCFA (Nouveau stock: {new_stock:.0f})".replace(",", " "),
+                "label": f"Vente enregistrée : {qty:.0f}x {matched['name']} pour un total de {total_amount:,.0f} FCFA (Marge: {margin_sign}{net_margin:,.0f} FCFA, Stock: {new_stock:.0f})".replace(",", " "),
                 "details": sale_item,
+                "summary": sale_summary,
             })
 
     # Si aucune action CRUD n'a été déclenchée et qu'une analyse existe
@@ -172,7 +190,14 @@ def execute_ai_intent_and_crud(
             "grounded": ans.get("grounded", True),
         }
 
-    reply = llm_result.get("reply") or "Opération effectuée avec succès."
+    # Si des ventes ont été enregistrées, enrichir la réponse avec les calculs financiers détaillés
+    sales_summaries = [a.get("summary") for a in actions_taken if a.get("type") == "sale_recorded" and a.get("summary")]
+    if sales_summaries:
+        combined_summaries = "\n\n".join(sales_summaries)
+        reply = f"{combined_summaries}\n\nVos indicateurs de caisse et de marge ont été immédiatement recalculés."
+    else:
+        reply = llm_result.get("reply") or "Opération effectuée avec succès."
+
     return {
         "reply": reply,
         "actions_taken": actions_taken,
@@ -398,16 +423,17 @@ def _parse_with_heuristics(
         }
 
     # 3. Détection Vente
-    # Ex: "J'ai vendu 5 ordinateurs à 200000 FCFA" ou "Nouvelle vente de 3 Claviers"
-    sale_match = re.search(r"(?:vendu|vente de?)\s+(\d+)\s+([A-Za-z0-9\s\-_À-ÿ]+)", lower)
+    # Ex: "J'ai vendu 5 ordinateurs à 200000 FCFA", "Vends 2 Samsung", "Enregistre la vente de 3 Claviers à 15000"
+    sale_match = re.search(r"(?:vendu|vends?|vente(?:\s+de)?|encaiss[eé]r?)\s+(?:de\s+)?(\d+)\s+([A-Za-z0-9\s\-_À-ÿ]+)", lower)
     if sale_match:
         qty = float(sale_match.group(1))
         prod_part = sale_match.group(2).strip()
         # Nettoyage prix éventuel
-        price_m = re.search(r"[aà]\s*(\d+[\d\s]*)(?:fcfa|f)?", prod_part, re.IGNORECASE)
+        price_m = re.search(r"(?:[aà]|au prix de|prix)\s*[:=]?\s*(\d+[\d\s]*)(?:fcfa|f)?", prod_part, re.IGNORECASE)
         unit_price = float(re.sub(r"\s+", "", price_m.group(1))) if price_m else None
         prod_name = prod_part[:price_m.start()].strip() if price_m else prod_part
-        prod_name = re.sub(r"(?:au prix de|[aà]\s+\d+).*", "", prod_name, flags=re.IGNORECASE).strip()
+        prod_name = re.sub(r"(?:au prix de|[aà]\s+\d+|prix\s*[:=]?\s*\d+).*", "", prod_name, flags=re.IGNORECASE).strip()
+        prod_name = re.sub(r"^(?:le produit|un produit|l'article|les)\s+", "", prod_name, flags=re.IGNORECASE).strip()
 
         actions.append({
             "type": "add_sale",
@@ -416,7 +442,7 @@ def _parse_with_heuristics(
             "unit_price": unit_price,
         })
         return {
-            "reply": f"C'est noté ! J'ai enregistré la vente de {qty:.0f} « {prod_name} » et mis à jour le stock disponible.",
+            "reply": f"C'est noté ! J'enregistre la vente de {qty:.0f} « {prod_name} » et je mets à jour le stock disponible.",
             "actions": actions,
         }
 

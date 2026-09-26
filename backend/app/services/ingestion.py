@@ -181,17 +181,26 @@ def parse_tabular(path: str, filename: str) -> tuple[list[dict[str, Any]], list[
 
     if kind == "products":
         mapping = _map_headers(headers, PRODUCT_FIELDS)
+        # Si le SKU n'est pas fourni, on le génère automatiquement à partir du nom ou de l'index
         if "sku" not in mapping:
-            raise IngestionError(
-                422,
-                "unknown_schema",
-                "Une liste de produits doit indiquer la référence de chaque produit.",
-            )
-        products = [
-            record
-            for record in _records(frame, mapping)
-            if str(record.get("sku") or "").strip()
-        ]
+            if "name" in mapping:
+                # Génération automatique de SKU
+                mapping["sku"] = mapping["name"]
+            else:
+                raise IngestionError(
+                    422,
+                    "unknown_schema",
+                    "Une liste de produits doit au minimum indiquer le nom ou la référence de chaque article.",
+                )
+        products = []
+        for idx, record in enumerate(_records(frame, mapping), 1):
+            sku_val = str(record.get("sku") or "").strip()
+            if not sku_val or sku_val == str(record.get("name") or ""):
+                # Création d'un SKU propre
+                name_clean = re.sub(r"[^A-Za-z0-9]+", "-", str(record.get("name") or f"ART-{idx}").strip().upper()).strip("-")
+                record["sku"] = name_clean[:16] or f"ART-{idx:03d}"
+            if record.get("name"):
+                products.append(record)
         return products, []
 
     mapping = _map_headers(headers, SALE_FIELDS)
@@ -200,6 +209,8 @@ def parse_tabular(path: str, filename: str) -> tuple[list[dict[str, Any]], list[
     }:
         sku_header = next(header for header in headers if _normalize(header) == "sku")
         mapping["product_sku"] = sku_header
+    if "product_sku" not in mapping and "name" in mapping:
+        mapping["product_sku"] = mapping["name"]
     if "product_sku" not in mapping or "quantity" not in mapping:
         raise IngestionError(
             422,
@@ -219,7 +230,20 @@ def parse_tabular(path: str, filename: str) -> tuple[list[dict[str, Any]], list[
 def _read_frame(path: str, suffix: str) -> pd.DataFrame:
     try:
         if suffix in _CSV_SUFFIXES:
-            frame = pd.read_csv(path, encoding="utf-8-sig")
+            # Essayer différentes configurations d'encodage et de séparateur (virgule, point-virgule, tabulation)
+            frame = None
+            encodings = ["utf-8-sig", "utf-8", "latin1", "cp1252", "iso-8859-1"]
+            for enc in encodings:
+                try:
+                    # sep=None avec engine='python' détecte automatiquement ',' ou ';' ou '\t'
+                    frame = pd.read_csv(path, sep=None, engine="python", encoding=enc)
+                    if frame is not None and not frame.empty:
+                        break
+                except Exception:
+                    continue
+            if frame is None or frame.empty:
+                # Repli avec séparateur virgule standard
+                frame = pd.read_csv(path, encoding="utf-8-sig")
         elif suffix in _EXCEL_SUFFIXES:
             frame = pd.read_excel(path)
         elif suffix in _PDF_SUFFIXES:

@@ -14,10 +14,22 @@ import type {
 } from "@/types";
 import { getStoredSession } from "@/services/auth";
 
-// Vide quand l'API et le site partagent la même origine (déploiement en un service).
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// Résolution d'API : utilise la variable d'env, ou Render en production/défaut, ou localhost si spécifié
+const getApiBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== "") {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== "undefined") {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      return "https://bizia-backend.onrender.com"; // Fallback automatique vers Render pour dev local
+    }
+  }
+  return "https://bizia-backend.onrender.com";
+};
 
-export const API_IS_SAME_ORIGIN = API_URL === "";
+const API_URL = getApiBaseUrl();
+
+export const API_IS_SAME_ORIGIN = false;
 
 export const API_UNREACHABLE_MESSAGE =
   "BizIA est momentanément injoignable. Réessayez dans un instant.";
