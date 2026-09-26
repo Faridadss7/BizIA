@@ -53,9 +53,11 @@ export function LiveProductShowcase() {
           borderBottom: "1px solid var(--color-border, #e2e8f0)",
           background: "var(--color-surface-hover, #F8FAFC)",
           padding: "0.5rem 0.85rem",
+          flexWrap: "wrap",
+          gap: "0.5rem",
         }}
       >
-        <div style={{ display: "flex", gap: "0.35rem" }}>
+        <div style={{ display: "flex", gap: "0.35rem", overflowX: "auto", maxWidth: "100%", paddingBottom: "2px" }}>
           <button
             type="button"
             onClick={() => setActiveTab("simulator")}
@@ -69,6 +71,7 @@ export function LiveProductShowcase() {
               background: activeTab === "simulator" ? "var(--color-primary, #1D4ED8)" : "transparent",
               color: activeTab === "simulator" ? "#FFFFFF" : "var(--color-text-muted, #64748B)",
               transition: "all 0.15s ease",
+              whiteSpace: "nowrap",
             }}
           >
             Simulateur What-If
@@ -86,6 +89,7 @@ export function LiveProductShowcase() {
               background: activeTab === "sales" ? "var(--color-primary, #1D4ED8)" : "transparent",
               color: activeTab === "sales" ? "#FFFFFF" : "var(--color-text-muted, #64748B)",
               transition: "all 0.15s ease",
+              whiteSpace: "nowrap",
             }}
           >
             Journal de Caisse
@@ -103,13 +107,14 @@ export function LiveProductShowcase() {
               background: activeTab === "kpi" ? "var(--color-primary, #1D4ED8)" : "transparent",
               color: activeTab === "kpi" ? "#FFFFFF" : "var(--color-text-muted, #64748B)",
               transition: "all 0.15s ease",
+              whiteSpace: "nowrap",
             }}
           >
             Bilan &amp; Marges
           </button>
         </div>
 
-        <span style={{ fontSize: "0.75rem", color: "var(--color-success, #059669)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.35rem" }}>
+        <span style={{ fontSize: "0.75rem", color: "var(--color-success, #059669)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.35rem", whiteSpace: "nowrap" }}>
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--color-success, #059669)", display: "inline-block" }} />
           Calcul temps réel
         </span>

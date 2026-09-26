@@ -2,117 +2,74 @@
 
 import Link from "next/link";
 import { LiveProductShowcase } from "@/components/home/LiveProductShowcase";
+import { BizIALogo } from "@/components/brand/BizIALogo";
 import { useAuth } from "@/contexts/AuthContext";
-import { IconPackage, IconTrending, IconFile, IconSparkles } from "@/components/icons/Icons";
+import {
+  IconMic,
+  IconCamera,
+  IconChartBar,
+  IconUpload,
+  IconSparkles,
+  IconCheckCircle,
+  IconLock,
+  IconArrowRight,
+} from "@/components/icons/Icons";
 
 export function HomeContent() {
   const { user, isLoading, isAuthenticated, login } = useAuth();
 
   return (
-    <div className="landing" style={{ maxWidth: 1240, margin: "0 auto", padding: "1.5rem 1.25rem 3.5rem" }}>
+    <div className="landing-container">
       {/* ── Section Hero Principale ── */}
-      <section style={{ padding: "2.5rem 0 3.5rem" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-            gap: "3rem",
-            alignItems: "center",
-          }}
-        >
+      <section className="landing-hero">
+        <div className="landing-hero__grid">
           {/* Colonne Texte & Appel à l'action */}
-          <div>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "var(--color-primary, #1D4ED8)",
-                backgroundColor: "var(--color-primary-subtle, rgba(29, 78, 216, 0.08))",
-                padding: "0.35rem 0.75rem",
-                borderRadius: "9999px",
-                marginBottom: "1rem",
-              }}
-            >
-              <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "var(--color-primary, #1D4ED8)" }} />
-              Gestion Commerciale &amp; Analyse Financière IA
+          <div className="landing-hero__text">
+            <div className="landing-badge">
+              <span className="landing-badge__dot" />
+              Plateforme Commerciale &amp; Analyse Financière IA
             </div>
 
-            <h1
-              style={{
-                fontSize: "2.35rem",
-                fontWeight: 800,
-                lineHeight: 1.2,
-                color: "var(--color-text, #111827)",
-                letterSpacing: "-0.03em",
-                margin: "0 0 1.15rem",
-              }}
-            >
+            <h1 className="landing-hero__title">
               Pilotez vos ventes, stocks et marges en temps réel.
             </h1>
 
-            <p
-              style={{
-                fontSize: "1.05rem",
-                lineHeight: 1.6,
-                color: "var(--color-text-muted, #4B5563)",
-                marginBottom: "2rem",
-              }}
-            >
-              Conçu pour les commerçants, grossistes et PME africaines : encaissez vos ventes au comptoir ou par dictée vocale, scannez vos factures avec l&apos;IA Vision, simulez vos bénéfices avec le tableur What-If et éditez vos bilans financiers officiels en FCFA.
+            <p className="landing-hero__subtitle">
+              Conçu pour les commerçants, grossistes et PME : encaissez vos ventes au comptoir ou par dictée vocale, scannez vos factures avec l&apos;IA Vision, simulez vos bénéfices avec le tableur What-If et éditez vos bilans officiels en FCFA.
             </p>
 
             {/* Grille de 4 Piliers Clés */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                gap: "0.85rem",
-                padding: "1.15rem",
-                background: "var(--color-surface, #F9FAFB)",
-                border: "1px solid var(--color-border, #E5E7EB)",
-                borderRadius: "8px",
-                marginBottom: "2rem",
-              }}
-            >
-              <div>
-                <strong style={{ fontSize: "0.85rem", color: "var(--color-text, #111827)", display: "block", marginBottom: 2 }}>
-                  Caisse &amp; Déstockage
-                </strong>
-                <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)" }}>
-                  Saisie rapide &amp; Dictée vocale
-                </span>
+            <div className="landing-pillars">
+              <div className="landing-pillar-item">
+                <div className="landing-pillar-item__header">
+                  <span className="landing-pillar-icon"><IconMic size={16} /></span>
+                  <strong>Caisse &amp; Déstockage</strong>
+                </div>
+                <span>Saisie rapide &amp; Dictée vocale</span>
               </div>
 
-              <div>
-                <strong style={{ fontSize: "0.85rem", color: "var(--color-text, #111827)", display: "block", marginBottom: 2 }}>
-                  Scanner OCR IA
-                </strong>
-                <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)" }}>
-                  Photo &amp; Factures PDF
-                </span>
+              <div className="landing-pillar-item">
+                <div className="landing-pillar-item__header">
+                  <span className="landing-pillar-icon"><IconCamera size={16} /></span>
+                  <strong>Scanner OCR IA</strong>
+                </div>
+                <span>Photo &amp; Factures PDF</span>
               </div>
 
-              <div>
-                <strong style={{ fontSize: "0.85rem", color: "var(--color-text, #111827)", display: "block", marginBottom: 2 }}>
-                  Simulateur What-If
-                </strong>
-                <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)" }}>
-                  Calcul de marge en FCFA
-                </span>
+              <div className="landing-pillar-item">
+                <div className="landing-pillar-item__header">
+                  <span className="landing-pillar-icon"><IconChartBar size={16} /></span>
+                  <strong>Simulateur What-If</strong>
+                </div>
+                <span>Calcul de marge en FCFA</span>
               </div>
 
-              <div>
-                <strong style={{ fontSize: "0.85rem", color: "var(--color-text, #111827)", display: "block", marginBottom: 2 }}>
-                  Multi-Entreprises
-                </strong>
-                <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)" }}>
-                  Isolation des comptes
-                </span>
+              <div className="landing-pillar-item">
+                <div className="landing-pillar-item__header">
+                  <span className="landing-pillar-icon"><IconLock size={16} /></span>
+                  <strong>Multi-Entreprises</strong>
+                </div>
+                <span>Isolation Cloud Supabase</span>
               </div>
             </div>
 
@@ -120,8 +77,8 @@ export function HomeContent() {
             {isLoading ? (
               <p className="muted">Chargement…</p>
             ) : isAuthenticated && user ? (
-              <div>
-                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+              <div className="landing-cta-box">
+                <div className="landing-cta-buttons">
                   <Link href="/dashboard" className="btn btn--primary btn--md">
                     Accéder au Tableau de bord
                   </Link>
@@ -132,13 +89,13 @@ export function HomeContent() {
                     Scanner une Facture
                   </Link>
                 </div>
-                <p style={{ fontSize: "0.8125rem", color: "var(--color-text-muted, #6B7280)", margin: 0 }}>
+                <p className="landing-cta-user">
                   Connecté en tant que <strong>{user.firstName || user.email}</strong>
                 </p>
               </div>
             ) : (
-              <div>
-                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "0.85rem" }}>
+              <div className="landing-cta-box">
+                <div className="landing-cta-buttons">
                   <Link href="/inscription" className="btn btn--primary btn--md">
                     Créer un compte
                   </Link>
@@ -159,161 +116,123 @@ export function HomeContent() {
                     Se connecter
                   </Link>
                 </div>
-                <p style={{ fontSize: "0.75rem", color: "var(--color-text-muted, #6B7280)", margin: 0 }}>
-                  Accès gratuit • Données sécurisées • 100% conforme devises FCFA
-                </p>
+                <div className="landing-trust-bar">
+                  <span className="trust-item"><IconCheckCircle size={14} /> Accès immédiat</span>
+                  <span className="trust-item"><IconLock size={14} /> Supabase PostgreSQL &amp; Clerk</span>
+                  <span className="trust-item"><IconCheckCircle size={14} /> 100% Devises FCFA</span>
+                </div>
               </div>
             )}
           </div>
 
           {/* Démonstration Produit Haute Fidélité */}
-          <div>
+          <div className="landing-hero__visual">
             <LiveProductShowcase />
           </div>
         </div>
       </section>
 
-      {/* ── 4 Cartes Fonctionnelles Complètes ── */}
-      <section style={{ padding: "2.5rem 0", borderTop: "1px solid var(--color-border, #E5E7EB)" }}>
-        <div style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.45rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.35rem" }}>
+      {/* ── 4 Cartes Fonctionnelles Complètes avec Icônes Vectorielles ── */}
+      <section className="landing-modules">
+        <div className="landing-modules__header">
+          <h2>
             Modules d&apos;exploitation opérationnels
           </h2>
-          <p style={{ fontSize: "0.9rem", color: "var(--color-text-muted, #6B7280)", margin: 0 }}>
-            Une suite complète et intégrée pour gérer vos encaissements, vos stocks et vos bilans.
+          <p>
+            Une suite complète et intégrée pour gérer vos encaissements, vos stocks et vos bilans financiers.
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))", gap: "1.25rem" }}>
+        <div className="landing-cards-grid">
           
-          <Link href="/chat" style={{ textDecoration: "none", color: "inherit" }}>
-            <div
-              className="card card--glass"
-              style={{
-                background: "var(--color-surface, #FFFFFF)",
-                border: "1px solid var(--color-border, #E5E7EB)",
-                padding: "1.5rem",
-                borderRadius: "8px",
-                height: "100%",
-                transition: "all 0.2s ease",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
+          <Link href="/chat" className="landing-card-link">
+            <div className="landing-card card card--glass">
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+                <div className="landing-card__top">
                   <span className="badge badge--primary">Dictée Vocale</span>
-                  <span style={{ fontSize: "1.2rem" }}>🎙️</span>
+                  <div className="landing-card__icon-box landing-card__icon-box--primary">
+                    <IconMic size={20} />
+                  </div>
                 </div>
-                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.5rem" }}>
+                <h3>
                   Assistant &amp; Caisse Vocale
                 </h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted, #4B5563)", lineHeight: 1.55, margin: 0 }}>
+                <p>
                   Dictez vos ventes au micro en français ou en langues locales. BizIA calcule le montant total, déduit le stock et met à jour la marge nette instantanément.
                 </p>
               </div>
-              <div style={{ marginTop: "1rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-primary, #1D4ED8)" }}>
-                Ouvrir l&apos;assistant →
+              <div className="landing-card__footer">
+                <span>Ouvrir l&apos;assistant</span>
+                <IconArrowRight size={14} />
               </div>
             </div>
           </Link>
 
-          <Link href="/scanner" style={{ textDecoration: "none", color: "inherit" }}>
-            <div
-              className="card card--glass"
-              style={{
-                background: "var(--color-surface, #FFFFFF)",
-                border: "1px solid var(--color-border, #E5E7EB)",
-                padding: "1.5rem",
-                borderRadius: "8px",
-                height: "100%",
-                transition: "all 0.2s ease",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
+          <Link href="/scanner" className="landing-card-link">
+            <div className="landing-card card card--glass">
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+                <div className="landing-card__top">
                   <span className="badge badge--success">Gemini Vision OCR</span>
-                  <span style={{ fontSize: "1.2rem" }}>📸</span>
+                  <div className="landing-card__icon-box landing-card__icon-box--success">
+                    <IconCamera size={20} />
+                  </div>
                 </div>
-                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.5rem" }}>
+                <h3>
                   Scanner Reçus &amp; Factures
                 </h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted, #4B5563)", lineHeight: 1.55, margin: 0 }}>
+                <p>
                   Prenez en photo vos factures fournisseurs ou tickets de caisse via la caméra en direct. L&apos;IA extrait automatiquement les articles, prix d&apos;achat et quantités.
                 </p>
               </div>
-              <div style={{ marginTop: "1rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-primary, #1D4ED8)" }}>
-                Scanner un document →
+              <div className="landing-card__footer">
+                <span>Scanner un document</span>
+                <IconArrowRight size={14} />
               </div>
             </div>
           </Link>
 
-          <Link href="/simulateur" style={{ textDecoration: "none", color: "inherit" }}>
-            <div
-              className="card card--glass"
-              style={{
-                background: "var(--color-surface, #FFFFFF)",
-                border: "1px solid var(--color-border, #E5E7EB)",
-                padding: "1.5rem",
-                borderRadius: "8px",
-                height: "100%",
-                transition: "all 0.2s ease",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
+          <Link href="/simulateur" className="landing-card-link">
+            <div className="landing-card card card--glass">
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+                <div className="landing-card__top">
                   <span className="badge badge--info">Rentabilité</span>
-                  <span style={{ fontSize: "1.2rem" }}>📊</span>
+                  <div className="landing-card__icon-box landing-card__icon-box--info">
+                    <IconChartBar size={20} />
+                  </div>
                 </div>
-                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.5rem" }}>
+                <h3>
                   Simulateur What-If
                 </h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted, #4B5563)", lineHeight: 1.55, margin: 0 }}>
+                <p>
                   Ajustez les prix et les volumes de vente avec des curseurs interactifs. Observez l&apos;impact en direct sur votre marge brute et votre résultat net.
                 </p>
               </div>
-              <div style={{ marginTop: "1rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-primary, #1D4ED8)" }}>
-                Simuler les marges →
+              <div className="landing-card__footer">
+                <span>Simuler les marges</span>
+                <IconArrowRight size={14} />
               </div>
             </div>
           </Link>
 
-          <Link href="/import" style={{ textDecoration: "none", color: "inherit" }}>
-            <div
-              className="card card--glass"
-              style={{
-                background: "var(--color-surface, #FFFFFF)",
-                border: "1px solid var(--color-border, #E5E7EB)",
-                padding: "1.5rem",
-                borderRadius: "8px",
-                height: "100%",
-                transition: "all 0.2s ease",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
+          <Link href="/import" className="landing-card-link">
+            <div className="landing-card card card--glass">
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+                <div className="landing-card__top">
                   <span className="badge badge--warning">Multi-Formats</span>
-                  <span style={{ fontSize: "1.2rem" }}>📁</span>
+                  <div className="landing-card__icon-box landing-card__icon-box--warning">
+                    <IconUpload size={20} />
+                  </div>
                 </div>
-                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text, #111827)", margin: "0 0 0.5rem" }}>
+                <h3>
                   Import CSV &amp; Excel
                 </h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted, #4B5563)", lineHeight: 1.55, margin: 0 }}>
+                <p>
                   Importez vos fichiers de catalogue ou historiques de ventes en un clic. Détection automatique des séparateurs (; ou ,) et encodages français.
                 </p>
               </div>
-              <div style={{ marginTop: "1rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--color-primary, #1D4ED8)" }}>
-                Importer un fichier →
+              <div className="landing-card__footer">
+                <span>Importer un fichier</span>
+                <IconArrowRight size={14} />
               </div>
             </div>
           </Link>
