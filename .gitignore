@@ -51,6 +51,7 @@ data/uploads/*
 *.csv
 *.pdf
 !data/samples/**
+!test_data/**
 !docs/**/*.pdf
 
 # Logs & Scratch

@@ -1,0 +1,231 @@
+﻿Code SKU,Désignation Produit,Prix d'Achat (FCFA),Prix de Vente (FCFA),Quantité en Stock,Seuil d'Alerte,Catégorie
+ALIM-001,Riz Parfumé Jasmin 25kg Royal Aroma,14500,17500,48,5,Alimentation
+ALIM-002,Riz Blanc Long Grain 50kg Maman,21000,24500,32,5,Alimentation
+ALIM-003,Riz Brisé Cassé 2x 25kg Papillon,11500,13800,60,10,Alimentation
+ALIM-004,Huile Végétale Raffinée 5L Dinor,5200,6500,75,8,Alimentation
+ALIM-005,Huile de Palme Raffinée 20L Mayor,19500,23000,25,4,Alimentation
+ALIM-006,Huile de Tournesol 1L Lesieur,1400,1850,120,15,Alimentation
+ALIM-007,Sucre Blanc en Morceaux 1kg St Louis,850,1100,150,20,Alimentation
+ALIM-008,Sucre Roux en Poudre 50kg SOSUCAM,22000,26000,18,3,Alimentation
+ALIM-009,Farine de Blé Boulangère 50kg Grands Moulins,18500,22000,40,5,Alimentation
+ALIM-010,Farine de Maïs Blanche 5kg Locale,1600,2200,55,10,Alimentation
+ALIM-011,Pâtes Alimentaires Spaghetti 500g Panzani,450,650,240,30,Alimentation
+ALIM-012,Pâtes Coquillettes 500g Madina (Carton 20),7200,9500,35,5,Alimentation
+ALIM-013,Lait Concentré Sucré Bonnet Rouge 397g,650,850,180,24,Alimentation
+ALIM-014,Lait en Poudre Nido 2.5kg Boîte Métal,13500,16500,22,4,Alimentation
+ALIM-015,Lait Concentré Non Sucré Gloria 410g,550,750,140,20,Alimentation
+ALIM-016,Tomate Concentrée Gino 70g (Carton 50),6800,8500,45,6,Alimentation
+ALIM-017,Double Concentré de Tomate Salsa 400g,500,700,95,12,Alimentation
+ALIM-018,Café Soluble Nescafé Classic 200g Bocal,2400,3200,65,8,Alimentation
+ALIM-019,Thé Vert de Chine Spécial Gunpowder 250g,900,1300,80,10,Alimentation
+ALIM-020,Chocolat en Poudre Nesquik 400g,1800,2400,50,8,Alimentation
+ALIM-021,Sardines à l'Huile Végétale Titus 125g,450,600,210,25,Alimentation
+ALIM-022,Thon Entier au Naturel Saupiquet 160g,850,1200,90,12,Alimentation
+ALIM-023,Bouillon d'Assaisonnement Maggi Étoile (Paquet 60),1100,1500,110,15,Alimentation
+ALIM-024,Sel de Cuisine Fin Iodé 1kg Annadi,200,300,300,40,Alimentation
+ALIM-025,Mayonnaise Calvé Bocal 450g,1400,1900,70,10,Alimentation
+ALIM-026,Moutarde de Dijon Amora 265g,950,1350,60,8,Alimentation
+ALIM-027,Vinaigre Blanc d'Alcool 1L Cristal,450,650,85,10,Alimentation
+ALIM-028,Biscuits Sablés Petit Beurre Lu 200g,400,600,130,20,Alimentation
+ALIM-029,Pâte à Tartiner Choco Noisette 400g ChocoPain,1200,1700,45,6,Alimentation
+ALIM-030,Corned Beef Bœuf Salé 340g Exeter,1650,2200,55,8,Alimentation
+ALIM-031,Champignons de Paris Émincés 400g Bonduelle,1100,1600,40,5,Alimentation
+ALIM-032,Petits Pois Carottes Boîte 400g Cassegrain,900,1350,48,6,Alimentation
+ALIM-033,Couscous Grain Moyen 1kg Dari,950,1400,65,10,Alimentation
+ALIM-034,Flocons d'Avoine Quaker Oats 500g,1300,1850,38,5,Alimentation
+ALIM-035,Levure Chimique Alsa Sachet (Lot de 8),600,900,85,10,Alimentation
+BOIS-001,Eau Minérale Possotomé 1.5L (Pack de 6),1800,2400,110,15,Boissons
+BOIS-002,Eau Minérale Fifji 50cl (Pack de 12),1600,2200,85,10,Boissons
+BOIS-003,Coca-Cola Original Bouteille PET 1.5L,750,1000,140,20,Boissons
+BOIS-004,Fanta Orange Bouteille PET 1.5L,750,1000,95,15,Boissons
+BOIS-005,Sprite Citron Bouteille PET 1.5L,750,1000,70,10,Boissons
+BOIS-006,Jus de Mangue Naturel 1L Ceres,1150,1600,60,8,Boissons
+BOIS-007,Jus d'Ananas Pur 1L Pressea,1050,1500,75,10,Boissons
+BOIS-008,Jus Pomme Kiwi 1L Don Simon,950,1400,55,8,Boissons
+BOIS-009,Boisson Énergisante Red Bull Canette 250ml,950,1400,160,20,Boissons
+BOIS-010,Boisson Énergisante XXL Energy 33cl,400,600,200,25,Boissons
+BOIS-011,Bière La Béninoise 65cl (Casier 12),6000,7800,45,6,Boissons
+BOIS-012,Bière Castel Beer 65cl (Casier 12),6200,8000,40,5,Boissons
+BOIS-013,Bière Heineken Canette 33cl (Pack 24),14500,18000,30,4,Boissons
+BOIS-014,Bière Guinness Foreign Extra Stout 33cl,650,900,120,15,Boissons
+BOIS-015,Maltina Boisson Maltée Sans Alcool 33cl,450,650,100,12,Boissons
+BOIS-016,Panaché Rafraîchissant Chill 50cl,550,750,65,8,Boissons
+BOIS-017,Vin Rouge Bordeaux Supérieur Baron 75cl,3800,5500,35,4,Boissons
+BOIS-018,Vin Rosé d'Anjou Demi-Sec 75cl,3200,4800,28,4,Boissons
+BOIS-019,Champagne Brut Nicolas Feuillatte 75cl,24000,32000,12,2,Boissons
+BOIS-020,Whisky Écossais Johnnie Walker Red Label 75cl,9500,13500,20,3,Boissons
+BOIS-021,Gin Gordon's Dry London 75cl,7200,10500,18,3,Boissons
+BOIS-022,Liqueur de Menthe Pastille 70cl,4500,6800,15,2,Boissons
+BOIS-023,Sirop de Grenadine Teisseire 70cl,1850,2600,40,5,Boissons
+BOIS-024,Nectar de Goyave 1L Réa,950,1400,45,6,Boissons
+BOIS-025,Bissap Artisanal Pasteurisé 50cl,350,500,80,10,Boissons
+TECH-001,Smartphone Xiaomi Redmi 13C 128Go 4Go RAM,68000,82000,14,2,High-Tech
+TECH-002,Smartphone Samsung Galaxy A15 128Go Noir,88000,105000,10,2,High-Tech
+TECH-003,Smartphone Tecno Spark 20 256Go 8Go RAM,94000,112000,8,2,High-Tech
+TECH-004,Téléphone Clavier Basique Itel 2160 Double SIM,7200,9500,45,6,High-Tech
+TECH-005,Écouteurs Sans Fil Bluetooth TWS Pro 5,4500,7500,60,8,High-Tech
+TECH-006,Casque Bluetooth Stéréo P9 Réduction Bruit,6200,9800,32,5,High-Tech
+TECH-007,Câble USB vers USB Type-C Charge Rapide 2m,900,2000,120,15,High-Tech
+TECH-008,Câble Lightning pour iPhone Tressé 1.5m,1100,2500,90,12,High-Tech
+TECH-009,Câble Micro-USB Standard 1m Renforcé,600,1500,110,15,High-Tech
+TECH-010,Chargeur Secteur Rapide 25W Type-C Samsung,3200,5500,48,6,High-Tech
+TECH-011,Power Bank 20000mAh Double Sortie Oraimo,11000,15500,24,4,High-Tech
+TECH-012,Power Bank Compact 10000mAh Fast Charge,6800,9800,35,5,High-Tech
+TECH-013,Clé USB 64Go USB 3.0 SanDisk Ultra,3600,5500,55,8,High-Tech
+TECH-014,Clé USB 32Go Kingston DataTraveler,2400,4000,75,10,High-Tech
+TECH-015,Carte Mémoire MicroSD 128Go avec Adaptateur,5200,8000,40,5,High-Tech
+TECH-016,Carte Mémoire MicroSD 32Go Classe 10,2100,3500,65,8,High-Tech
+TECH-017,Support Téléphone Voiture Magnétique Grille,1400,2800,50,6,High-Tech
+TECH-018,Trépied Ring Light LED 26cm avec Télécommande,4800,8000,22,3,High-Tech
+TECH-019,Enceinte Portable Bluetooth Étanche JBL GO 3,19500,26000,12,2,High-Tech
+TECH-020,Mini Enceinte Sans Fil Rechargeable RGB,3500,6000,40,5,High-Tech
+TECH-021,Souris Optique Sans Fil 2.4GHz Logitech M185,5200,8000,30,4,High-Tech
+TECH-022,Souris Filaire USB Ergonomique Noire,1800,3200,45,6,High-Tech
+TECH-023,Clavier USB AZERTY Français Standard,3200,5500,28,4,High-Tech
+TECH-024,Tapis de Souris Repose-Poignet Gel Confort,1200,2500,40,5,High-Tech
+TECH-025,Rallonge Multiprise 6 Prises Parafoudre 3m,4500,7500,35,5,High-Tech
+TECH-026,Routeur WiFi 4G LTE Mobile Huawei E5577,26000,35000,8,2,High-Tech
+TECH-027,Adaptateur HDMI vers VGA avec Audio,2200,4000,30,4,High-Tech
+TECH-028,Hub USB 4 Ports USB 3.0 Haute Vitesse,2800,5000,32,4,High-Tech
+TECH-029,Pochette Housse Protection PC Portable 15.6,3500,6500,25,4,High-Tech
+TECH-030,Verre Trempé Protection Écran Smartphone Universel,500,1500,150,20,High-Tech
+COSM-001,Savon Noir d'Afrique Authentique 150g Dudu Osun,450,750,180,20,Cosmétique
+COSM-002,Beurre de Karité Pur Bio Non Raffiné 500g,1800,2800,65,8,Cosmétique
+COSM-003,Huile Vierge de Coco Pure Pressée à Froid 250ml,1400,2200,75,10,Cosmétique
+COSM-004,Lait Corporel Hydratant Nivea Nourishing 400ml,2800,4200,55,8,Cosmétique
+COSM-005,Lait Corps Éclaircissant Naturel Carotte 500ml,2400,3800,45,6,Cosmétique
+COSM-006,Gel Douche Exfoliant Gommant Cottage 250ml,1800,2800,60,8,Cosmétique
+COSM-007,Savon de Toilette Parfumé Lux 125g Rose,350,500,220,25,Cosmétique
+COSM-008,Savon Antibactérien Dettol Original 110g,450,650,190,25,Cosmétique
+COSM-009,Shampoing Antipelliculaire Head & Shoulders 400ml,3100,4600,40,5,Cosmétique
+COSM-010,Après-Shampoing Démêlant Ultra Doux Garnier 300ml,2200,3400,38,5,Cosmétique
+COSM-011,Crème Défrisante Sans Soude Dark and Lovely,2400,3600,48,6,Cosmétique
+COSM-012,Huile Capillaire Fortifiante Ricin Pur 100ml,1200,2000,70,8,Cosmétique
+COSM-013,Dentifrice Triple Action Colgate 125ml,600,950,160,20,Cosmétique
+COSM-014,Dentifrice Protection Caries Signal 100ml,450,700,140,15,Cosmétique
+COSM-015,Brosse à Dents Médium Oral-B (Lot de 3),1100,1750,85,10,Cosmétique
+COSM-016,Déodorant Spray Nivea Men Dry Impact 150ml,1600,2500,60,8,Cosmétique
+COSM-017,Déodorant Bille Rexona Women Cotton Dry 50ml,1100,1800,75,10,Cosmétique
+COSM-018,Eau de Parfum Homme Sauvage Tribute 100ml,6500,11000,20,3,Cosmétique
+COSM-019,Eau de Parfum Femme La Vie Brillante 100ml,6200,10500,22,3,Cosmétique
+COSM-020,Brume Corporelle Parfumée Victoria Shimmer 250ml,3200,5500,40,5,Cosmétique
+COSM-021,Gel Coiffant Fixation Forte Eco Styler 473ml,2100,3500,50,6,Cosmétique
+COSM-022,Mèche à Tresser Kanekalon X-Pression N°1 Noir,900,1400,130,15,Cosmétique
+COSM-023,Crème Visage Jour Hydratante Vitamine C 50ml,3200,5200,30,4,Cosmétique
+COSM-024,Sérum Anti-Tâches & Éclat Niacinamide 30ml,4200,6800,25,3,Cosmétique
+COSM-025,Lingettes Démaquillantes Micellaires (Paquet 40),950,1600,70,8,Cosmétique
+COSM-026,Vernis à Ongles Longue Tenue Rouge Flamboyant,600,1200,90,10,Cosmétique
+COSM-027,Coton Démaquillant Disques Doux (Sachet 80),650,1100,100,12,Cosmétique
+COSM-028,Baume à Lèvres Réparateur Vaseline Rosy 20g,500,900,120,15,Cosmétique
+COSM-029,Coupe-Ongles Professionnel Acier Inoxydable,450,900,110,12,Cosmétique
+COSM-030,Gant de Toilette Marocain Kessa Exfoliant,550,1100,85,10,Cosmétique
+ENTR-001,Lessive en Poudre Omo Actif 1kg Sachet,1150,1600,140,15,Entretien
+ENTR-002,Lessive Poudre Ariel 2.5kg Sac Éco,3600,4800,55,8,Entretien
+ENTR-003,Liquide Vaisselle Citron Paic Puissant 750ml,950,1450,90,12,Entretien
+ENTR-004,Eau de Javel Désinfectante La Croix 1L,550,850,150,20,Entretien
+ENTR-005,Nettoyant Sols & Multi-surfaces Ajax Pin 1L,1200,1800,75,10,Entretien
+ENTR-006,Assouplissant Textile Lenor Souffle d'Été 1.5L,2200,3200,45,6,Entretien
+ENTR-007,Désodorisant d'Intérieur Aérosol Air Wick 300ml,1100,1750,65,8,Entretien
+ENTR-008,Insecticide Anti-Moustiques Baygon Vert 400ml,1450,2100,80,10,Entretien
+ENTR-009,Papier Hygiénique Doux 2 Plis (Pack de 12 Rouleaux),2200,3200,70,10,Entretien
+ENTR-010,Essuie-Tout Cuisine Ultra Absorbant (Lot de 3),1100,1700,85,12,Entretien
+ENTR-011,Éponges Vaisselle Double Face Abrasive (Lot de 5),450,800,160,20,Entretien
+ENTR-012,Serpillière Épaisse Coton Gaufré 50x60cm,700,1200,95,12,Entretien
+ENTR-013,Balai Balayette avec Manche Bois Verni,1800,2800,40,5,Entretien
+ENTR-014,Seau Plastique Résistant 12L avec Bec Verseur,1200,2000,50,6,Entretien
+ENTR-015,Sacs Poubelle Renforcés 50 Litres (Rouleau 20),1100,1750,80,10,Entretien
+ENTR-016,Gants de Ménage Latex Réutilisables Taille M,650,1100,100,12,Entretien
+ENTR-017,Bloc WC Nettoyant & Désodorisant Canard 50g,600,950,110,15,Entretien
+ENTR-018,Crème à Récurer Anti-Calcaire Cif Blanc 750ml,1400,2100,50,6,Entretien
+ENTR-019,Allumettes de Sécurité Boîte Famille (Pack 10),400,650,150,20,Entretien
+ENTR-020,Poudre à Récurer Vim Multi-Usage 500g,550,850,90,10,Entretien
+ENTR-021,Papier Aluminium Alimentaire 30m Qualité Pro,1300,2000,60,8,Entretien
+ENTR-022,Film Étirable Plastique Alimentaire 50m,950,1500,75,10,Entretien
+ENTR-023,Pastilles Lave-Linge Anti-Calcaire (Boîte 15),1900,2900,30,4,Entretien
+ENTR-024,Savon de Marseille Authentique Cube 300g,700,1100,100,12,Entretien
+ENTR-025,Raclette Sol Caoutchouc Professionnelle 45cm,1900,3000,35,5,Entretien
+PAP-001,Rame de Papier A4 80g Double A (500 Feuilles),2800,3900,140,20,Papeterie
+PAP-002,Stylo à Bille BIC Cristal Bleu (Boîte de 50),3800,5500,45,6,Papeterie
+PAP-003,Stylo à Bille BIC Cristal Noir (Boîte de 50),3800,5500,40,5,Papeterie
+PAP-004,Cahier 200 Pages Grand Format Séyès 24x32cm,850,1300,180,25,Papeterie
+PAP-005,Cahier 100 Pages Petit Format 17x22cm Ligné,350,550,240,30,Papeterie
+PAP-006,Classeur à Levier Dos 75mm Polypropylène Noir,1400,2200,60,8,Papeterie
+PAP-007,Chemises Carton Lustré 24x32cm (Paquet de 25),2200,3400,50,8,Papeterie
+PAP-008,Pochettes Plastiques Perforées A4 (Paquet de 100),1100,1800,85,12,Papeterie
+PAP-009,Calculatrice Scientifique Casio fx-82MS,5200,7800,35,4,Papeterie
+PAP-010,Calculatrice de Bureau 12 Chiffres Grand Écran,3200,5000,40,5,Papeterie
+PAP-011,Agrafeuse Métal Grande Capacité 24/6 26/6,2100,3500,45,6,Papeterie
+PAP-012,Boîte de 1000 Agrafes Galvanisées 24/6,300,600,130,20,Papeterie
+PAP-013,Perforateur de Bureau Métallique 2 Trous 20F,1800,3000,35,5,Papeterie
+PAP-014,Ruban Adhésif Transparent Scotch 19mm x 33m,250,500,200,25,Papeterie
+PAP-015,Dévidoir de Bureau Lourd pour Ruban Adhésif,1600,2800,30,4,Papeterie
+PAP-016,Marqueurs Permanents Biseautés Noirs (Boîte 12),2400,3800,50,6,Papeterie
+PAP-017,Surligneurs Fluo Couleurs Assorties (Pochette 4),1200,2000,75,10,Papeterie
+PAP-018,Crayons de Papier HB avec Embout Gomme (Boîte 12),900,1500,80,10,Papeterie
+PAP-019,Taille-Crayon Métallique 2 Trous Résistant,250,500,110,15,Papeterie
+PAP-020,Gomme Blanche Plastique Sans Poussière Maped,200,400,140,20,Papeterie
+PAP-021,"Ensemble Géométrie 4 Pièces (Règle, Équerre, Rapporteur)",550,1000,95,12,Papeterie
+PAP-022,Bloc Notes Post-it Jaune 76x76mm (Pack de 3),850,1450,90,12,Papeterie
+PAP-023,Sous-Chemises 80g Assorties (Paquet de 100),1900,3000,40,5,Papeterie
+PAP-024,Enveloppes Blanches Autocollantes DL (Boîte 100),1500,2500,55,8,Papeterie
+PAP-025,Colle Blanche Liquide 120g UHU Twist & Glue,650,1100,85,10,Papeterie
+QUIN-001,Ampoule LED Éco 9W E27 Blanc Chaud Philips,950,1600,160,20,Quincaillerie
+QUIN-002,Ampoule LED Éco 15W E27 Blanc Froid Puissant,1400,2300,110,15,Quincaillerie
+QUIN-003,Projecteur LED Extérieur Étanche 50W IP65,6800,10500,25,4,Quincaillerie
+QUIN-004,Cadenas Monobloc Laiton 50mm avec 3 Clés,2200,3600,50,6,Quincaillerie
+QUIN-005,Cadenas Haute Sécurité Blindé 70mm Tri-Circle,4200,6800,30,4,Quincaillerie
+QUIN-006,Jeu de 6 Tournevis Précision Électricien Isolé,3200,5200,35,5,Quincaillerie
+QUIN-007,Pince Universelle Isolée 200mm Acier Trempé,2400,4000,40,5,Quincaillerie
+QUIN-008,Mètre Ruban Enrouleur 5m Boîtier Résistant,1100,2000,75,10,Quincaillerie
+QUIN-009,Niveau à Bulle Aluminium 40cm Magnétique,2100,3500,30,4,Quincaillerie
+QUIN-010,Marteau Menuisier Manche Fibre de Verre 300g,2600,4200,35,5,Quincaillerie
+QUIN-011,Scie à Métaux Poignée Ergonomique avec Lame,2800,4600,28,4,Quincaillerie
+QUIN-012,Boîte de 10 Lames de Scie à Métaux HSS,1800,3000,45,6,Quincaillerie
+QUIN-013,Clé à Molette Chromée 10 Pouces (250mm),3400,5500,25,4,Quincaillerie
+QUIN-014,Pince Multiprise Entrepassée 250mm,2900,4800,30,4,Quincaillerie
+QUIN-015,Ruban Adhésif Isolant Électricien Noir 10m,300,600,180,20,Quincaillerie
+QUIN-016,Ruban d'Étanchéité Téflon Plomberie 12mm x 12m,250,500,150,20,Quincaillerie
+QUIN-017,Colle Forte Glue Universelle Instantanée 3g (Lot 2),400,800,140,15,Quincaillerie
+QUIN-018,Mastic Silicone Transparent Sanitaire 280ml,1900,3100,45,6,Quincaillerie
+QUIN-019,Pistolet à Cartouche Mastic Silicone Renforcé,1800,3000,30,4,Quincaillerie
+QUIN-020,Boîte de Vis Bois Aggloméré 4x40mm (Boîte 200),1400,2400,60,8,Quincaillerie
+QUIN-021,Chevilles Nylon Universelles 6mm (Sachet 100),900,1600,80,10,Quincaillerie
+QUIN-022,Piles Alcalines AA LR6 Duracell (Pack de 4),1600,2500,95,12,Quincaillerie
+QUIN-023,Piles Alcalines AAA LR03 Energizer (Pack de 4),1500,2400,90,12,Quincaillerie
+QUIN-024,Torche Lampe LED Rechargeable USB Puissante,3200,5500,35,5,Quincaillerie
+QUIN-025,Disjoncteur Divisionnaire Unipolaire 16A Hager,2400,3900,40,5,Quincaillerie
+QUIN-026,Interrupteur Mural Simple Allumage Blanc Legrand,1100,1900,70,10,Quincaillerie
+QUIN-027,Prise Murale 2P+T 16A avec Éclipse de Sécurité,1200,2000,65,10,Quincaillerie
+QUIN-028,Câble Électrique Rigide 3x1.5mm² (Couronne 50m),14500,19000,15,2,Quincaillerie
+QUIN-029,Tuyau d'Arrosage Renforcé 15m avec Raccords,5500,8500,20,3,Quincaillerie
+QUIN-030,Gants de Protection Chantier Paume Enduite PU,750,1400,110,15,Quincaillerie
+MODE-001,Pagne Tissu Wax Véritable Super Hollandais (6 Yards),16500,22000,25,3,Mode & Textile
+MODE-002,Pagne Wax Imprimé Africain Fancy (6 Yards),5800,8500,45,6,Mode & Textile
+MODE-003,Bazin Riche Riche Autriche Teint Artisanal 5m,28000,38000,14,2,Mode & Textile
+MODE-004,Dentelle Brodée Suisse Festonnée 5 Yards,22000,31000,16,2,Mode & Textile
+MODE-005,Chemise Homme Coton Manches Longues Slim Blanc,6500,10500,30,4,Mode & Textile
+MODE-006,Polo Homme Piqué 100% Coton Uni Bleu Marine,4200,7000,40,5,Mode & Textile
+MODE-007,T-Shirt Col Rond Coton Peigné Uni Noir,2200,4000,75,10,Mode & Textile
+MODE-008,Pantalon Chino Ajusté Beige Homme,7500,12000,24,4,Mode & Textile
+MODE-009,Jean Denim Coupe Droite Délavé Homme,8200,13500,28,4,Mode & Textile
+MODE-010,Robe Trapèze Évasée Imprimée Wax Femme,9500,15000,20,3,Mode & Textile
+MODE-011,Ensemble Jupe et Top Wax Moderne Femme,12000,18500,18,3,Mode & Textile
+MODE-012,Foulard Écharpe Soie Satinée Imprimée,2400,4500,50,6,Mode & Textile
+MODE-013,Ceinture Homme Cuir Véritable Boucle Métal,3200,6000,45,6,Mode & Textile
+MODE-014,Portefeuille Homme Cuir Multi-Compartiments,3800,7000,35,5,Mode & Textile
+MODE-015,Sac à Main Élégant Femme Cuir PU Noir,8500,14000,22,3,Mode & Textile
+MODE-016,Sac à Dos Ville Polyvalent Porte-PC 15 Pouces,7200,12000,25,4,Mode & Textile
+MODE-017,Pochette Soirée Cérémonie Dorée avec Chaînette,4500,8000,20,3,Mode & Textile
+MODE-018,Sandales Cuir Confort Homme Style Saharienne,6200,10000,30,4,Mode & Textile
+MODE-019,Escarpins Talons Fins 8cm Noirs Femme,9500,15500,18,3,Mode & Textile
+MODE-020,Baskets Sneaker Basses Blanches Unisexe,11000,17500,24,4,Mode & Textile
+MODE-021,Mocassins Cuir Souple Marron Élégant,13500,21000,15,2,Mode & Textile
+MODE-022,Chaussettes Coton Respirantes (Lot de 3 Paires),1200,2200,80,10,Mode & Textile
+MODE-023,Boxer Coton Stretch Homme (Lot de 2),2200,3800,65,8,Mode & Textile
+MODE-024,Soutien-Gorge Confort Dentelle Fine,2800,4900,40,5,Mode & Textile
+MODE-025,Casquette Baseball Ajustable Coton Vintage,2100,3900,50,6,Mode & Textile
+MODE-026,Chapeau de Paille Tressée Protection Solaire,1800,3500,35,4,Mode & Textile
+MODE-027,Montre Bracelet Cuir Quartz Homme Cadran Bleu,8500,14500,20,3,Mode & Textile
+MODE-028,Lunettes de Soleil UV400 Monture Métal Unisexe,3200,6000,45,6,Mode & Textile
+MODE-029,Parapluie Pliant Automatique Coupe-Vent,2800,4800,40,5,Mode & Textile
+MODE-030,Boubou Brodé Traditionnel Homme Coton Bazin,19500,28000,12,2,Mode & Textile

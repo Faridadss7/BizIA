@@ -16,9 +16,11 @@ Serveur Backend : https://bizia-backend.onrender.com
 CONTENU DU KIT DE TEST :
 --------------------------------------------------------------------------------
 1. ETAPES_DE_TEST_BIZIA.txt          -> Ce fichier d'instructions
-2. catalogue_import_test.csv        -> Fichier CSV de 8 produits pour l'import
-3. facture_test_fournisseur.jpg     -> Facture fournisseur pour tester l'OCR
-4. BizIA_Presentation_Officielle.pdf -> Diaporama officiel (8 slides)
+2. catalogue_import_test.csv        -> Fichier CSV rapide de 8 produits
+3. catalogue_200_produits.csv       -> Catalogue MASSIF de 230 produits (48,5M FCFA de stock, 8 rayons)
+4. catalogue_200_produits.xlsx      -> Format Excel du catalogue massif de 230 produits
+5. facture_test_fournisseur.jpg     -> Facture fournisseur pour tester l'OCR
+6. BizIA_Presentation_Officielle.pdf -> Diaporama officiel (8 slides)
 
 --------------------------------------------------------------------------------
 ETAPES DE TEST & DEMONSTRATION PAS A PAS :
@@ -40,12 +42,14 @@ ETAPE 2 : SCANNER OCR DE FACTURE (Gemini Vision)
   beton, Riz, Huile, Lait, Sucre), des quantites et des prix d'achat, avec
   mise a jour du stock en 1 clic.
 
-ETAPE 3 : IMPORTATION INTELLIGENTE CSV & EXCEL
-----------------------------------------------
+ETAPE 3 : IMPORTATION INTELLIGENTE CSV & EXCEL (Test Données Massives)
+---------------------------------------------------------------------
 - URL : https://bizia.vercel.app/import
-- Action : Glissez le fichier "catalogue_import_test.csv" et confirmez.
-- Resultat attendu : Mapping automatique des colonnes (SKU, Designation, Prix
-  d'achat, Prix de vente, Quantite) et integration directe au catalogue.
+- Action : Glissez soit "catalogue_import_test.csv" (rapide), soit "catalogue_200_produits.csv"
+  ou "catalogue_200_produits.xlsx" (230 produits réels) et confirmez l'import.
+- Resultat attendu : Mapping automatique instantané des colonnes (SKU, Désignation, Prix
+  d'achat, Prix de vente, Quantité, Seuil, Catégorie) et intégration directe des 230 produits
+  dans le catalogue et le tableau de bord avec calcul de valorisation financière.
 
 ETAPE 4 : CAISSE & COMMANDE VOCALE
 ----------------------------------
