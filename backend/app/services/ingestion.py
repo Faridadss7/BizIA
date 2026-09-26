@@ -37,18 +37,19 @@ COLUMN_ALIASES: dict[str, set[str]] = {
     "unit_cost": {
         "unit_cost", "cout", "cost", "prix_achat", "cout_unitaire", "cout_unite", "cout_achat",
         "prix_de_revient", "prix_revient", "cost_price", "purchase_price", "prix_d_achat",
-        "cout_d_achat", "pa", "p_achat", "cout_u", "prix_achat_unitaire", "achat", "tarif_achat"
+        "cout_d_achat", "pa", "p_achat", "cout_u", "prix_achat_unitaire", "achat", "tarif_achat",
+        "p_u", "pu", "cout_unitaire_ht", "prix_unitaire_achat"
     },
     "unit_price": {
         "unit_price", "prix", "price", "prix_vente", "prix_unitaire", "prix_unite", "prix_u",
-        "pu", "prix_de_vente", "prix_vente_unitaire", "prix_unitaire_vente", "montant_unitaire",
+        "pu", "p_u", "prix_de_vente", "prix_vente_unitaire", "prix_unitaire_vente", "montant_unitaire",
         "selling_price", "unit_selling_price", "pv", "p_vente", "prix_public", "tarif_vente",
-        "prix_ttc", "prix_ht"
+        "prix_ttc", "prix_ht", "tarif", "p_unitaire"
     },
     "stock_quantity": {
         "stock_quantity", "stock", "qte_stock", "quantite_stock", "stock_actuel",
         "quantite_en_stock", "qte_en_stock", "stock_initial", "quantite_disponible",
-        "stock_dispo", "qte_dispo", "inventaire", "quantite", "qte", "quantite_stock_actuel"
+        "stock_dispo", "qte_dispo", "inventaire", "quantite_stock_actuel"
     },
     "low_stock_threshold": {
         "low_stock_threshold", "seuil", "seuil_stock", "seuil_alerte", "stock_minimum",
@@ -181,6 +182,12 @@ def parse_tabular(path: str, filename: str) -> tuple[list[dict[str, Any]], list[
                 name_clean = re.sub(r"[^A-Za-z0-9]+", "-", str(record.get("name") or f"ART-{idx}").strip().upper()).strip("-")
                 record["sku"] = name_clean[:16] or f"ART-{idx:03d}"
             if record.get("name"):
+                # Si la quantité extraite n'est pas un nombre valide (ex: reliquat de mot-clé), ignorer la ligne
+                sq = record.get("stock_quantity")
+                if sq is not None and not isinstance(sq, (int, float)):
+                    continue
+                if record.get("unit_price") is None and record.get("unit_cost") is not None:
+                    record["unit_price"] = record["unit_cost"]
                 products.append(record)
         return products, []
 
@@ -436,13 +443,40 @@ def _rows_to_frame(rows: list[list[Any]] | None) -> pd.DataFrame | None:
             cleaned.append(cells)
     if len(cleaned) < 2:
         return None
-    width = max(len(row) for row in cleaned)
+
+    # Recherche intelligente de la ligne d'en-tête (en-tête souvent précédé du logo/coordonnées)
+    header_idx = 0
+    for i, row in enumerate(cleaned):
+        norm = [_normalize(c) for c in row if c]
+        if _detect_kind(norm) is not None:
+            header_idx = i
+            break
+
+    headers_row = cleaned[header_idx]
+    body_raw = cleaned[header_idx + 1:]
+    if not headers_row or not body_raw:
+        return None
+
+    width = max(len(headers_row), max(len(row) for row in body_raw))
     if width < 2:
         return None
-    padded = [row + [""] * (width - len(row)) for row in cleaned]
-    headers = _unique_headers(padded[0])
-    body = padded[1:]
-    if not any(any(cell for cell in row) for row in body):
+
+    headers_padded = headers_row + [f"col_{j}" for j in range(len(headers_row), width)]
+    headers = _unique_headers(headers_padded)
+
+    body: list[list[str]] = []
+    _footer_keywords = ("montant brut", "total net", "total a payer", "net a payer", "acquitte", "total général", "total:", "le 25/", "le 26/", "le 27/", "le 28/", "le 29/", "le 30/", "le 31/", "signature", "tampon", "cachet")
+    for row in body_raw:
+        row_text = " ".join(str(c) for c in row).lower()
+        if any(kw in row_text for kw in _footer_keywords):
+            continue
+        padded_row = row + [""] * (width - len(row))
+        # Exclure les lignes qui n'ont aucun chiffre ou qui ne contiennent qu'un seul mot
+        non_empty = [c.strip() for c in padded_row if c.strip()]
+        if len(non_empty) >= 2 and any(re.search(r"\d+", c) for c in non_empty[1:]):
+            body.append(padded_row[:width])
+
+    if not body:
         return None
     return pd.DataFrame(body, columns=headers)
 
@@ -506,24 +540,32 @@ def _detect_kind(headers: list[str]) -> str | None:
 
     # Éléments typiques d'un catalogue produit (prix d'achat, stock disponible, seuil, catégorie)
     product_specific = {_normalize(a) for a in COLUMN_ALIASES["unit_cost"] | COLUMN_ALIASES["stock_quantity"] | COLUMN_ALIASES["low_stock_threshold"] | COLUMN_ALIASES["category"]}
-    # Éléments typiques d'un journal de vente (date de vente, canal, quantité vendue)
+    # Éléments typiques d'un journal de vente (date de vente, canal, etc.)
     sales_specific = {_normalize(a) for a in COLUMN_ALIASES["sold_at"] | {"quantite_vendue", "qte_vendue", "quantity_sold", "date_vente", "date_de_vente"}}
 
     product_hints = {_normalize(a) for a in COLUMN_ALIASES["sku"] | COLUMN_ALIASES["name"]}
     quantity_hints = {_normalize(a) for a in COLUMN_ALIASES["quantity"]}
 
-    # Si le fichier contient des coûts d'achat, du stock ou catégorie -> Produits
-    if normalized & product_specific:
-        return "products"
-    # Si le fichier contient une date de vente ou quantité vendue spécifique -> Ventes
-    if normalized & sales_specific:
+    has_date = bool(normalized & sales_specific)
+    has_prod_spec = bool(normalized & product_specific)
+    has_qty = bool(normalized & quantity_hints)
+    has_prod_hints = bool(normalized & product_hints)
+
+    # 1. Si une date ou canal de vente est présent -> Journal de vente
+    if has_date:
         return "sales"
-    # Si le fichier contient des identifiants produits ou noms -> Produits
-    if normalized & product_hints:
-        return "products"
-    # Si le fichier a une colonne quantité -> Ventes
-    if normalized & quantity_hints:
+    # 2. Si une quantité est présente sans coût de revient ni stock -> Ventes
+    if has_qty and not has_prod_spec:
         return "sales"
+    # 3. Si des champs spécifiques aux produits (coût, stock, catégorie, seuil) sont présents -> Produits
+    if has_prod_spec:
+        return "products"
+    # 4. Si une quantité est présente -> Ventes
+    if has_qty:
+        return "sales"
+    # 5. Si des identifiants ou noms d'articles sont présents -> Produits
+    if has_prod_hints:
+        return "products"
     return None
 
 
@@ -559,6 +601,9 @@ def _map_headers(headers: list[str], fields: tuple[str, ...]) -> dict[str, str]:
     return mapping
 
 
+_NUMERIC_FIELDS = frozenset({"unit_cost", "unit_price", "stock_quantity", "low_stock_threshold", "quantity"})
+
+
 def _records(frame: pd.DataFrame, mapping: dict[str, str]) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     for _, row in frame.iterrows():
@@ -566,12 +611,31 @@ def _records(frame: pd.DataFrame, mapping: dict[str, str]) -> list[dict[str, Any
         empty = True
         for field, column in mapping.items():
             value = _native(row[column])
+            if field in _NUMERIC_FIELDS and value is not None:
+                value = _parse_number(value)
             record[field] = value
             if value is not None and str(value).strip() != "":
                 empty = False
         if not empty:
             records.append(record)
     return records
+
+
+def _parse_number(value: Any) -> Any:
+    if isinstance(value, (int, float)):
+        return value
+    if not isinstance(value, str):
+        return value
+    cleaned = re.sub(r"[\s\u00a0\u202f]+", "", value)
+    for token in ("fcfa", "cfa", "xof", "eur", "usd", "f", "frs", "franc", "francs", "ht", "ttc"):
+        cleaned = re.sub(rf"(?i){token}", "", cleaned)
+    cleaned = cleaned.replace(",", ".").strip()
+    if not cleaned:
+        return None
+    try:
+        return float(cleaned) if "." in cleaned else int(cleaned)
+    except ValueError:
+        return value
 
 
 def _native(value: Any) -> Any:

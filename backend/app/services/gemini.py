@@ -296,9 +296,9 @@ def _config(max_output_tokens: int, **extra: Any) -> dict[str, Any]:
 
 
 def _model_candidates() -> list[str]:
-    primary = settings.gemini_model or "gemini-2.5-flash"
+    primary = settings.gemini_model or "gemini-2.0-flash"
     candidates: list[str] = [primary]
-    for m in ("gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash"):
+    for m in ("gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.5-flash", "gemini-2.0-flash-lite"):
         if m and m not in candidates:
             candidates.append(m)
     return candidates

@@ -174,23 +174,10 @@ class JsonStore:
             if not sku:
                 continue
             
-            # Si le produit n'existe pas encore au catalogue (ex: facture/reçu scanné), on le crée automatiquement
             existing_product = self.get_product(sku)
             if existing_product is None:
-                unit_price = float(sale.get("unit_price") or 0.0)
-                unit_cost = float(sale.get("unit_cost") or (round(unit_price * 0.7, 2) if unit_price > 0 else 0.0))
-                qty = float(sale.get("quantity") or 1.0)
-                clean_sku = re.sub(r"[^A-Za-z0-9]+", "-", sku.strip().upper()).strip("-")[:16] or f"ART-{len(self.list_products())+1:03d}"
-                self.add_product({
-                    "sku": clean_sku,
-                    "name": sku,
-                    "unit_price": unit_price if unit_price > 0 else (unit_cost * 1.3 if unit_cost > 0 else 1000.0),
-                    "unit_cost": unit_cost,
-                    "stock_quantity": max(10.0, qty),
-                    "category": "Général",
-                })
-                sale["product_sku"] = clean_sku
-                stats["products_ingested"] += 1
+                stats["sales_skipped_unknown"] += 1
+                continue
 
             if self.has_equivalent_sale(sale):
                 stats["sales_skipped_duplicate"] += 1
