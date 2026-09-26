@@ -55,20 +55,37 @@ export function SignupForm() {
     setGoogleLoading(true);
     setServerError(null);
     try {
-      await (clerk as unknown as { authenticateWithRedirect: (params: unknown) => Promise<void> }).authenticateWithRedirect({
-        strategy: "oauth_google",
-        redirectUrl: "/sso-callback",
-        redirectUrlComplete: "/dashboard",
-      });
+      if (!clerk.loaded) {
+        throw new Error("Initialisation du service en cours. Veuillez patienter une seconde.");
+      }
+      const signUpTarget = clerk.client?.signUp;
+      if (signUpTarget && typeof signUpTarget.authenticateWithRedirect === "function") {
+        await signUpTarget.authenticateWithRedirect({
+          strategy: "oauth_google",
+          redirectUrl: "/sso-callback",
+          redirectUrlComplete: "/dashboard",
+        });
+        return;
+      }
+      const signInTarget = clerk.client?.signIn;
+      if (signInTarget && typeof signInTarget.authenticateWithRedirect === "function") {
+        await signInTarget.authenticateWithRedirect({
+          strategy: "oauth_google",
+          redirectUrl: "/sso-callback",
+          redirectUrlComplete: "/dashboard",
+        });
+        return;
+      }
+      throw new Error("oauth_unavailable");
     } catch (err: unknown) {
       setGoogleLoading(false);
-      const msg = err instanceof Error ? err.message : String(err || "");
-      if (/strategy|not enabled|unsupported/i.test(msg)) {
+      const rawMsg = err instanceof Error ? err.message : String(err || "");
+      if (/oauth_unavailable|strategy|not enabled|unsupported|is not a function/i.test(rawMsg)) {
         setServerError(
-          "La connexion Google requiert d'activer 'Google' dans le tableau de bord Clerk (User & Authentication > Social Connections > Google). Vous pouvez créer votre compte immédiatement avec le formulaire ci-dessous."
+          "La connexion Google requiert d'activer 'Google' dans le tableau de bord Clerk (Configure > Social Connections > Google). Vous pouvez créer votre compte immédiatement avec le formulaire e-mail ci-dessous."
         );
       } else {
-        setServerError(msg || "Impossible d'initier l'inscription Google. Utilisez le formulaire ci-dessous.");
+        setServerError(rawMsg || "Inscription Google temporairement indisponible. Utilisez le formulaire ci-dessous.");
       }
     }
   }
