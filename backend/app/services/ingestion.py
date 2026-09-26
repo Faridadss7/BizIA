@@ -20,76 +20,57 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 COLUMN_ALIASES: dict[str, set[str]] = {
-    "sku": {"sku", "code", "ref", "reference", "code_produit", "reference_produit", "sku_produit"},
-    "name": {"name", "nom", "produit", "product", "libelle", "designation", "intitule"},
-    "category": {"category", "categorie", "cat", "famille", "rayon"},
+    "sku": {
+        "sku", "code", "ref", "reference", "code_produit", "reference_produit", "sku_produit",
+        "code_sku", "sku_code", "ref_produit", "code_article", "ref_article", "article_code",
+        "id_produit", "code_barre", "code_article_fournisseur"
+    },
+    "name": {
+        "name", "nom", "produit", "product", "libelle", "designation", "intitule",
+        "designation_produit", "nom_produit", "nom_article", "designation_article",
+        "libelle_produit", "article", "item", "description"
+    },
+    "category": {
+        "category", "categorie", "cat", "famille", "rayon", "famille_produit", "type",
+        "categorie_produit", "groupe", "secteur", "famille_article"
+    },
     "unit_cost": {
-        "unit_cost",
-        "cout",
-        "cost",
-        "prix_achat",
-        "cout_unitaire",
-        "cout_unite",
-        "cout_achat",
-        "prix_de_revient",
-        "prix_revient",
-        "cost_price",
-        "purchase_price",
+        "unit_cost", "cout", "cost", "prix_achat", "cout_unitaire", "cout_unite", "cout_achat",
+        "prix_de_revient", "prix_revient", "cost_price", "purchase_price", "prix_d_achat",
+        "cout_d_achat", "pa", "p_achat", "cout_u", "prix_achat_unitaire", "achat", "tarif_achat"
     },
     "unit_price": {
-        "unit_price",
-        "prix",
-        "price",
-        "prix_vente",
-        "prix_unitaire",
-        "prix_unite",
-        "prix_u",
-        "pu",
-        "prix_de_vente",
-        "prix_vente_unitaire",
-        "prix_unitaire_vente",
-        "montant_unitaire",
-        "selling_price",
-        "unit_selling_price",
+        "unit_price", "prix", "price", "prix_vente", "prix_unitaire", "prix_unite", "prix_u",
+        "pu", "prix_de_vente", "prix_vente_unitaire", "prix_unitaire_vente", "montant_unitaire",
+        "selling_price", "unit_selling_price", "pv", "p_vente", "prix_public", "tarif_vente",
+        "prix_ttc", "prix_ht"
     },
-    "stock_quantity": {"stock_quantity", "stock", "qte_stock", "quantite_stock", "stock_actuel"},
+    "stock_quantity": {
+        "stock_quantity", "stock", "qte_stock", "quantite_stock", "stock_actuel",
+        "quantite_en_stock", "qte_en_stock", "stock_initial", "quantite_disponible",
+        "stock_dispo", "qte_dispo", "inventaire", "quantite", "qte", "quantite_stock_actuel"
+    },
     "low_stock_threshold": {
-        "low_stock_threshold",
-        "seuil",
-        "seuil_stock",
-        "seuil_alerte",
-        "stock_minimum",
+        "low_stock_threshold", "seuil", "seuil_stock", "seuil_alerte", "stock_minimum",
+        "seuil_minimum", "min_stock", "stock_min", "alerte_stock", "seuil_reappro"
     },
     "product_sku": {
-        "product_sku",
-        "sku",
-        "code",
-        "produit",
-        "ref",
-        "reference",
-        "code_produit",
-        "reference_produit",
-        "sku_produit",
+        "product_sku", "sku", "code", "produit", "ref", "reference", "code_produit",
+        "reference_produit", "sku_produit", "code_sku", "designation", "nom", "article",
+        "designation_produit", "nom_produit"
     },
     "quantity": {
-        "quantity",
-        "qte",
-        "quantite",
-        "qty",
-        "quantite_vendue",
-        "qte_vendue",
-        "quantity_sold",
+        "quantity", "qte", "quantite", "qty", "quantite_vendue", "qte_vendue",
+        "quantity_sold", "nombre", "unites_vendues", "nombre_ventes", "volume_vendu"
     },
     "sold_at": {
-        "sold_at",
-        "date",
-        "jour",
-        "timestamp",
-        "date_vente",
-        "date_de_vente",
-        "sale_date",
+        "sold_at", "date", "jour", "timestamp", "date_vente", "date_de_vente",
+        "sale_date", "date_heure", "date_encaissement", "heure", "date_transaction"
     },
-    "channel": {"channel", "canal", "source"},
+    "channel": {
+        "channel", "canal", "source", "mode_paiement", "caisse", "point_de_vente",
+        "moyen_paiement", "vendeur"
+    },
 }
 
 # Mentions d'unité ou de devise accolées à un en-tête, sans valeur pour le mapping.
@@ -522,24 +503,59 @@ def _cell_text(value: Any) -> str:
 
 def _detect_kind(headers: list[str]) -> str | None:
     normalized = {_normalize(header) for header in headers}
-    quantity_aliases = {_normalize(alias) for alias in COLUMN_ALIASES["quantity"]}
-    if normalized & quantity_aliases:
+
+    # Éléments typiques d'un catalogue produit (prix d'achat, stock disponible, seuil, catégorie)
+    product_specific = {_normalize(a) for a in COLUMN_ALIASES["unit_cost"] | COLUMN_ALIASES["stock_quantity"] | COLUMN_ALIASES["low_stock_threshold"] | COLUMN_ALIASES["category"]}
+    # Éléments typiques d'un journal de vente (date de vente, canal, quantité vendue)
+    sales_specific = {_normalize(a) for a in COLUMN_ALIASES["sold_at"] | {"quantite_vendue", "qte_vendue", "quantity_sold", "date_vente", "date_de_vente"}}
+
+    product_hints = {_normalize(a) for a in COLUMN_ALIASES["sku"] | COLUMN_ALIASES["name"]}
+    quantity_hints = {_normalize(a) for a in COLUMN_ALIASES["quantity"]}
+
+    # Si le fichier contient des coûts d'achat, du stock ou catégorie -> Produits
+    if normalized & product_specific:
+        return "products"
+    # Si le fichier contient une date de vente ou quantité vendue spécifique -> Ventes
+    if normalized & sales_specific:
         return "sales"
-    product_hints = {_normalize(alias) for alias in COLUMN_ALIASES["sku"] | COLUMN_ALIASES["name"]}
+    # Si le fichier contient des identifiants produits ou noms -> Produits
     if normalized & product_hints:
         return "products"
+    # Si le fichier a une colonne quantité -> Ventes
+    if normalized & quantity_hints:
+        return "sales"
     return None
 
 
 def _map_headers(headers: list[str], fields: tuple[str, ...]) -> dict[str, str]:
     mapping: dict[str, str] = {}
     normalized_headers = {header: _normalize(header) for header in headers}
+
+    # Étape 1 : Correspondance exacte prioritaire
     for field in fields:
         aliases = {_normalize(alias) for alias in COLUMN_ALIASES.get(field, {field})}
         for header, normalized in normalized_headers.items():
-            if normalized in aliases:
+            if normalized in aliases and header not in mapping.values():
                 mapping[field] = header
                 break
+
+    # Étape 2 : Correspondance préfixe/suffixe si non encore mappé
+    for field in fields:
+        if field in mapping:
+            continue
+        aliases = {_normalize(alias) for alias in COLUMN_ALIASES.get(field, {field})}
+        for header, normalized in normalized_headers.items():
+            if header in mapping.values():
+                continue
+            # Éviter de mapper "prix_d_achat" vers "unit_price"
+            if field == "unit_price" and ("achat" in normalized or "cost" in normalized or "cout" in normalized):
+                continue
+            if field == "unit_cost" and ("vente" in normalized or "sell" in normalized):
+                continue
+            if any(normalized == alias or normalized.startswith(alias) or alias in normalized for alias in aliases):
+                mapping[field] = header
+                break
+
     return mapping
 
 
