@@ -175,7 +175,7 @@ class JsonStore:
 
             return deleted
 
-    def add_sale(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def add_sale(self, payload: dict[str, Any], decrement_stock: bool = True) -> dict[str, Any]:
         product_sku = str(payload.get("product_sku") or "").strip()
         if not product_sku:
             raise ValueError("Une vente doit référencer un product_sku.")
@@ -185,6 +185,16 @@ class JsonStore:
             catalog = self._find_product(data["products"], product_sku)
             sale = self._normalize_sale(payload, catalog)
             data["sales"].append(sale)
+
+            # Décrémentation automatique du stock lors de la vente
+            if decrement_stock and catalog is not None:
+                qty_sold = float(sale.get("quantity") or 0.0)
+                current_stock = float(catalog.get("stock_quantity") or 0.0)
+                catalog["stock_quantity"] = max(0.0, current_stock - qty_sold)
+                idx = self._product_index(data["products"], product_sku)
+                if idx is not None:
+                    data["products"][idx] = catalog
+
             self._dump(data)
 
             if self.company_id:
@@ -193,21 +203,37 @@ class JsonStore:
                     db_sale = supabase_client.add_sale_db(self.company_id, sale)
                     if db_sale:
                         sale["id"] = db_sale.get("id", sale["id"])
+                    if decrement_stock and catalog is not None:
+                        supabase_client.upsert_product_db(self.company_id, catalog)
                 except Exception:
                     pass
 
             return copy.deepcopy(sale)
 
     def delete_sale(self, sale_id: str) -> bool:
-        """Supprime une vente par ID."""
+        """Supprime une vente par ID et restitue le stock."""
         target = str(sale_id or "").strip()
         if not target:
             return False
         with self._lock:
             data = self._load()
             initial_count = len(data["sales"])
+            target_sale = next((s for s in data["sales"] if str(s.get("id")) == target), None)
             data["sales"] = [s for s in data["sales"] if str(s.get("id")) != target]
             deleted = len(data["sales"]) < initial_count
+
+            catalog = None
+            if deleted and target_sale:
+                sku = target_sale.get("product_sku")
+                if sku:
+                    catalog = self._find_product(data["products"], sku)
+                    if catalog is not None:
+                        qty_sold = float(target_sale.get("quantity") or 0.0)
+                        catalog["stock_quantity"] = float(catalog.get("stock_quantity") or 0.0) + qty_sold
+                        idx = self._product_index(data["products"], sku)
+                        if idx is not None:
+                            data["products"][idx] = catalog
+
             if deleted:
                 self._dump(data)
 
@@ -215,6 +241,8 @@ class JsonStore:
                 try:
                     from app.services import supabase_client
                     supabase_client.delete_sale_db(self.company_id, target)
+                    if catalog is not None:
+                        supabase_client.upsert_product_db(self.company_id, catalog)
                 except Exception:
                     pass
 
@@ -253,7 +281,7 @@ class JsonStore:
             if self.has_equivalent_sale(sale):
                 stats["sales_skipped_duplicate"] += 1
                 continue
-            self.add_sale(sale)
+            self.add_sale(sale, decrement_stock=False)
             stats["sales_ingested"] += 1
         if stats["products_ingested"] or stats["sales_ingested"]:
             self.record_source(source)

@@ -133,7 +133,7 @@ export function HomeContent() {
       </section>
 
       {/* ── 4 Cartes Fonctionnelles Complètes avec Icônes Vectorielles ── */}
-      <section className="landing-modules">
+      <section id="fonctionnalites" className="landing-modules" style={{ scrollMarginTop: "80px" }}>
         <div className="landing-modules__header">
           <h2>
             Modules d&apos;exploitation opérationnels
@@ -237,6 +237,55 @@ export function HomeContent() {
             </div>
           </Link>
 
+        </div>
+      </section>
+
+      {/* ── Section À propos (Mission, Problème & Solution) ── */}
+      <section id="a-propos" className="landing-about" style={{ scrollMarginTop: "80px", marginTop: "4rem", marginBottom: "2rem" }}>
+        <div className="landing-modules__header">
+          <div className="landing-badge" style={{ margin: "0 auto 0.75rem" }}>
+            <span className="landing-badge__dot" />
+            Notre Raison d&apos;Être
+          </div>
+          <h2>À propos de BizIA</h2>
+          <p style={{ maxWidth: "680px", margin: "0 auto" }}>
+            Rendre la puissance de l&apos;Intelligence Artificielle et de l&apos;analyse financière accessible à chaque PME, commerçant et grossiste du continent africain.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", marginTop: "2.25rem" }}>
+          {/* Carte 1 : Le Défi */}
+          <div className="card card--glass" style={{ padding: "1.75rem" }}>
+            <div style={{ display: "inline-flex", padding: "0.55rem", borderRadius: "8px", background: "rgba(239, 68, 68, 0.14)", color: "#ef4444", marginBottom: "1rem" }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.6rem", color: "var(--color-text)" }}>
+              Le Problème Résolu
+            </h3>
+            <p style={{ fontSize: "0.875rem", lineHeight: 1.6, color: "var(--color-text-muted)", margin: 0 }}>
+              En Afrique de l&apos;Ouest, plus de 80% des commerçants gèrent encore leurs activités sur des carnets papier ou des feuilles volantes. Les pertes invisibles de stocks, les prix fixés sans calcul précis de marge et l&apos;absence de traçabilité empêchent les entreprises de grandir et d&apos;obtenir des financements bancaires.
+            </p>
+          </div>
+
+          {/* Carte 2 : La Solution */}
+          <div className="card card--glass" style={{ padding: "1.75rem" }}>
+            <div style={{ display: "inline-flex", padding: "0.55rem", borderRadius: "8px", background: "rgba(16, 185, 129, 0.14)", color: "#10b981", marginBottom: "1rem" }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            </div>
+            <h3 style={{ fontSize: "1.15rem", marginBottom: "0.6rem", color: "var(--color-text)" }}>
+              La Solution BizIA
+            </h3>
+            <p style={{ fontSize: "0.875rem", lineHeight: 1.6, color: "var(--color-text-muted)", margin: 0 }}>
+              BizIA transforme n&apos;importe quel smartphone ou ordinateur en copilote commercial complet. Vous dictez vos ventes vocalement, vous scannez vos factures avec l&apos;IA Vision en quelques secondes, vous simulez vos prix dans un tableur interactif What-If et vous éditez des bilans certifiés en FCFA.
+            </p>
+          </div>
         </div>
       </section>
     </div>

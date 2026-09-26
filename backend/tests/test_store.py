@@ -93,6 +93,22 @@ def test_add_sale_fills_cost_sold_at_and_catalog_sku(tmp_path: Path) -> None:
     assert sale["quantity"] == 3.0
     datetime.fromisoformat(sale["sold_at"])
     assert len(store.list_sales()) == 1
+    # Le stock initial était 4, après vente de 3 il doit rester 1
+    assert store.get_product("HUILE-1L")["stock_quantity"] == 1.0
+
+
+def test_sale_decrements_stock_and_delete_restores_stock(tmp_path: Path) -> None:
+    store = _store(tmp_path)
+    store.add_product(
+        {"sku": "SAVON", "name": "Savon", "unit_cost": 200, "unit_price": 400, "stock_quantity": 5}
+    )
+    # Vente de 2 unités sur un stock de 5
+    sale = store.add_sale({"product_sku": "SAVON", "quantity": 2, "unit_price": 400})
+    assert store.get_product("SAVON")["stock_quantity"] == 3.0
+
+    # Suppression de la vente : le stock doit revenir à 5
+    assert store.delete_sale(sale["id"]) is True
+    assert store.get_product("SAVON")["stock_quantity"] == 5.0
 
 
 def test_add_sale_falls_back_to_catalog_price(tmp_path: Path) -> None:

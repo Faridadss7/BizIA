@@ -153,12 +153,9 @@ def execute_ai_intent_and_crud(
             }
             sale_item = store.add_sale(sale_payload)
 
-            # Mise à jour du stock si disponible (déstockage)
+            # Déstockage automatique géré par store.add_sale
             curr_stock = float(matched.get("stock_quantity", 0.0))
             new_stock = max(0.0, curr_stock - qty)
-            updated_prod = dict(matched)
-            updated_prod["stock_quantity"] = new_stock
-            store.add_product(updated_prod)
 
             database_updated = True
             margin_sign = "+" if net_margin >= 0 else ""
