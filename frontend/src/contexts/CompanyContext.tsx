@@ -15,32 +15,14 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const STORAGE_KEY_ACTIVE = "bizia_active_company_id";
 
-const DEMO_COMPANIES_PRESET: Company[] = [
-  {
-    id: "default-comp",
-    name: "Mon Entreprise (Principal)",
-    currency: "FCFA",
-    category: "Commerce Général",
-    role: "owner",
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "demo-electronique",
-    name: "Boutique High-Tech Cotonou",
-    currency: "FCFA",
-    category: "Électronique & Informatique",
-    role: "owner",
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "demo-grossiste",
-    name: "Grossiste Alimentaire Dantokpa",
-    currency: "FCFA",
-    category: "Distribution & Agroalimentaire",
-    role: "owner",
-    created_at: new Date().toISOString(),
-  },
-];
+const DEFAULT_COMPANY: Company = {
+  id: "default-comp",
+  name: "Mon Entreprise",
+  currency: "FCFA",
+  category: "Commerce Général",
+  role: "owner",
+  created_at: new Date().toISOString(),
+};
 
 type CompanyContextValue = {
   companies: Company[];
@@ -57,15 +39,16 @@ type CompanyContextValue = {
 const CompanyContext = createContext<CompanyContextValue | null>(null);
 
 export function CompanyProvider({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth();
-  const [companies, setCompanies] = useState<Company[]>(DEMO_COMPANIES_PRESET);
-  const [currentCompanyId, setCurrentCompanyId] = useState<string>(DEMO_COMPANIES_PRESET[0].id);
+  const { isAuthenticated, user } = useAuth();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [currentCompanyId, setCurrentCompanyId] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const refreshCompanies = useCallback(async () => {
     if (!isAuthenticated) {
-      setCompanies(DEMO_COMPANIES_PRESET);
+      setCompanies([]);
+      setCurrentCompanyId("");
       return;
     }
     setLoading(true);
@@ -84,15 +67,20 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
           }
         }
       } else {
-        setCompanies(DEMO_COMPANIES_PRESET);
+        const fallbackName = user ? `Entreprise ${user.firstName} ${user.lastName || ""}`.trim() : "Mon Entreprise";
+        const fallback: Company = { ...DEFAULT_COMPANY, name: fallbackName };
+        setCompanies([fallback]);
+        setCurrentCompanyId(fallback.id);
       }
     } catch {
-      // Garde les données locales / par défaut en cas d'erreur réseau
-      setCompanies(DEMO_COMPANIES_PRESET);
+      const fallbackName = user ? `Entreprise ${user.firstName} ${user.lastName || ""}`.trim() : "Mon Entreprise";
+      const fallback: Company = { ...DEFAULT_COMPANY, name: fallbackName };
+      setCompanies([fallback]);
+      setCurrentCompanyId(fallback.id);
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     void refreshCompanies();
@@ -149,7 +137,7 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   const closeCreateModal = useCallback(() => setIsCreateModalOpen(false), []);
 
   const currentCompany = useMemo(() => {
-    return companies.find((c) => c.id === currentCompanyId) ?? companies[0] ?? DEMO_COMPANIES_PRESET[0];
+    return companies.find((c) => c.id === currentCompanyId) ?? companies[0] ?? DEFAULT_COMPANY;
   }, [companies, currentCompanyId]);
 
   const value = useMemo(

@@ -444,7 +444,13 @@ class JsonStore:
         existing = self.list_companies_for_user(user_id)
         if existing:
             return existing[0]
-        name = f"Entreprise {user_name}".strip() if user_name.strip() else "Mon Entreprise"
+        raw_name = user_name.strip()
+        if not raw_name:
+            name = "Mon Entreprise"
+        elif raw_name.lower().startswith("entreprise"):
+            name = raw_name
+        else:
+            name = f"Entreprise {raw_name}"
         return self.create_company_for_user(user_id, name)
 
 

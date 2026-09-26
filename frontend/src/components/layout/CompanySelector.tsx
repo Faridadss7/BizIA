@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useCompany } from "@/contexts/CompanyContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { IconCheckCircle, IconX } from "@/components/icons/Icons";
 
 export function CompanySelector() {
+  const { isAuthenticated } = useAuth();
   const {
     companies,
     currentCompany,
@@ -64,7 +66,7 @@ export function CompanySelector() {
     }
   }
 
-  if (!currentCompany) return null;
+  if (!isAuthenticated || !currentCompany || companies.length === 0) return null;
 
   return (
     <>

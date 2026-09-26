@@ -61,7 +61,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link href="/" className="header__brand" onClick={() => setMenuOpen(false)}>
               <BizIALogo size="md" showTagline />
             </Link>
-            {!isAuthPage && <CompanySelector />}
+            {isAuthenticated && !isAuthPage && <CompanySelector />}
           </div>
 
           {showNav && (
