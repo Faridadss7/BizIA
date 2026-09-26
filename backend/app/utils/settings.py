@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     supabase_url: str = Field(default="", validation_alias=AliasChoices("SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL"))
     supabase_anon_key: str = Field(default="", repr=False, validation_alias=AliasChoices("SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_ANON_KEY"))
     supabase_service_role_key: str = Field(default="", repr=False, validation_alias=AliasChoices("SUPABASE_SERVICE_ROLE_KEY"))
+    # Clerk Configuration
+    clerk_publishable_key: str = Field(default="", validation_alias=AliasChoices("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "CLERK_PUBLISHABLE_KEY"))
+    clerk_secret_key: str = Field(default="", repr=False, validation_alias=AliasChoices("CLERK_SECRET_KEY"))
+
     secret_key: str = Field(default="bizia_secret_auth_token_key_2026_fata_nexus", validation_alias=AliasChoices("SECRET_KEY", "JWT_SECRET"))
 
     @property

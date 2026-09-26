@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { AppShell } from "@/components/layout/AppShell";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CompanyProvider } from "@/contexts/CompanyContext";
@@ -34,17 +35,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body>
-        <AuthProvider>
-          <CompanyProvider>
-            <ToastProvider>
-              <AppShell>{children}</AppShell>
-              <ServiceWorkerRegister />
-            </ToastProvider>
-          </CompanyProvider>
-        </AuthProvider>
-      </body>
-    </html>
+    <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
+      <html lang="fr">
+        <body>
+          <AuthProvider>
+            <CompanyProvider>
+              <ToastProvider>
+                <AppShell>{children}</AppShell>
+                <ServiceWorkerRegister />
+              </ToastProvider>
+            </CompanyProvider>
+          </AuthProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

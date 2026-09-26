@@ -69,27 +69,53 @@ def _new_id() -> str:
 
 
 class JsonStore:
-    """Source unique de vérité : saisie manuelle et import écrivent ici."""
+    """Source unique de vérité : saisie manuelle et import écrivent ici avec réplication Supabase."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, company_id: str | None = None) -> None:
         self.path = Path(path)
+        self.company_id = company_id
         self._lock = threading.RLock()
 
     def list_products(self) -> list[dict[str, Any]]:
         with self._lock:
+            if self.company_id:
+                try:
+                    from app.services import supabase_client
+                    db_items = supabase_client.list_products_db(self.company_id)
+                    if db_items is not None and len(db_items) > 0:
+                        # Synchroniser le cache local
+                        data = self._load()
+                        data["products"] = db_items
+                        self._dump(data)
+                        return copy.deepcopy(db_items)
+                except Exception:
+                    pass
             return copy.deepcopy(self._load()["products"])
 
     def list_sales(self) -> list[dict[str, Any]]:
         with self._lock:
+            if self.company_id:
+                try:
+                    from app.services import supabase_client
+                    db_sales = supabase_client.list_sales_db(self.company_id)
+                    if db_sales is not None and len(db_sales) > 0:
+                        # Synchroniser le cache local
+                        data = self._load()
+                        data["sales"] = db_sales
+                        self._dump(data)
+                        return copy.deepcopy(db_sales)
+                except Exception:
+                    pass
             return copy.deepcopy(self._load()["sales"])
 
     def get_product(self, sku: str) -> dict[str, Any] | None:
         with self._lock:
-            found = self._find_product(self._load()["products"], sku)
+            products = self.list_products()
+            found = self._find_product(products, sku)
             return copy.deepcopy(found) if found is not None else None
 
     def add_product(self, payload: dict[str, Any]) -> dict[str, Any]:
-        """Crée ou met à jour par SKU (insensible à la casse)."""
+        """Crée ou met à jour par SKU (insensible à la casse) en local et sur Supabase."""
         sku = str(payload.get("sku") or "").strip()
         if not sku:
             raise ValueError("Un produit doit avoir un SKU.")
@@ -103,6 +129,16 @@ class JsonStore:
             else:
                 data["products"][index] = product
             self._dump(data)
+
+            if self.company_id:
+                try:
+                    from app.services import supabase_client
+                    db_prod = supabase_client.upsert_product_db(self.company_id, product)
+                    if db_prod:
+                        product["id"] = db_prod.get("id", product["id"])
+                except Exception:
+                    pass
+
             return copy.deepcopy(product)
 
     def delete_product(self, sku_or_id: str) -> bool:
@@ -120,6 +156,14 @@ class JsonStore:
             deleted = len(data["products"]) < initial_count
             if deleted:
                 self._dump(data)
+
+            if self.company_id:
+                try:
+                    from app.services import supabase_client
+                    supabase_client.delete_product_db(self.company_id, target)
+                except Exception:
+                    pass
+
             return deleted
 
     def add_sale(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -133,6 +177,16 @@ class JsonStore:
             sale = self._normalize_sale(payload, catalog)
             data["sales"].append(sale)
             self._dump(data)
+
+            if self.company_id:
+                try:
+                    from app.services import supabase_client
+                    db_sale = supabase_client.add_sale_db(self.company_id, sale)
+                    if db_sale:
+                        sale["id"] = db_sale.get("id", sale["id"])
+                except Exception:
+                    pass
+
             return copy.deepcopy(sale)
 
     def delete_sale(self, sale_id: str) -> bool:
@@ -147,6 +201,14 @@ class JsonStore:
             deleted = len(data["sales"]) < initial_count
             if deleted:
                 self._dump(data)
+
+            if self.company_id:
+                try:
+                    from app.services import supabase_client
+                    supabase_client.delete_sale_db(self.company_id, target)
+                except Exception:
+                    pass
+
             return deleted
 
     def extend_dataset(
@@ -540,7 +602,7 @@ def get_company_store(company_id: str) -> JsonStore:
         key = str(company_id).strip() or "default_company"
     if key not in _company_stores:
         base = get_store().path
-        _company_stores[key] = JsonStore(base.parent / "companies" / f"{key}.json")
+        _company_stores[key] = JsonStore(base.parent / "companies" / f"{key}.json", company_id=key)
     return _company_stores[key]
 
 

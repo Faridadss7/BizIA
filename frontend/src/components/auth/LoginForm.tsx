@@ -24,7 +24,7 @@ const INITIAL: LoginFormValues = {
 
 export function LoginForm() {
   const router = useRouter();
-  const { login, loginWithGoogleAccount, isAuthenticated } = useAuth();
+  const { login, loginWithGoogleAccount, loginWithClerk, isAuthenticated } = useAuth();
   const [values, setValues] = useState<LoginFormValues>(INITIAL);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -121,7 +121,13 @@ export function LoginForm() {
         <button
           type="button"
           className="btn btn--google"
-          onClick={() => setIsGoogleModalOpen(true)}
+          onClick={() => {
+            try {
+              loginWithClerk();
+            } catch {
+              setIsGoogleModalOpen(true);
+            }
+          }}
           disabled={googleSubmitting || submitting}
         >
           <span className="btn__icon">
