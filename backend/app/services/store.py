@@ -460,12 +460,14 @@ class JsonStore:
     def as_dataset(self, source: str | None = None) -> dict[str, Any]:
         """Sortie conforme à `shared/contrats/canonical-dataset.schema.json`."""
         with self._lock:
+            products = self.list_products()
+            sales = self.list_sales()
             data = self._load()
             resolved = source or data.get("last_source") or "manual"
             return {
                 "source": resolved,
-                "products": copy.deepcopy(data["products"]),
-                "sales": copy.deepcopy(data["sales"]),
+                "products": copy.deepcopy(products),
+                "sales": copy.deepcopy(sales),
             }
 
     def _sale_key(self, sale: dict[str, Any]) -> tuple[str, float, float, str]:

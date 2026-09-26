@@ -430,38 +430,47 @@ export function SpreadsheetSimulator() {
       setStatusMessage({ text: "Injection des données et calcul de l'analyse en cours...", type: "info" });
 
       const productsPayload = computedProducts
-        .filter((p) => p.name.trim() || p.unit_price > 0)
+        .filter((p) => p.name.trim() || p.unit_price > 0 || p.unit_cost > 0)
         .map((p) => ({
-          sku: p.sku,
-          name: p.name || p.sku,
-          category: p.category,
-          unit_cost: p.unit_cost,
-          unit_price: p.adjPrice,
-          stock_quantity: p.stock_quantity,
+          sku: p.sku || `SKU-${Math.random().toString(36).slice(2, 7)}`,
+          name: p.name || p.sku || "Article",
+          category: p.category || "Général",
+          unit_cost: Number(p.unit_cost) || 0,
+          unit_price: Number(p.adjPrice ?? p.unit_price) || 0,
+          stock_quantity: Number(p.stock_quantity) || 0,
           low_stock_threshold: 5,
         }));
 
       const salesPayload =
         template === "sales"
           ? saleRows
-            .filter((s) => s.name.trim() || s.unit_price > 0)
+            .filter((s) => (s.sku.trim() || s.name.trim()) && Number(s.quantity) > 0)
             .map((s) => ({
-              product_sku: s.sku,
-              quantity: s.quantity,
-              unit_price: s.unit_price,
-              sold_at: s.date,
+              product_sku: s.sku || "ART-001",
+              quantity: Math.max(1, Number(s.quantity) || 1),
+              unit_price: Number(s.unit_price) || 0,
+              sold_at: s.date || new Date().toISOString().split("T")[0],
               channel: "Comptoir",
             }))
           : computedProducts
-            .filter((p) => p.name.trim() || p.unit_price > 0)
+            .filter((p) => (p.name.trim() || p.unit_price > 0) && Number(p.adjQty ?? p.simulated_sales_qty) > 0)
             .map((p) => ({
               product_sku: p.sku,
-              quantity: p.adjQty,
-              unit_price: p.adjPrice,
-              unit_cost: p.unit_cost,
+              quantity: Math.max(1, Number(p.adjQty ?? p.simulated_sales_qty) || 1),
+              unit_price: Number(p.adjPrice ?? p.unit_price) || 0,
+              unit_cost: Number(p.unit_cost) || 0,
               sold_at: new Date().toISOString().split("T")[0],
               channel: "Simulateur",
             }));
+
+      if (productsPayload.length === 0 && salesPayload.length === 0) {
+        setStatusMessage({
+          text: "Renseignez au moins un produit ou une vente valide dans le tableau avant d'injecter.",
+          type: "error",
+        });
+        setLoading(false);
+        return;
+      }
 
       await api.commitImport({
         filename: `tableau_${template}_${new Date().toISOString().slice(0, 10)}.xlsx`,
@@ -472,13 +481,20 @@ export function SpreadsheetSimulator() {
 
       await api.runAnalysis();
 
-      setStatusMessage({ text: "Données injectées et rapport généré avec succès. Redirection vers le tableau de bord...", type: "success" });
+      setStatusMessage({
+        text: "Données injectées et analyse mise à jour avec succès ! Redirection vers le tableau de bord...",
+        type: "success",
+      });
 
       setTimeout(() => {
         router.push("/dashboard");
-      }, 1200);
+      }, 1000);
     } catch (err) {
-      setStatusMessage({ text: "Erreur lors de l'injection vers le moteur d'analyse.", type: "error" });
+      console.error("Erreur injection simulateur:", err);
+      setStatusMessage({
+        text: "Erreur lors de l'injection vers le moteur d'analyse. Vérifiez que vos colonnes prix et quantités sont remplies.",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }

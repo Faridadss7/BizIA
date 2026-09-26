@@ -18,4 +18,8 @@ def analysis_run(
 
 @router.get("/summary")
 def analysis_summary(company: dict = Depends(current_company)) -> dict:
-    return {"result": get_company_store(company["id"]).get_last_analysis()}
+    store = get_company_store(company["id"])
+    last = store.get_last_analysis()
+    if last is None:
+        last = run_analysis(company_id=company["id"])
+    return {"result": last}

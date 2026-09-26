@@ -502,13 +502,12 @@ def generate_report(
     format: str = Query(default="pdf", pattern="^(pdf|docx)$"),
     company: dict = Depends(current_company),
 ):
-    analysis = get_company_store(company["id"]).get_last_analysis()
+    store = get_company_store(company["id"])
+    analysis = store.get_last_analysis()
     if analysis is None:
-        raise ApiError(
-            400,
-            "no_analysis",
-            "Lancez une analyse avant d'exporter un rapport.",
-        )
+        from app.services.pipeline import run_analysis
+        analysis = run_analysis(company_id=company["id"])
+
     report = _report_payload(analysis, company)
     safe_name = "".join(c if c.isalnum() else "_" for c in str(company.get("name") or "bizia")).strip("_").lower() or "bizia"
     if format == "pdf":

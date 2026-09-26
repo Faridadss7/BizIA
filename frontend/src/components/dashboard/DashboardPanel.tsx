@@ -126,13 +126,6 @@ export function DashboardPanel() {
   }, [loadSummary, currentCompany.id]);
 
   async function handleRunAnalysis() {
-    if (
-      !window.confirm(
-        `Lancer l'analyse sur les produits et ventes de ${currentCompany.name} ?`,
-      )
-    ) {
-      return;
-    }
     setAnalyzing(true);
     setActionError(null);
     try {
@@ -194,7 +187,15 @@ export function DashboardPanel() {
   }
 
   const kpis = result?.kpis;
-  const hasData = kpis && (kpis.sales_count > 0 || kpis.revenue > 0);
+  const hasData = Boolean(
+    result && (
+      (kpis && (kpis.sales_count > 0 || kpis.revenue > 0 || kpis.units_sold > 0)) ||
+      (result.top_sold && result.top_sold.length > 0) ||
+      (result.low_stock && result.low_stock.length > 0) ||
+      (result.insights && result.insights.length > 0) ||
+      (result.alerts && result.alerts.length > 0)
+    )
+  );
 
   return (
     <AppPageLayout
@@ -219,7 +220,7 @@ export function DashboardPanel() {
           <Button
             variant="secondary"
             onClick={() => setIsPdfModalOpen(true)}
-            disabled={!hasData}
+            disabled={loading}
           >
             Bilan PDF Officiel
           </Button>
