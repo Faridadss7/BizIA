@@ -241,8 +241,25 @@ export function ReceiptScanner({ onSuccess, standalone = false }: ReceiptScanner
       )}
 
       {successMessage && (
-        <div style={{ marginBottom: "1rem" }}>
-          <Alert variant="success">{successMessage}</Alert>
+        <div style={{ marginBottom: "1.25rem" }}>
+          <Alert variant="success">
+            <div>
+              <p style={{ margin: "0 0 0.5rem", fontWeight: 600 }}>{successMessage}</p>
+              <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", fontSize: "0.85rem" }}>
+                <a href="/produits" style={{ color: "var(--color-primary, #1D4ED8)", fontWeight: 700, textDecoration: "underline" }}>
+                  Consulter les Produits
+                </a>
+                <span>•</span>
+                <a href="/ventes" style={{ color: "var(--color-primary, #1D4ED8)", fontWeight: 600, textDecoration: "underline" }}>
+                  Voir les Ventes
+                </a>
+                <span>•</span>
+                <a href="/dashboard" style={{ color: "var(--color-primary, #1D4ED8)", fontWeight: 600, textDecoration: "underline" }}>
+                  Tableau de bord
+                </a>
+              </div>
+            </div>
+          </Alert>
         </div>
       )}
 
