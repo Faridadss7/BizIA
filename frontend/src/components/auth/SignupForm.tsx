@@ -141,13 +141,7 @@ export function SignupForm() {
             <button
               type="button"
               className="btn btn--google"
-              onClick={() => {
-                try {
-                  loginWithClerk();
-                } catch {
-                  setIsGoogleModalOpen(true);
-                }
-              }}
+              onClick={() => setIsGoogleModalOpen(true)}
               disabled={googleSubmitting || submitting}
             >
               <span className="btn__icon">
