@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 
 interface VoiceRecorderProps {
   onRecorded: (audioBlob?: Blob, transcript?: string) => void;
@@ -13,49 +13,41 @@ export function VoiceRecorder({ onRecorded, onLiveTranscript, disabled = false }
   const [liveTranscript, setLiveTranscript] = useState("");
   const [recordingTime, setRecordingTime] = useState(0);
 
+  const isRecordingRef = useRef(false);
+  const streamRef = useRef<MediaStream | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<any>(null);
   const transcriptRef = useRef<string>("");
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
+  const cleanupRecognition = useCallback(() => {
+    if (recognitionRef.current) {
       try {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = "fr-FR";
-
-        recognition.onresult = (event: any) => {
-          let current = "";
-          for (let i = 0; i < event.results.length; i++) {
-            current += event.results[i][0].transcript + " ";
-          }
-          const clean = current.trim();
-          transcriptRef.current = clean;
-          setLiveTranscript(clean);
-          if (onLiveTranscript) {
-            onLiveTranscript(clean);
-          }
-        };
-
-        recognition.onerror = (event: any) => {
-          console.warn("Reconnaissance vocale navigateur:", event.error);
-        };
-
-        recognitionRef.current = recognition;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        recognitionRef.current.abort();
       } catch (e) {
-        console.warn("SpeechRecognition init error:", e);
+        // Ignorer les erreurs d'arrêt
       }
+      recognitionRef.current = null;
     }
+  }, []);
 
+  useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      cleanupRecognition();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          try {
+            track.stop();
+          } catch (e) {}
+        });
+      }
     };
-  }, [onLiveTranscript]);
+  }, [cleanupRecognition]);
 
   const getSupportedMimeType = () => {
     if (typeof MediaRecorder === "undefined") return "";
@@ -73,11 +65,13 @@ export function VoiceRecorder({ onRecorded, onLiveTranscript, disabled = false }
   };
 
   const startRecording = async () => {
-    if (disabled || isRecording) return;
+    if (disabled || isRecordingRef.current) return;
     setLiveTranscript("");
     transcriptRef.current = "";
     setRecordingTime(0);
     audioChunksRef.current = [];
+    isRecordingRef.current = true;
+    setIsRecording(true);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -87,6 +81,52 @@ export function VoiceRecorder({ onRecorded, onLiveTranscript, disabled = false }
           autoGainControl: true,
         },
       });
+      streamRef.current = stream;
+
+      // Nettoyer toute instance antérieure avant de démarrer
+      cleanupRecognition();
+
+      const SpeechRecognition =
+        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = "fr-FR";
+
+          recognition.onresult = (event: any) => {
+            // STOP IMMÉDIAT : ignorer tout résultat si l'enregistrement est stoppé
+            if (!isRecordingRef.current) return;
+
+            let current = "";
+            for (let i = 0; i < event.results.length; i++) {
+              current += event.results[i][0].transcript + " ";
+            }
+            const clean = current.trim();
+            if (isRecordingRef.current) {
+              transcriptRef.current = clean;
+              setLiveTranscript(clean);
+              if (onLiveTranscript) {
+                onLiveTranscript(clean);
+              }
+            }
+          };
+
+          recognition.onerror = () => {
+            // Ignorer les erreurs non bloquantes
+          };
+
+          recognition.onend = () => {
+            // Pas de relance automatique
+          };
+
+          recognitionRef.current = recognition;
+          recognition.start();
+        } catch (e) {
+          console.warn("SpeechRecognition start error:", e);
+        }
+      }
 
       const mimeType = getSupportedMimeType();
       let mediaRecorder: MediaRecorder;
@@ -106,50 +146,57 @@ export function VoiceRecorder({ onRecorded, onLiveTranscript, disabled = false }
       mediaRecorder.onstop = () => {
         const blobType = mediaRecorder.mimeType || mimeType || "audio/webm";
         const audioBlob = new Blob(audioChunksRef.current, { type: blobType });
-        stream.getTracks().forEach((track) => track.stop());
         const finalText = transcriptRef.current.trim() || undefined;
         onRecorded(audioBlob, finalText);
       };
 
       mediaRecorder.start(100);
-      setIsRecording(true);
 
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.start();
-        } catch (e) {
-          console.warn("Reconnaissance déjà active:", e);
-        }
-      }
     } catch (err) {
+      isRecordingRef.current = false;
+      setIsRecording(false);
       console.error("Accès micro refusé:", err);
       alert("Veuillez autoriser l'accès au microphone dans votre navigateur pour parler à l'IA.");
     }
   };
 
   const stopRecording = () => {
-    if (!isRecording) return;
+    if (!isRecordingRef.current) return;
+    // 1. Coupe immédiatement le drapeau d'enregistrement
+    isRecordingRef.current = false;
     setIsRecording(false);
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
 
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch (e) {}
+    // 2. Coupe immédiatement la reconnaissance vocale (aucun mot prononcé après ce clic ne sera transcrit)
+    cleanupRecognition();
+
+    // 3. Coupe immédiatement le microphone physique (le voyant rouge s'éteint)
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => {
+        try {
+          track.stop();
+        } catch (e) {}
+      });
+      streamRef.current = null;
     }
 
+    // 4. Stoppe l'enregistrement média pour déclencher onstop et envoyer
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       try {
-        mediaRecorderRef.current.requestData();
+        mediaRecorderRef.current.stop();
       } catch (e) {}
-      mediaRecorderRef.current.stop();
+    } else {
+      const finalText = transcriptRef.current.trim() || undefined;
+      if (finalText) {
+        onRecorded(undefined, finalText);
+      }
     }
   };
 

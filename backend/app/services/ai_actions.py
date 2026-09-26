@@ -218,16 +218,18 @@ def _parse_with_llm(
         "Tu es l'assistant d'exploitation BizIA. Tu aides les dirigeants de PME à gérer leur entreprise.\n"
         "Tu as accès aux produits en stock et aux ventes actuelles.\n"
         "Tu dois répondre en français de façon chaleureuse, naturelle, précise et concise avec les montants au format FCFA.\n"
-        "Si l'utilisateur demande d'ajouter un ou plusieurs produits sans préciser leurs prix ou leurs stocks (ex: 'ajoute calculatrice, téléphone, montre'), "
-        "mets impérativement unit_price: 0, unit_cost: 0, stock_quantity: 0 (ne JAMAIS inventer de prix fictifs).\n"
-        "Si des prix ou stocks sont explicitement mentionnés dans la demande, utilise exactement les chiffres donnés.\n"
+        "DIRECTIVES POUR L'AJOUT DE PRODUITS :\n"
+        "1. Si l'utilisateur demande d'ajouter un produit avec son prix (ex: 'ajoute une calculatrice à 5000 francs', 'téléphone 45000 fcfa', 'sac de riz prix 15000'), "
+        "extrait le NOM PUR du produit (ex: 'Calculatrice' sans 'une', sans le prix, sans point) et mets son prix exact dans unit_price (ex: 5000) et unit_cost estimé à 70% du prix.\n"
+        "2. Si l'utilisateur demande d'ajouter un produit sans préciser de prix ni stock (ex: 'ajoute calculatrice, téléphone'), "
+        "mets impérativement unit_price: 0, unit_cost: 0, stock_quantity: 0 (ne JAMAIS inventer de prix fictif).\n"
         "Format JSON attendu strictement :\n"
         "{\n"
         '  "reply": "Ta réponse conversationnelle complète, naturelle et conviviale",\n'
         '  "actions": [\n'
-        '    {"type": "add_product", "name": "Nom", "unit_price": 0, "unit_cost": 0, "stock_quantity": 0, "category": "Général"},\n'
+        '    {"type": "add_product", "name": "Nom", "unit_price": 5000, "unit_cost": 3500, "stock_quantity": 0, "category": "Général"},\n'
         '    {"type": "delete_product", "target": "Nom ou SKU"},\n'
-        '    {"type": "add_sale", "product": "Nom ou SKU", "quantity": 1, "unit_price": 0}\n'
+        '    {"type": "add_sale", "product": "Nom ou SKU", "quantity": 1, "unit_price": 5000}\n'
         "  ]\n"
         "}"
     )
@@ -255,7 +257,14 @@ def _parse_with_llm(
     )
 
     has_explicit_prices = bool(
-        re.search(r"(?:prix|co[uû]t|tarif|montant|[aà]\s*\d+|\d+\s*(?:fcfa|cfa|f|€|\$))\s*[:=]?\s*\d+", message, re.IGNORECASE)
+        re.search(
+            r"(?:prix|co[uû]t|tarif|montant)\s*[:=]?\s*\d+"
+            r"|[aà]\s*\d+[\d\s]*(?:fcfa|cfa|francs?|f|€|\$)?"
+            r"|\d+[\d\s]*(?:fcfa|cfa|francs?|f|€|\$)"
+            r"|pour\s*\d+[\d\s]*(?:fcfa|cfa|francs?|f|€|\$)?",
+            message,
+            re.IGNORECASE,
+        )
     )
 
     # Essai Groq si disponible
@@ -339,21 +348,45 @@ def _parse_with_heuristics(
         items = [item.strip() for item in re.split(r"[,;]|\s+et\s+", content) if item.strip()]
         if items:
             for item in items:
-                # Nettoyer d'éventuels prix
-                price_m = re.search(r"(?:prix|vendu [aà]|au prix de)\s*[:=]?\s*(\d+[\d\s]*)(?:fcfa|f)?", item, re.IGNORECASE)
-                stock_m = re.search(r"(?:stock|quantit[eé])\s*[:=]?\s*(\d+)", item, re.IGNORECASE)
+                # Extraction du prix et stock
+                price_m = re.search(
+                    r"(?:(?:au\s+)?prix(?:\s+de)?|vendu\s+[aà]|[aà]|co[uû]te?|tarif(?:\s+de)?)\s*[:=]?\s*(\d+[\d\s]*)\s*(?:fcfa|cfa|francs?|f|€|\$)?"
+                    r"|(\d+[\d\s]*)\s*(?:fcfa|cfa|francs?|f|€|\$)",
+                    item,
+                    re.IGNORECASE,
+                )
+                stock_m = re.search(
+                    r"(?:stock(?:\s+de)?|quantit[eé](?:\s+de)?)\s*[:=]?\s*(\d+)|(\d+)\s*(?:unit[eé]s?|pi[èe]ces?|ex|exemplaires?)",
+                    item,
+                    re.IGNORECASE,
+                )
+                price = 0.0
+                if price_m:
+                    raw_p = price_m.group(1) or price_m.group(2) or ""
+                    try:
+                        price = float(re.sub(r"\s+", "", raw_p))
+                    except ValueError:
+                        price = 0.0
+
+                stock = 0.0
+                if stock_m:
+                    raw_s = stock_m.group(1) or stock_m.group(2) or ""
+                    try:
+                        stock = float(re.sub(r"\s+", "", raw_s))
+                    except ValueError:
+                        stock = 0.0
+
                 name = item
                 if price_m:
                     name = name[:price_m.start()]
                 if stock_m and stock_m.start() < len(name):
                     name = name[:stock_m.start()]
-                name = re.sub(r"(?:au prix de|prix|stock|quantit[eé]).*", "", name, flags=re.IGNORECASE).strip()
-                name = re.sub(r"^(?:le produit|un produit|l'article|les produits)\s+", "", name, flags=re.IGNORECASE).strip()
+                name = re.sub(r"(?:au prix de|prix|stock|quantit[eé]|co[uû]te?|[aà]\s*\d+).*", "", name, flags=re.IGNORECASE).strip()
+                name = re.sub(r"^(?:le|la|les|un|une|l['’]|du|de la|des|le produit|un produit|l'article|les produits)\s+", "", name, flags=re.IGNORECASE).strip()
+                name = re.sub(r"[.,;:!?]+$", "", name).strip()
 
                 if len(name) >= 2:
-                    price = float(re.sub(r"\s+", "", price_m.group(1))) if price_m else 0.0
                     cost = round(price * 0.7, 2) if price > 0 else 0.0
-                    stock = float(stock_m.group(1)) if stock_m else 0.0
                     actions.append({
                         "type": "add_product",
                         "name": name.title(),
@@ -366,31 +399,61 @@ def _parse_with_heuristics(
             if actions:
                 names_str = ", ".join(f"« {a['name']} »" for a in actions)
                 return {
-                    "reply": f"J'ai bien enregistré {len(actions)} article(s) dans votre catalogue ({names_str}) avec des prix à 0 FCFA afin que vous puissiez saisir vous-même vos tarifs.",
+                    "reply": f"J'ai bien enregistré {len(actions)} article(s) dans votre catalogue ({names_str}).",
                     "actions": actions,
                 }
 
-    # Détection Produit Unique
-    add_match = re.search(r"(?:ajoute?r?|cr[eé][eé]r?|nouveau produit|enregistre?r?)\s+(?:le produit\s+)?([A-Za-z0-9\s\-_À-ÿ]+)", lower)
+    # Détection Produit Unique (ex: "Ajoute une calculatrice à 5000 francs", "Crée le produit Téléphone 65000 FCFA")
+    add_match = re.search(
+        r"(?:ajoute?r?|cr[eé][eé]r?|nouveau\s+produit|nouvel\s+article|enregistre?r?)\s+(?:(?:un|une|le|la|les|l['’])\s+)?(?:produits?\s+|articles?\s+)?([A-Za-z0-9\s\-_À-ÿ\.\'\,]+)",
+        text,
+        re.IGNORECASE,
+    )
     if add_match and not ("vente" in lower or "vendu" in lower):
-        raw_part = text[add_match.start(1):]
-        # Extraction du prix
-        price_m = re.search(r"(?:prix|vendu [aà]|au prix de)\s*[:=]?\s*(\d+[\d\s]*)(?:fcfa|f)?", raw_part, re.IGNORECASE)
-        stock_m = re.search(r"(?:stock|quantit[eé])\s*[:=]?\s*(\d+)", raw_part, re.IGNORECASE)
-        
-        # Nettoyage du nom
+        raw_part = add_match.group(1).strip()
+
+        # 1. Extraction du prix (ex: "à 5000 francs", "au prix de 5000", "5000 fcfa", "prix: 5000")
+        price_m = re.search(
+            r"(?:(?:au\s+)?prix(?:\s+de)?|vendu\s+[aà]|[aà]|co[uû]te?|tarif(?:\s+de)?)\s*[:=]?\s*(\d+[\d\s]*)\s*(?:fcfa|cfa|francs?|f|€|\$)?"
+            r"|(\d+[\d\s]*)\s*(?:fcfa|cfa|francs?|f|€|\$)",
+            raw_part,
+            re.IGNORECASE,
+        )
+        price = 0.0
+        if price_m:
+            raw_p = price_m.group(1) or price_m.group(2) or ""
+            try:
+                price = float(re.sub(r"\s+", "", raw_p))
+            except ValueError:
+                price = 0.0
+
+        # 2. Extraction du stock (ex: "stock 10", "quantité: 5", "10 unités")
+        stock_m = re.search(
+            r"(?:stock(?:\s+de)?|quantit[eé](?:\s+de)?)\s*[:=]?\s*(\d+)|(\d+)\s*(?:unit[eé]s?|pi[èe]ces?|ex|exemplaires?)",
+            raw_part,
+            re.IGNORECASE,
+        )
+        stock = 0.0
+        if stock_m:
+            raw_s = stock_m.group(1) or stock_m.group(2) or ""
+            try:
+                stock = float(re.sub(r"\s+", "", raw_s))
+            except ValueError:
+                stock = 0.0
+
+        # 3. Extraction et nettoyage du nom
         name = raw_part
         if price_m:
             name = name[:price_m.start()]
         if stock_m and stock_m.start() < len(name):
             name = name[:stock_m.start()]
-        name = re.sub(r"(?:au prix de|prix|stock|quantit[eé]).*", "", name, flags=re.IGNORECASE).strip()
-        name = re.sub(r"^(?:le produit|un produit|l'article)\s+", "", name, flags=re.IGNORECASE).strip()
+
+        name = re.sub(r"(?:au prix de|prix|stock|quantit[eé]|co[uû]te?|[aà]\s*\d+).*", "", name, flags=re.IGNORECASE).strip()
+        name = re.sub(r"^(?:le|la|les|un|une|l['’]|du|de la|des|produit|article)\s+", "", name, flags=re.IGNORECASE).strip()
+        name = re.sub(r"[.,;:!?]+$", "", name).strip()
 
         if len(name) >= 2:
-            price = float(re.sub(r"\s+", "", price_m.group(1))) if price_m else 0.0
             cost = round(price * 0.7, 2) if price > 0 else 0.0
-            stock = float(stock_m.group(1)) if stock_m else 0.0
             actions.append({
                 "type": "add_product",
                 "name": name.title(),
@@ -400,11 +463,11 @@ def _parse_with_heuristics(
                 "category": "Général",
             })
             if price > 0:
-                detail_txt = f"Prix : {price:,.0f} FCFA, Stock : {stock:.0f}".replace(",", " ")
+                reply_txt = f"J'ai bien ajouté le produit « {name.title()} » au prix de {price:,.0f} FCFA (coût estimé : {cost:,.0f} FCFA, stock : {stock:.0f}).".replace(",", " ")
             else:
-                detail_txt = "Prix et stock initialisés à 0 afin que vous puissiez définir vos tarifs"
+                reply_txt = f"J'ai bien préparé l'ajout du produit « {name.title()} » (Prix et stock initialisés à 0 afin que vous puissiez définir vos tarifs)."
             return {
-                "reply": f"J'ai bien préparé l'ajout du produit « {name.title()} » ({detail_txt}).",
+                "reply": reply_txt,
                 "actions": actions,
             }
 

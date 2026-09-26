@@ -136,19 +136,24 @@ export function ChatPanel() {
 
   async function handleVoiceRecorded(audioBlob?: Blob, transcript?: string) {
     if (loading) return;
+    const cleanTranscript = (transcript || "").trim();
+    if (!cleanTranscript && (!audioBlob || audioBlob.size === 0)) {
+      return;
+    }
     stopSpeaking();
+    setInput("");
     setLoading(true);
     setError(null);
 
     const userMsgId = `u-${Date.now()}`;
-    const userLabel = transcript ? transcript : "Message vocal en cours...";
+    const userLabel = cleanTranscript || "Message vocal en cours...";
     const historyPayload = messages.map((m) => ({ role: m.role, content: m.content }));
 
     setMessages((prev) => [...prev, { id: userMsgId, role: "user", content: userLabel }]);
 
     try {
-      const reply = await api.chatVoice(audioBlob, transcript, historyPayload);
-      const recognized = reply.transcript || transcript;
+      const reply = await api.chatVoice(audioBlob, cleanTranscript, historyPayload);
+      const recognized = reply.transcript || cleanTranscript;
       if (recognized && recognized !== "Message vocal non reconnu ou vide.") {
         setMessages((prev) =>
           prev.map((m) => (m.id === userMsgId ? { ...m, content: recognized } : m))
@@ -178,6 +183,7 @@ export function ChatPanel() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors du traitement du message vocal.");
     } finally {
+      setInput("");
       setLoading(false);
     }
   }
