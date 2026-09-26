@@ -190,12 +190,16 @@ export function ImportPanel() {
             {addedRows > 0 && (
               <>
                 {" "}
-                <Link href="/ventes" className="alert__link">
-                  Voir l&apos;historique des ventes
+                <Link href="/produits" className="alert__link" style={{ fontWeight: 700 }}>
+                  Consulter les produits enregistrés
                 </Link>{" "}
-                ou{" "}
+                •{" "}
+                <Link href="/ventes" className="alert__link">
+                  Voir les ventes
+                </Link>{" "}
+                •{" "}
                 <Link href="/dashboard" className="alert__link">
-                  ouvrir le tableau de bord
+                  Tableau de bord
                 </Link>
                 .
               </>

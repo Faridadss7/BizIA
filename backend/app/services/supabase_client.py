@@ -62,7 +62,8 @@ def list_companies(user_id: str) -> list[dict[str, Any]]:
                 if c:
                     c["role"] = row.get("role", "member")
                     companies.append(c)
-            return companies
+            if companies:
+                return companies
         except Exception as err:
             logger.error("Erreur Supabase list_companies: %s", err)
 
