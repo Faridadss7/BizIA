@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useCompany } from "@/contexts/CompanyContext";
+import { useCompany, cleanCompanyName } from "@/contexts/CompanyContext";
 import { api } from "@/services/api";
 import { formatCurrency, formatPercent } from "@/utils/format";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +16,9 @@ type Props = {
 
 export function PdfReportModal({ isOpen, onClose, result }: Props) {
   const { currentCompany } = useCompany();
+  const companyName = cleanCompanyName(currentCompany?.name);
+  const currency = currentCompany?.currency || "FCFA";
+  const category = currentCompany?.category || "Commerce Général";
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   useEffect(() => {
@@ -75,7 +78,7 @@ export function PdfReportModal({ isOpen, onClose, result }: Props) {
           <div>
             <h2>Consultation & Export du Bilan PDF</h2>
             <p className="muted">
-              Bilan officiel pour {currentCompany.name} ({currentCompany.currency || "FCFA"}).
+              Bilan officiel pour {companyName} ({currency}).
             </p>
           </div>
           <div className="pdf-modal__actions" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -132,9 +135,9 @@ export function PdfReportModal({ isOpen, onClose, result }: Props) {
           <div className="pdf-document__company-info">
             <div>
               <span className="pdf-label">Entreprise auditée</span>
-              <h3 className="pdf-company-name">{currentCompany.name}</h3>
+              <h3 className="pdf-company-name">{companyName}</h3>
               <p className="pdf-company-sub">
-                Devise : {currentCompany.currency || "FCFA"} {currentCompany.category ? `· ${currentCompany.category}` : "· Commerce Général"}
+                Devise : {currency} · {category}
               </p>
             </div>
             <div className="pdf-status-badge">
@@ -147,8 +150,8 @@ export function PdfReportModal({ isOpen, onClose, result }: Props) {
             <h4 className="pdf-section__title">1. Synthèse Financière Globale & Bénéfices Nets</h4>
             <p className="pdf-text">
               {hasData
-                ? `Ce rapport consolide les flux commerciaux, la structure des coûts et la rentabilité nette de ${currentCompany.name} sur la période analysée.`
-                : `Aucune transaction enregistrée pour ${currentCompany.name} pour le moment. Enregistrez des ventes ou importez un fichier pour consolider le bilan.`}
+                ? `Ce rapport consolide les flux commerciaux, la structure des coûts et la rentabilité nette de ${companyName} sur la période analysée.`
+                : `Aucune transaction enregistrée pour ${companyName} pour le moment. Enregistrez des ventes ou importez un fichier pour consolider le bilan.`}
             </p>
             <div className="pdf-kpi-grid">
               <div className="pdf-kpi-box">
@@ -254,7 +257,7 @@ export function PdfReportModal({ isOpen, onClose, result }: Props) {
                     Aucune alerte critique
                   </strong>
                   <p style={{ margin: "4px 0 0", fontSize: "0.84rem", color: "#64748b" }}>
-                    Aucun seuil de rupture ou anomalie n&apos;a été détecté pour {currentCompany.name}.
+                    Aucun seuil de rupture ou anomalie n&apos;a été détecté pour {companyName}.
                   </p>
                 </div>
               )}
@@ -293,8 +296,8 @@ export function PdfReportModal({ isOpen, onClose, result }: Props) {
           {/* 6. Signature & Validation */}
           <div className="pdf-footer">
             <div className="pdf-footer__left">
-              <strong>BizIA Analytics Suite V2 — Rapport Certifié</strong>
-              <span>Génération algorithmique autonome · {currentCompany.name}</span>
+              <strong>BizIA Analytics Suite — Rapport Certifié</strong>
+              <span>Génération algorithmique autonome · {companyName}</span>
               <span style={{ fontSize: "0.75rem", color: "#64748b" }}>Horodatage : {currentDate}</span>
             </div>
             <div className="pdf-footer__right">
