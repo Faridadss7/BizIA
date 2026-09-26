@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { useCompany } from "@/contexts/CompanyContext";
+import { useCompany, cleanCompanyName } from "@/contexts/CompanyContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 import { Button } from "@/components/ui/Button";
@@ -89,8 +89,8 @@ export function CompanySelector() {
             </svg>
           </span>
           <div className="company-selector__info">
-            <span className="company-selector__name" title={currentCompany.name}>
-              {currentCompany.name.replace(/^Entreprise\s+Entreprise/i, "Entreprise")}
+            <span className="company-selector__name" title={cleanCompanyName(currentCompany.name)}>
+              {cleanCompanyName(currentCompany.name)}
             </span>
             {currentCompany.category && (
               <span className="company-selector__badge">{currentCompany.category}</span>
@@ -120,7 +120,7 @@ export function CompanySelector() {
                     role="menuitem"
                   >
                     <div className="company-selector__item-content">
-                      <strong className="company-selector__item-title">{comp.name}</strong>
+                      <strong className="company-selector__item-title">{cleanCompanyName(comp.name)}</strong>
                       <span className="company-selector__item-meta">
                         {comp.currency} {comp.category ? `· ${comp.category}` : ""}
                       </span>

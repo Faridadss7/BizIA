@@ -166,7 +166,7 @@ export function SalesPanel() {
 
   return (
     <AppPageLayout
-      eyebrow={`Transactions • ${currentCompany.name}`}
+      eyebrow="Transactions"
       title="Ventes"
       description={`Enregistrez et suivez les ventes de ${currentCompany.name}. Données strictement rattachées à votre entreprise courante.`}
       actions={

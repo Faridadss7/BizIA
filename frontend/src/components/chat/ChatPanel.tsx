@@ -190,7 +190,7 @@ export function ChatPanel() {
   return (
     <AppPageLayout
       className="chat-section"
-      eyebrow={`Assistant IA & Voix • ${currentCompany.name}`}
+      eyebrow="Assistant IA & Voix"
       title="Assistant d'analyse & Actions"
       description="Interrogez vos données, pilotez vos stocks, ajoutez des articles et enregistrez des ventes par saisie ou par commande vocale avec retour vocal."
     >

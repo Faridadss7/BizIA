@@ -523,7 +523,7 @@ export function SpreadsheetSimulator() {
 
   return (
     <AppPageLayout
-      eyebrow={`Création de Tableaux & Scénarios • ${currentCompany.name}`}
+      eyebrow="Création de Tableaux & Scénarios"
       title="Créateur de Tableaux Excel & Simulateur Prévisionnel"
       description="Créez vos tableaux d'exploitation, exportez vos fichiers Excel (.xlsx / .csv) et injectez directement vos chiffres dans l'analyse de données pour générer un rapport décisionnel."
     >

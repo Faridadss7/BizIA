@@ -15,6 +15,15 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const STORAGE_KEY_ACTIVE = "bizia_active_company_id";
 
+export function cleanCompanyName(name?: string | null): string {
+  if (!name || typeof name !== "string") return "Mon Entreprise";
+  let cleaned = name.trim();
+  while (/^entreprise\s+entreprise/i.test(cleaned)) {
+    cleaned = cleaned.replace(/^entreprise\s+/i, "");
+  }
+  return cleaned.trim() || "Mon Entreprise";
+}
+
 const DEFAULT_COMPANY: Company = {
   id: "default-comp",
   name: "Mon Entreprise",
@@ -54,7 +63,12 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const res = await api.companies.list();
-      const items = res.items ?? [];
+      const rawItems = res.items ?? [];
+      const items = rawItems.map((c) => ({
+        ...c,
+        name: cleanCompanyName(c.name),
+      }));
+
       if (items.length > 0) {
         setCompanies(items);
         const storedActiveId = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY_ACTIVE) : null;
@@ -67,13 +81,19 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
           }
         }
       } else {
-        const fallbackName = user ? `Entreprise ${user.firstName} ${user.lastName || ""}`.trim() : "Mon Entreprise";
+        const rawUser = user ? `${user.firstName} ${user.lastName || ""}`.trim() : "";
+        const fallbackName = rawUser
+          ? cleanCompanyName(rawUser.toLowerCase().startsWith("entreprise") ? rawUser : `Entreprise ${rawUser}`)
+          : "Mon Entreprise";
         const fallback: Company = { ...DEFAULT_COMPANY, name: fallbackName };
         setCompanies([fallback]);
         setCurrentCompanyId(fallback.id);
       }
     } catch {
-      const fallbackName = user ? `Entreprise ${user.firstName} ${user.lastName || ""}`.trim() : "Mon Entreprise";
+      const rawUser = user ? `${user.firstName} ${user.lastName || ""}`.trim() : "";
+      const fallbackName = rawUser
+        ? cleanCompanyName(rawUser.toLowerCase().startsWith("entreprise") ? rawUser : `Entreprise ${rawUser}`)
+        : "Mon Entreprise";
       const fallback: Company = { ...DEFAULT_COMPANY, name: fallbackName };
       setCompanies([fallback]);
       setCurrentCompanyId(fallback.id);
@@ -137,7 +157,11 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   const closeCreateModal = useCallback(() => setIsCreateModalOpen(false), []);
 
   const currentCompany = useMemo(() => {
-    return companies.find((c) => c.id === currentCompanyId) ?? companies[0] ?? DEFAULT_COMPANY;
+    const found = companies.find((c) => c.id === currentCompanyId) ?? companies[0] ?? DEFAULT_COMPANY;
+    return {
+      ...found,
+      name: cleanCompanyName(found.name),
+    };
   }, [companies, currentCompanyId]);
 
   const value = useMemo(

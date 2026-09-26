@@ -41,6 +41,18 @@ def get_supabase_client():
     return _supabase_client
 
 
+import re
+
+
+def clean_company_name(name: Any) -> str:
+    if not name:
+        return "Mon Entreprise"
+    cleaned = str(name).strip()
+    while re.match(r"^entreprise\s+entreprise", cleaned, re.IGNORECASE):
+        cleaned = re.sub(r"^entreprise\s+", "", cleaned, count=1, flags=re.IGNORECASE)
+    return cleaned.strip() or "Mon Entreprise"
+
+
 # ==============================================================================
 # Méthodes Entreprises (Multi-entreprises V2)
 # ==============================================================================
@@ -62,6 +74,14 @@ def list_companies(user_id: str) -> list[dict[str, Any]]:
                 c = row.get("companies") or {}
                 if c:
                     c["role"] = row.get("role", "member")
+                    orig_name = str(c.get("name") or "")
+                    clean_name = clean_company_name(orig_name)
+                    c["name"] = clean_name
+                    if clean_name != orig_name and c.get("id"):
+                        try:
+                            client.table("companies").update({"name": clean_name}).eq("id", c["id"]).execute()
+                        except Exception:
+                            pass
                     companies.append(c)
             if companies:
                 return companies
@@ -145,6 +165,14 @@ def get_company(company_id: str, user_id: str) -> dict[str, Any] | None:
             if comp_res.data:
                 comp = comp_res.data[0]
                 comp["role"] = role
+                orig_name = str(comp.get("name") or "")
+                clean_name = clean_company_name(orig_name)
+                comp["name"] = clean_name
+                if clean_name != orig_name and comp.get("id"):
+                    try:
+                        client.table("companies").update({"name": clean_name}).eq("id", comp["id"]).execute()
+                    except Exception:
+                        pass
                 return comp
         except Exception as err:
             logger.error("Erreur Supabase get_company: %s", err)

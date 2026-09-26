@@ -113,7 +113,7 @@ export function ProductsPanel() {
 
   return (
     <AppPageLayout
-      eyebrow={`Catalogue • ${currentCompany.name}`}
+      eyebrow="Catalogue"
       title="Produits"
       description={`Gérez le catalogue de ${currentCompany.name}. Tous les produits et calculs de marges sont strictement cloisonnés à cette entreprise.`}
     >

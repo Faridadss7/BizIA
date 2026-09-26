@@ -79,7 +79,7 @@ def register(first_name: str, last_name: str, email: str, password: str) -> dict
             "password_hash": password_hash.hash(password),
         }
     )
-    store.ensure_default_company(user["id"], f"Entreprise {first_name} {last_name}".strip())
+    store.ensure_default_company(user["id"], f"{first_name} {last_name}".strip())
     return _new_session(user)
 
 
@@ -109,7 +109,7 @@ def google_login(email: str, first_name: str = "", last_name: str = "") -> dict[
                 "password_hash": password_hash.hash(secrets.token_urlsafe(32)),
             }
         )
-        comp_name = f"Entreprise {f_name} {l_name}".strip()
+        comp_name = f"{f_name} {l_name}".strip()
         store.ensure_default_company(user["id"], comp_name)
     return _new_session(user)
 
@@ -147,7 +147,7 @@ def authenticate(token: str) -> dict[str, str]:
                             "first_name": data.get("first_name", ""),
                             "last_name": data.get("last_name", ""),
                         })
-                        store.ensure_default_company(user_id, f"Entreprise {data.get('first_name', '')} {data.get('last_name', '')}".strip())
+                        store.ensure_default_company(user_id, f"{data.get('first_name', '')} {data.get('last_name', '')}".strip())
                     return {
                         "id": user_id,
                         "email": data["email"],

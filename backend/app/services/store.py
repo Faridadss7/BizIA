@@ -68,6 +68,15 @@ def _new_id() -> str:
     return str(uuid.uuid4())
 
 
+def clean_company_name(name: Any) -> str:
+    if not name:
+        return "Mon Entreprise"
+    cleaned = str(name).strip()
+    while re.match(r"^entreprise\s+entreprise", cleaned, re.IGNORECASE):
+        cleaned = re.sub(r"^entreprise\s+", "", cleaned, count=1, flags=re.IGNORECASE)
+    return cleaned.strip() or "Mon Entreprise"
+
+
 class JsonStore:
     """Source unique de vérité : saisie manuelle et import écrivent ici avec réplication Supabase."""
 
@@ -345,6 +354,9 @@ class JsonStore:
                 if c:
                     item = copy.deepcopy(c)
                     item["role"] = m.get("role", "member")
+                    cleaned_name = clean_company_name(item.get("name"))
+                    item["name"] = cleaned_name
+                    c["name"] = cleaned_name
                     results.append(item)
             return results
 
@@ -361,7 +373,7 @@ class JsonStore:
             company_id = _new_id()
             company = {
                 "id": company_id,
-                "name": name.strip(),
+                "name": clean_company_name(name),
                 "category": (category or "Commerce Général").strip(),
                 "currency": (currency or "FCFA").strip(),
                 "created_by": str(user_id),
@@ -404,6 +416,7 @@ class JsonStore:
                 return None
             result = copy.deepcopy(company)
             result["role"] = member.get("role", "member")
+            result["name"] = clean_company_name(result.get("name"))
             return result
 
     def company_exists(self, company_id: str) -> bool:
@@ -431,7 +444,8 @@ class JsonStore:
                 if str(c.get("id")) == str(company_id):
                     for k in ("name", "category", "currency"):
                         if k in updates and updates[k] is not None:
-                            c[k] = str(updates[k]).strip()
+                            val = str(updates[k]).strip()
+                            c[k] = clean_company_name(val) if k == "name" else val
                     c["updated_at"] = datetime.now(timezone.utc).isoformat()
                     data["companies"][idx] = c
                     self._dump(data)
@@ -444,14 +458,14 @@ class JsonStore:
         existing = self.list_companies_for_user(user_id)
         if existing:
             return existing[0]
-        raw_name = user_name.strip()
-        if not raw_name:
+        cleaned_user = clean_company_name(user_name.strip())
+        if not cleaned_user or cleaned_user == "Mon Entreprise":
             name = "Mon Entreprise"
-        elif raw_name.lower().startswith("entreprise"):
-            name = raw_name
+        elif cleaned_user.lower().startswith("entreprise"):
+            name = cleaned_user
         else:
-            name = f"Entreprise {raw_name}"
-        return self.create_company_for_user(user_id, name)
+            name = f"Entreprise {cleaned_user}"
+        return self.create_company_for_user(user_id, clean_company_name(name))
 
 
     def get_last_analysis(self) -> dict[str, Any] | None:

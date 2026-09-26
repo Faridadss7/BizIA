@@ -200,7 +200,7 @@ export function DashboardPanel() {
   return (
     <AppPageLayout
       className="dashboard"
-      eyebrow={`Tableau de bord • ${currentCompany.name}`}
+      eyebrow="Tableau de bord"
       title="Vue d'ensemble"
       description={`Indicateurs clés, alertes et analyses de performance pour ${currentCompany.name} (${currentCompany.category || "Commerce Général"}).`}
       actions={
