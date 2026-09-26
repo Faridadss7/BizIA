@@ -71,6 +71,10 @@ export function SalesPanel() {
     load();
   }, [load, currentCompany.id]);
 
+  // Pagination des ventes
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
   const totals = useMemo(
     () =>
       items.reduce(
@@ -82,6 +86,30 @@ export function SalesPanel() {
       ),
     [items]
   );
+
+  useEffect(() => {
+    setPage(1);
+  }, [items.length, pageSize]);
+
+  const totalPages = pageSize > 0 ? Math.max(1, Math.ceil(items.length / pageSize)) : 1;
+  const paginatedSales = useMemo(() => {
+    if (pageSize <= 0) return items;
+    const start = (page - 1) * pageSize;
+    return items.slice(start, start + pageSize);
+  }, [items, page, pageSize]);
+
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    if (page <= 3) {
+      return [1, 2, 3, 4, "…", totalPages];
+    }
+    if (page >= totalPages - 2) {
+      return [1, "…", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+    return [1, "…", page - 1, page, page + 1, "…", totalPages];
+  }, [page, totalPages]);
 
   /** Le prix du catalogue sert de proposition, l'utilisateur peut le corriger. */
   function selectProduct(sku: string) {
@@ -179,7 +207,7 @@ export function SalesPanel() {
         </Link>
       }
     >
-      <div className="page-grid">
+      <div className="page-grid page-grid--form-table">
         <form className="card card--glass form-card" onSubmit={handleSubmit}>
           <h2>Nouvelle vente</h2>
 
@@ -281,7 +309,13 @@ export function SalesPanel() {
         </form>
 
         <div className="card card--glass">
-          <h2>Historique des ventes ({items.length})</h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.75rem" }}>
+            <h2>Historique des ventes ({items.length})</h2>
+            <span className="badge badge--default" style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
+              Total : {formatCurrency(totals.revenue, currentCompany.currency || "FCFA")}
+            </span>
+          </div>
+
           {loadError && <Alert variant="error">{loadError}</Alert>}
           {loading ? (
             <Spinner />
@@ -291,47 +325,120 @@ export function SalesPanel() {
               description="Enregistrez une première vente ou importez un document de ventes."
             />
           ) : (
-            <div className="table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Produit</th>
-                    <th>Qté</th>
-                    <th>Prix unit.</th>
-                    <th>Total</th>
-                    <th>Date</th>
-                    <th>Canal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((s, i) => (
-                    <tr key={s.id ?? `${s.product_sku}-${i}`}>
-                      <td><code>{s.product_sku}</code></td>
-                      <td>{s.quantity}</td>
-                      <td>{formatCurrency(s.unit_price, currentCompany.currency || "FCFA")}</td>
-                      <td><strong>{formatCurrency(s.quantity * s.unit_price, currentCompany.currency || "FCFA")}</strong></td>
-                      <td className="td--nowrap">{formatDate(s.sold_at)}</td>
-                      <td>
-                        <span className="table-tag table-tag--info">
-                          {s.channel && s.channel !== "manual" ? s.channel : "Boutique"}
-                        </span>
-                      </td>
+            <>
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Produit</th>
+                      <th>Qté</th>
+                      <th>Prix unit.</th>
+                      <th>Total</th>
+                      <th>Date</th>
+                      <th>Canal</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th scope="row">Total</th>
-                    <td>{totals.quantity}</td>
-                    <td />
-                    <td>
-                      <strong>{formatCurrency(totals.revenue, currentCompany.currency || "FCFA")}</strong>
-                    </td>
-                    <td colSpan={2} />
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paginatedSales.map((s, i) => (
+                      <tr key={s.id ?? `${s.product_sku}-${i}`}>
+                        <td><code>{s.product_sku}</code></td>
+                        <td>{s.quantity}</td>
+                        <td>{formatCurrency(s.unit_price, currentCompany.currency || "FCFA")}</td>
+                        <td><strong>{formatCurrency(s.quantity * s.unit_price, currentCompany.currency || "FCFA")}</strong></td>
+                        <td className="td--nowrap">{formatDate(s.sold_at)}</td>
+                        <td>
+                          <span className="table-tag table-tag--info">
+                            {s.channel && s.channel !== "manual" ? s.channel : "Boutique"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th scope="row">Total</th>
+                      <td>{totals.quantity}</td>
+                      <td />
+                      <td>
+                        <strong>{formatCurrency(totals.revenue, currentCompany.currency || "FCFA")}</strong>
+                      </td>
+                      <td colSpan={2} />
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              {/* Barre de pagination dynamique pour les ventes */}
+              {items.length > 0 && (
+                <div className="pagination-bar">
+                  <div className="pagination-info">
+                    Affichage de <strong>{(page - 1) * pageSize + 1}</strong> à{" "}
+                    <strong>{pageSize > 0 ? Math.min(page * pageSize, items.length) : items.length}</strong> sur{" "}
+                    <strong>{items.length}</strong> {items.length > 1 ? "ventes" : "vente"}
+                  </div>
+
+                  <div className="pagination-controls">
+                    <div className="pagination-size">
+                      <label htmlFor="pageSizeSales" className="muted">
+                        Afficher :
+                      </label>
+                      <select
+                        id="pageSizeSales"
+                        value={pageSize}
+                        onChange={(e) => setPageSize(Number(e.target.value))}
+                      >
+                        <option value={15}>15 par page</option>
+                        <option value={20}>20 par page</option>
+                        <option value={50}>50 par page</option>
+                        <option value={100}>100 par page</option>
+                        <option value={-1}>Tout voir ({items.length})</option>
+                      </select>
+                    </div>
+
+                    {pageSize > 0 && totalPages > 1 && (
+                      <div className="pagination-nav">
+                        <button
+                          type="button"
+                          className="pagination-btn"
+                          onClick={() => setPage((p) => Math.max(1, p - 1))}
+                          disabled={page <= 1}
+                          title="Page précédente"
+                        >
+                          ← Précédent
+                        </button>
+
+                        {pageNumbers.map((num, idx) =>
+                          typeof num === "number" ? (
+                            <button
+                              key={idx}
+                              type="button"
+                              className={`pagination-btn ${num === page ? "pagination-btn--active" : ""}`}
+                              onClick={() => setPage(num)}
+                            >
+                              {num}
+                            </button>
+                          ) : (
+                            <span key={idx} className="pagination-ellipsis">
+                              {num}
+                            </span>
+                          )
+                        )}
+
+                        <button
+                          type="button"
+                          className="pagination-btn"
+                          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                          disabled={page >= totalPages}
+                          title="Page suivante"
+                        >
+                          Suivant →
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

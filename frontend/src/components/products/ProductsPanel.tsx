@@ -36,6 +36,10 @@ export function ProductsPanel() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [stockFilter, setStockFilter] = useState<"all" | "low" | "normal">("all");
 
+  // Pagination (20 par page par défaut, personnalisable)
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -83,6 +87,31 @@ export function ProductsPanel() {
     });
   }, [items, searchQuery, selectedCategory, stockFilter]);
 
+  // Réinitialiser la page si les filtres changent
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, selectedCategory, stockFilter, pageSize]);
+
+  const totalPages = pageSize > 0 ? Math.max(1, Math.ceil(filteredItems.length / pageSize)) : 1;
+  const paginatedItems = useMemo(() => {
+    if (pageSize <= 0) return filteredItems;
+    const start = (page - 1) * pageSize;
+    return filteredItems.slice(start, start + pageSize);
+  }, [filteredItems, page, pageSize]);
+
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    if (page <= 3) {
+      return [1, 2, 3, 4, "…", totalPages];
+    }
+    if (page >= totalPages - 2) {
+      return [1, "…", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+    return [1, "…", page - 1, page, page + 1, "…", totalPages];
+  }, [page, totalPages]);
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!form.sku.trim() || !form.name.trim()) {
@@ -117,7 +146,7 @@ export function ProductsPanel() {
       title="Produits"
       description={`Gérez le catalogue de ${currentCompany.name}. Tous les produits et calculs de marges sont strictement cloisonnés à cette entreprise.`}
     >
-      <div className="page-grid">
+      <div className="page-grid page-grid--form-table">
         <form className="card card--glass form-card" onSubmit={handleSubmit}>
           <h2>Nouveau produit</h2>
 
@@ -196,6 +225,16 @@ export function ProductsPanel() {
         <div className="card card--glass">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.75rem" }}>
             <h2>Catalogue ({filteredItems.length}/{items.length})</h2>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <span className="badge badge--default" style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
+                {items.length} articles
+              </span>
+              {filteredItems.some((p) => p.stock_quantity <= (p.low_stock_threshold ?? 5)) && (
+                <span className="badge badge--high" style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }}>
+                  {filteredItems.filter((p) => p.stock_quantity <= (p.low_stock_threshold ?? 5)).length} stock faible
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Barre de recherche et filtres */}
@@ -248,52 +287,132 @@ export function ProductsPanel() {
               description="Modifiez vos critères de recherche ou réinitialisez les filtres."
             />
           ) : (
-            <div className="table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Référence</th>
-                    <th>Nom</th>
-                    <th>Catégorie</th>
-                    <th>Prix</th>
-                    <th>Marge unitaire</th>
-                    <th>Stock</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredItems.map((p) => {
-                    const margin = p.unit_price - (p.unit_cost ?? 0);
-                    const marginPct = p.unit_price > 0 ? (margin / p.unit_price) * 100 : 0;
-                    const isLow = p.stock_quantity <= (p.low_stock_threshold ?? 5);
+            <>
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Référence</th>
+                      <th>Nom</th>
+                      <th>Catégorie</th>
+                      <th>Prix</th>
+                      <th>Marge unitaire</th>
+                      <th>Stock</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedItems.map((p) => {
+                      const margin = p.unit_price - (p.unit_cost ?? 0);
+                      const marginPct = p.unit_price > 0 ? (margin / p.unit_price) * 100 : 0;
+                      const isLow = p.stock_quantity <= (p.low_stock_threshold ?? 5);
 
-                    return (
-                      <tr key={p.id ?? p.sku}>
-                        <td><code>{p.sku}</code></td>
-                        <td><strong>{p.name}</strong></td>
-                        <td>{p.category ?? "—"}</td>
-                        <td>{formatCurrency(p.unit_price, currentCompany.currency || "FCFA")}</td>
-                        <td>
-                          <span style={{ color: margin < 0 ? "var(--color-danger, #ef4444)" : "var(--color-success, #10b981)", fontWeight: 600 }}>
-                            {formatCurrency(margin, currentCompany.currency || "FCFA")}
-                          </span>
-                          {p.unit_price > 0 && (
-                            <span className="muted" style={{ marginLeft: "0.4rem", fontSize: "0.75rem" }}>
-                              ({marginPct.toFixed(0)}%)
+                      return (
+                        <tr key={p.id ?? p.sku}>
+                          <td><code>{p.sku}</code></td>
+                          <td><strong>{p.name}</strong></td>
+                          <td>{p.category ?? "—"}</td>
+                          <td>{formatCurrency(p.unit_price, currentCompany.currency || "FCFA")}</td>
+                          <td>
+                            <span style={{ color: margin < 0 ? "var(--color-danger, #ef4444)" : "var(--color-success, #10b981)", fontWeight: 600 }}>
+                              {formatCurrency(margin, currentCompany.currency || "FCFA")}
                             </span>
-                          )}
-                        </td>
-                        <td>
-                          {p.stock_quantity}{" "}
-                          {isLow && (
-                            <span className="table-tag table-tag--warn">Faible</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                            {p.unit_price > 0 && (
+                              <span className="muted" style={{ marginLeft: "0.4rem", fontSize: "0.75rem" }}>
+                                ({marginPct.toFixed(0)}%)
+                              </span>
+                            )}
+                          </td>
+                          <td>
+                            {p.stock_quantity}{" "}
+                            {isLow && (
+                              <span className="table-tag table-tag--warn">Faible</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Barre de pagination dynamique */}
+              <div className="pagination-bar">
+                <div className="pagination-info">
+                  Affichage de <strong>{filteredItems.length === 0 ? 0 : (page - 1) * pageSize + 1}</strong> à{" "}
+                  <strong>{pageSize > 0 ? Math.min(page * pageSize, filteredItems.length) : filteredItems.length}</strong> sur{" "}
+                  <strong>{filteredItems.length}</strong> {filteredItems.length > 1 ? "articles" : "article"}
+                  {filteredItems.length < items.length && (
+                    <span className="muted" style={{ marginLeft: "0.35rem" }}>
+                      (filtrés sur {items.length})
+                    </span>
+                  )}
+                </div>
+
+                <div className="pagination-controls">
+                  <div className="pagination-size">
+                    <label htmlFor="pageSizeSelect" className="muted">
+                      Afficher :
+                    </label>
+                    <select
+                      id="pageSizeSelect"
+                      value={pageSize}
+                      onChange={(e) => setPageSize(Number(e.target.value))}
+                    >
+                      <option value={15}>15 par page</option>
+                      <option value={20}>20 par page</option>
+                      <option value={50}>50 par page</option>
+                      <option value={100}>100 par page</option>
+                      <option value={-1}>Tout voir ({filteredItems.length})</option>
+                    </select>
+                  </div>
+
+                  {pageSize > 0 && totalPages > 1 && (
+                    <div className="pagination-nav">
+                      <button
+                        type="button"
+                        className="pagination-btn"
+                        onClick={() => {
+                          setPage((p) => Math.max(1, p - 1));
+                        }}
+                        disabled={page <= 1}
+                        title="Page précédente"
+                      >
+                        ← Précédent
+                      </button>
+
+                      {pageNumbers.map((num, idx) =>
+                        typeof num === "number" ? (
+                          <button
+                            key={idx}
+                            type="button"
+                            className={`pagination-btn ${num === page ? "pagination-btn--active" : ""}`}
+                            onClick={() => setPage(num)}
+                          >
+                            {num}
+                          </button>
+                        ) : (
+                          <span key={idx} className="pagination-ellipsis">
+                            {num}
+                          </span>
+                        )
+                      )}
+
+                      <button
+                        type="button"
+                        className="pagination-btn"
+                        onClick={() => {
+                          setPage((p) => Math.min(totalPages, p + 1));
+                        }}
+                        disabled={page >= totalPages}
+                        title="Page suivante"
+                      >
+                        Suivant →
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
